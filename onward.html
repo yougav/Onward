@@ -144,14 +144,15 @@
   .sheet p{font-size:14px;line-height:1.55;color:var(--faint);margin:0 0 16px;}
   .toast{position:fixed;left:50%;bottom:calc(86px + var(--pad));transform:translateX(-50%);background:#06231f;color:var(--beacon);border:1px solid var(--beacon);padding:11px 18px;border-radius:999px;font-size:13px;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;}
   .toast.on{opacity:1;}
-  #splash{position:fixed;inset:0;z-index:300;background:var(--ink);display:flex;align-items:center;justify-content:center;transition:opacity .55s ease;}
+  #splash{position:fixed;inset:0;z-index:300;background-color:#000;display:flex;align-items:center;justify-content:center;transition:background-color .85s ease,opacity .58s ease;}
+  #splash.lit{background-color:var(--ink);}
   #splash.gone{opacity:0;pointer-events:none;}
   #splash .mark{display:flex;flex-direction:column;align-items:center;gap:16px;opacity:0;transform:scale(.95);transition:opacity .65s ease,transform .8s ease;}
   #splash.lit .mark{opacity:1;transform:scale(1);}
   #splash svg{width:92px;height:92px;}
   #splash .wm{font-size:21px;letter-spacing:.34em;text-transform:uppercase;color:var(--mist);font-weight:600;padding-left:.34em;}
   #splash .tg{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);padding-left:.2em;}
-  @media (prefers-reduced-motion:reduce){#splash,#splash .mark{transition:none;}#splash .mark{opacity:1;transform:none;}}
+  @media (prefers-reduced-motion:reduce){#splash,#splash .mark{transition:none;}#splash{background-color:var(--ink);}#splash .mark{opacity:1;transform:none;}}
 </style>
 </head>
 <body>
