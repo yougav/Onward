@@ -154,9 +154,12 @@
   #splash .wm{font-size:21px;letter-spacing:.34em;text-transform:uppercase;color:var(--mist);font-weight:600;padding-left:.34em;}
   #splash .tg{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);padding-left:.2em;}
   @media (prefers-reduced-motion:reduce){#splash,#splash .mark{transition:none;}#splash{background-color:var(--ink);}#splash .mark{opacity:1;transform:none;}}
+  .screen,.tabs{transition:opacity .6s ease;}
+  body.boot .screen,body.boot .tabs{opacity:0;}
+  @media (prefers-reduced-motion:reduce){.screen,.tabs{transition:none;}body.boot .screen,body.boot .tabs{opacity:1;}}
 </style>
 </head>
-<body>
+<body class="boot">
 <div class="app">
 
   <section id="s-deck" class="screen on">
@@ -234,7 +237,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">build 28g</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">build 28h</span></p>
   </section>
 
   <nav class="tabs">
@@ -1051,7 +1054,8 @@
   if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(function(){});}
   var returning=!!state;
   try{if(!state){state=seed();save();render();openSetup(true);}else{render();}}catch(e){}
-  if(returning)maybeDailyGreeting();
+  setTimeout(function(){document.body.classList.remove('boot');},120);
+  if(returning)setTimeout(maybeDailyGreeting,760);
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')maybeDailyGreeting();});
   window.addEventListener('focus',maybeDailyGreeting);
 })();
