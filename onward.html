@@ -144,9 +144,15 @@
   .sheet p{font-size:14px;line-height:1.55;color:var(--faint);margin:0 0 16px;}
   .toast{position:fixed;left:50%;bottom:calc(86px + var(--pad));transform:translateX(-50%);background:#06231f;color:var(--beacon);border:1px solid var(--beacon);padding:11px 18px;border-radius:999px;font-size:13px;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;}
   .toast.on{opacity:1;}
+  #splash{position:fixed;inset:0;z-index:300;background:radial-gradient(120% 70% at 50% 36%,#1A3047,#0B1521);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;transition:opacity .5s ease;}
+  #splash.gone{opacity:0;pointer-events:none;}
+  #splash svg{width:92px;height:92px;}
+  #splash .wm{font-size:21px;letter-spacing:.34em;text-transform:uppercase;color:var(--mist);font-weight:600;padding-left:.34em;}
+  #splash .tg{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);padding-left:.2em;}
 </style>
 </head>
 <body>
+<div id="splash"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="#5FD0C5" stroke-opacity="0.5" stroke-width="2"/><path d="M50,10 L54,50 L50,90 L46,50 Z" fill="#E8B65A"/><path d="M10,50 L50,46 L90,50 L50,54 Z" fill="#4FA39B"/><circle cx="50" cy="50" r="5.5" fill="#0E1A2B" stroke="#5FD0C5" stroke-opacity="0.7" stroke-width="1.6"/><circle cx="50" cy="10" r="2.4" fill="#E8B65A"/></svg><div class="wm">Onward</div><div class="tg">chart your passage</div></div>
 <div class="app">
 
   <section id="s-deck" class="screen on">
@@ -826,7 +832,7 @@
   }
 
   /* ---- actions ---- */
-  function completeToday(){const t=todayISO();if(state.deviations[t]){toast("Today already logged as weather");return;}if(state.completed.indexOf(t)<0){state.completed.push(t);save();toast("Day’s run logged ✓");render();}}
+  function completeToday(){const t=todayISO();if(state.deviations[t]){toast("Today already logged as weather");return;}if(state.completed.indexOf(t)>=0)return;const before=voyageContext(aggregate().made).completed;state.completed.push(t);save();render();const after=voyageContext(aggregate().made).completed;if(after>before)return;dayClosedSummary();}
 
   function stepperRows(values){
     return state.drinks.map(dr=>{const q=values[dr.id]||0;
@@ -907,11 +913,11 @@
     );
     function calc(){const c=basketTotals(values),r=rates();const total=Object.keys(values).reduce((a,k)=>a+(values[k]||0),0);if(total===0){$("#e_calc").innerHTML="A <b>clear day</b> — fair sailing.";}else{$("#e_calc").innerHTML="This day <b>"+fmtU(c.units)+" drift</b> · "+fmtMoney(c.money)+" · "+Math.round(c.kcal)+" ballast<br><span style='color:var(--faint)'>still salvaged "+fmtMoney(Math.max(0,r.money-c.money))+" against your usual</span>";}}
     bindSteppers(values,calc);calc();
-    $("#e_save").onclick=()=>{const d=$("#e_date").value||iso;if(d!==iso){delete state.deviations[iso];const ci=state.completed.indexOf(iso);if(ci>=0)state.completed.splice(ci,1);}const basket={};let total=0;Object.keys(values).forEach(k=>{if(values[k]>0){basket[k]=values[k];total+=values[k];}});if(total>0){state.deviations[d]=basket;const ci=state.completed.indexOf(d);if(ci>=0)state.completed.splice(ci,1);}else{delete state.deviations[d];if(d===todayISO()&&state.completed.indexOf(d)<0)state.completed.push(d);}save();closeSheet();render();toast("Logged");};
+    $("#e_save").onclick=()=>{const d=$("#e_date").value||iso;if(d!==iso){delete state.deviations[iso];const ci=state.completed.indexOf(iso);if(ci>=0)state.completed.splice(ci,1);}const basket={};let total=0;Object.keys(values).forEach(k=>{if(values[k]>0){basket[k]=values[k];total+=values[k];}});if(total>0){state.deviations[d]=basket;const ci=state.completed.indexOf(d);if(ci>=0)state.completed.splice(ci,1);}else{delete state.deviations[d];if(d===todayISO()&&state.completed.indexOf(d)<0)state.completed.push(d);}const newWeatherToday=(d===todayISO()&&total>0&&!existing);save();closeSheet();render();if(newWeatherToday){weatherReassurance();}else{toast("Logged");}};
     const ec=$("#e_clear");if(ec)ec.onclick=()=>{delete state.deviations[iso];save();closeSheet();render();toast("Set clear");};
   }
 
-  function backup(){const data=JSON.stringify(state);sheet("<h2>The papers</h2><p>Copy this somewhere safe. Paste into Restore on any device to bring the whole passage back.</p>"+'<div class="field"><textarea id="bk" rows="5" readonly>'+data+'</textarea></div>'+'<button class="btn primary" id="copyBk">Copy to clipboard</button><button class="btn quiet" id="closeBk">Done</button>');$("#copyBk").onclick=()=>{const ta=$("#bk");ta.select();(navigator.clipboard?navigator.clipboard.writeText(ta.value):Promise.reject()).then(()=>toast("Copied")).catch(()=>{document.execCommand("copy");toast("Copied");});};$("#closeBk").onclick=closeSheet;}
+  function backup(){const data=JSON.stringify(state);sheet("<h2>The papers</h2><p>Copy this somewhere safe. Paste into Restore on any device to bring the whole passage back.</p>"+'<div class="field"><textarea id="bk" rows="5" readonly>'+data+'</textarea></div>'+'<button class="btn primary" id="copyBk">Copy to clipboard</button><button class="btn quiet" id="closeBk">Done</button>');$("#copyBk").onclick=()=>{state.lastBackupISO=todayISO();save();const ta=$("#bk");ta.select();(navigator.clipboard?navigator.clipboard.writeText(ta.value):Promise.reject()).then(()=>toast("Copied")).catch(()=>{document.execCommand("copy");toast("Copied");});};$("#closeBk").onclick=closeSheet;}
   function restore(){sheet("<h2>Restore</h2><p>Paste the papers below. This replaces what’s aboard now.</p>"+'<div class="field"><textarea id="rs" rows="5" placeholder="Paste papers…"></textarea></div>'+'<button class="btn primary" id="doRs">Restore</button><button class="btn quiet" id="closeRs">Cancel</button>');$("#doRs").onclick=()=>{try{const r=JSON.parse($("#rs").value.trim());if(r&&r.v===3){state=r;save();closeSheet();render();toast("Restored");}else toast("Not valid papers");}catch(e){toast("Couldn’t read that");}};$("#closeRs").onclick=closeSheet;}
   function wipe(){sheet("<h2>Scuttle and start over?</h2><p>This sends the whole passage to the bottom, for good. Copy the papers first if there’s any doubt.</p>"+'<button class="btn danger" id="doWipe">Scuttle it</button><button class="btn quiet" id="closeWipe">Belay that</button>');$("#doWipe").onclick=()=>{localStorage.removeItem("onward.v3");state=seed();save();closeSheet();render();openSetup(true);toast("A clean slate");};$("#closeWipe").onclick=closeSheet;}
 
@@ -921,6 +927,57 @@
   function modal(html){$("#sheet2").innerHTML=html;$("#scrim2").classList.add("on");$("#sheet2").scrollTop=0;}
   function closeModal(){$("#scrim2").classList.remove("on");}
   $("#scrim2").addEventListener("click",e=>{if(e.target===$("#scrim2"))closeModal();});
+  // ---- daily greeting / close-of-day summary / weather reassurance ----
+  function greetingTitle(made){const t=["Morning watch","A new day\u2019s sailing","Back at the helm","The day ahead","Dawn on the water","A fresh horizon"];return t[made%t.length];}
+  function backupOverdue(){if(!state||aggregate().made<7)return false;const lb=state.lastBackupISO;if(!lb)return true;return daysBetween(lb,todayISO())>=14;}
+  function progressLine(A,V){if(V.openSea)return "<b>"+A.made+"</b> clear days made good \u2014 out beyond the full circuit now, in open water.";const vt=passageById(V.id).title;return "<b>"+A.made+"</b> clear day"+(A.made===1?"":"s")+" made good \u2014 "+vt+", day "+V.madeIn+" of "+V.length+".";}
+  function nextStepLine(A,V){const nIdx=nextPortIdx(A.made);if(V.openSea)return nIdx>=0?("Open water ahead \u2014 the next marker lies "+(PORTS[nIdx].d-A.made)+" days on."):"Open water ahead, and the next day, and the next.";if(nIdx<0)return "You\u2019re within sight of landfall \u2014 one more clean run brings it home.";const p=PORTS[nIdx],to=p.d-A.made;return "Next port, <b>"+p.name+"</b>, lies "+to+" day"+(to===1?"":"s")+" ahead.";}
+  function dailyGreeting(){
+    const A=aggregate();PORTS=currentPorts(A.made);const V=voyageContext(A.made),ti=dayInfo(todayISO());
+    const recentWeather=(A.leg===0&&A.made>0);
+    let h='<div class="eyebrow">'+greetingTitle(A.made)+'</div>';
+    if(recentWeather){
+      h+='<h2>Fair winds return</h2>';
+      h+='<p>The weather closed in on your last run \u2014 and that\u2019s the sea, not a failure of yours. What you\u2019ve banked still stands: '+progressLine(A,V)+'</p>';
+      h+='<p>The leg starts fresh from here. '+nextStepLine(A,V)+(ti.status==='pending'?' Close today\u2019s run when you\u2019re ready, and you\u2019re making way again.':'')+'</p>';
+    } else {
+      h+='<h2>'+(A.made===0?'Ready to cast off':'Still sailing')+'</h2>';
+      h+='<p>'+progressLine(A,V)+(A.banked.money>0?' '+fmtMoney(A.banked.money)+' in salvage banked along the way.':'')+'</p>';
+      h+='<p>'+nextStepLine(A,V)+(ti.status==='pending'?' Close today\u2019s run to gain on it.':(ti.status==='clear'?' Today\u2019s run is already logged \u2014 well sailed.':''))+'</p>';
+    }
+    if(backupOverdue())h+='<p class="muted">It\u2019s been a while since you copied your papers. A quick backup in the Locker keeps your whole passage safe.</p>';
+    h+='<button class="btn primary" id="mClose">Take the helm</button>';
+    modal(h);$("#mClose").onclick=closeModal;
+  }
+  function maybeDailyGreeting(){
+    if(!state)return;
+    if($("#scrim").classList.contains("on")||$("#scrim2").classList.contains("on"))return;
+    const started=aggregate().made>0||Object.keys(state.deviations).length>0;
+    if(!started)return;
+    if(state.lastSeenDay===todayISO())return;
+    state.lastSeenDay=todayISO();save();
+    dailyGreeting();
+  }
+  function dayClosedSummary(){
+    const A=aggregate();PORTS=currentPorts(A.made);const V=voyageContext(A.made),r=rates();
+    let h='<div class="eyebrow">Day\u2019s run closed</div><h2>Well sailed.</h2>';
+    h+='<p>'+progressLine(A,V)+'</p>';
+    const bits=[];if(r.money>0)bits.push('+'+fmtMoney(r.money)+' salvage');if(r.units>0)bits.push('+'+fmtU(r.units)+' drift held off');
+    if(bits.length)h+='<p class="muted">Today\u2019s gain: '+bits.join(' \u00b7 ')+' \u2014 '+fmtMoney(A.banked.money)+' banked all told.</p>';
+    const reached=PORTS.find(p=>p.d===A.made);
+    if(reached)h+='<p><b>Landfall at '+reached.name+'.</b> A fresh chapter\u2019s open in the log \u2014 tap the chart to read it.</p>';
+    else h+='<p>'+nextStepLine(A,V)+'</p>';
+    h+='<button class="btn primary" id="mClose">Sail on</button>';
+    modal(h);$("#mClose").onclick=closeModal;
+  }
+  function weatherReassurance(){
+    const A=aggregate();PORTS=currentPorts(A.made);const V=voyageContext(A.made);
+    let h='<div class="eyebrow">Weather logged</div><h2>It happens to every sailor.</h2>';
+    h+='<p>A weather day is part of the passage, not a failure of it. What you\u2019ve banked stays banked \u2014 '+progressLine(A,V)+'</p>';
+    h+='<p>This leg resets, and your next clean day starts a fresh one. No ground lost on the voyage; just weather astern. Fair winds will come again.</p>';
+    h+='<button class="btn primary" id="mClose">Sail on</button>';
+    modal(h);$("#mClose").onclick=closeModal;
+  }
 
   function loreOf(P){return {brief:(P.brief&&P.brief.length)?P.brief:["This passage follows "+P.title+" — "+P.era+". The full story is still being written."],ship:P.ship||"",crew:P.crew||"",sources:P.sources||""};}
   function factsHTML(L){return (L.ship||L.crew)?'<div class="facts">'+(L.ship?'<div><b>Ship</b>'+L.ship+'</div>':'')+(L.crew?'<div><b>Crew</b>'+L.crew+'</div>':'')+'</div>':'';}
@@ -986,7 +1043,13 @@
   $("#restoreBtn").onclick=restore;
   $("#wipeBtn").onclick=wipe;
 
-  if(!state){state=seed();save();render();openSetup(true);}else{render();}
+  if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
+  if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(function(){});}
+  function dismissSplash(){var sp=document.getElementById('splash');if(sp){sp.classList.add('gone');setTimeout(function(){if(sp.parentNode)sp.parentNode.removeChild(sp);},520);}}
+  if(!state){state=seed();save();render();openSetup(true);setTimeout(dismissSplash,200);}
+  else{render();setTimeout(dismissSplash,200);setTimeout(maybeDailyGreeting,780);}
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')maybeDailyGreeting();});
+  window.addEventListener('focus',maybeDailyGreeting);
 })();
 </script>
 </body>
