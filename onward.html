@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="theme-color" content="#0E1A2B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Onward">
+<title>Onward</title>
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<style>
+  :root{--ink:#0E1A2B;--slate:#16263B;--horizon:#1E3A52;--line:#26405C;--mist:#C9D6E5;--faint:#7E92AB;--beacon:#5FD0C5;--amber:#E8B65A;--danger:#E0746A;--pad:env(safe-area-inset-bottom,0px);}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;height:100%;}
+  body{background:radial-gradient(120% 60% at 50% -10%,#1A3047 0%,var(--ink) 55%) fixed;color:var(--mist);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior:none;}
+  .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;}
+  .app{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;}
+  .screen{flex:1;padding:calc(22px + env(safe-area-inset-top,0px)) 20px 104px;display:none;animation:fade .35s ease;}
+  .screen.on{display:block;}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.screen{animation:none}}
+  .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--faint);}
+  h1{font-size:20px;font-weight:600;margin:2px 0 18px;}
+  .muted{color:var(--faint);}
+  .bignum{font-size:54px;font-weight:300;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#fff;}
+  .biglabel{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-top:6px;}
+  .sub{margin-top:8px;font-size:13px;color:var(--beacon);}
+  .ribbon{display:flex;justify-content:center;gap:10px;margin:16px 0 4px;}
+  .pill{background:var(--slate);border:1px solid var(--line);border-radius:14px;padding:12px 10px;flex:1;min-width:0;text-align:center;}
+  .pill .k{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);}
+  .pill .v{font-size:17px;margin-top:5px;font-variant-numeric:tabular-nums;}
+  .card{background:var(--slate);border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0;}
+  .card h2{font-size:13px;letter-spacing:.04em;margin:0 0 12px;font-weight:600;color:var(--mist);}
+  .cond{font-size:14px;line-height:1.5;color:var(--mist);}
+  .cond .lead{color:var(--beacon);font-weight:600;}
+  .stat-row{display:flex;align-items:baseline;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--line);}
+  .stat-row:last-child{border-bottom:0;}
+  .stat-row .lbl{font-size:13px;color:var(--faint);}
+  .port{display:flex;align-items:flex-start;gap:14px;padding:13px 2px;border-bottom:1px solid var(--line);}
+  .port:last-child{border-bottom:0;}
+  .port .dot{width:22px;height:22px;border-radius:50%;flex:none;margin-top:1px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--faint);}
+  .port.done .dot{background:var(--beacon);border-color:var(--beacon);color:var(--ink);}
+  .port.next .dot{border-color:var(--amber);color:var(--amber);}
+  .port .pname{font-size:15px;}
+  .port .plog{font-size:12px;color:var(--faint);margin-top:3px;line-height:1.45;font-style:italic;}
+  .port .pwhen{font-size:12px;color:var(--amber);margin-top:3px;}
+  .port.future .pname{color:var(--faint);}
+  .port{cursor:pointer;}
+  .port .pgrow{flex:1;min-width:0;}
+  .port .pchev{margin-left:auto;align-self:center;color:var(--faint);font-size:13px;flex:none;padding-left:8px;}
+  .port.done .pchev{color:var(--beacon);}
+  .sub2{font-size:13px;color:var(--faint);margin:2px 0 12px;}
+  .facts{background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:14px 0;font-size:13px;line-height:1.5;color:var(--mist);}
+  .facts div+div{margin-top:6px;}
+  .facts b{color:var(--faint);font-weight:600;margin-right:4px;}
+  .lh{font-size:13px;letter-spacing:.04em;color:var(--faint);text-transform:uppercase;margin:18px 0 6px;}
+  .lstops .lrow{display:flex;gap:14px;align-items:center;padding:11px 2px;border-bottom:1px solid var(--line);cursor:pointer;}
+  .lstops .lrow:last-child{border-bottom:0;}
+  .lrow .dot{width:22px;height:22px;border-radius:50%;flex:none;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--faint);}
+  .lrow.done .dot{background:var(--beacon);border-color:var(--beacon);color:var(--ink);}
+  .lrow .pname{font-size:15px;}
+  .lrow .plog{font-size:12px;color:var(--beacon);margin-top:2px;}
+  .lrow .pwhen{font-size:12px;color:var(--faint);margin-top:2px;}
+  .lrow .pchev{margin-left:auto;color:var(--faint);font-size:13px;}
+  .srcs{font-size:12px;color:var(--faint);line-height:1.5;margin:16px 0 4px;padding-top:12px;border-top:1px solid var(--line);}
+  .brow{display:flex;gap:12px;padding:9px 2px;border-bottom:1px solid var(--line);}
+  .brow:last-child{border-bottom:0;}
+  .brow .bn{flex:none;width:22px;height:22px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--faint);}
+  .brow b{font-size:14px;}
+  .muted2{font-size:12px;color:var(--faint);margin-top:2px;line-height:1.45;font-style:italic;}
+  .detail{background:rgba(95,208,197,.08);border-left:2px solid var(--beacon);border-radius:0 8px 8px 0;padding:10px 12px;margin:16px 0 0;font-size:13px;line-height:1.55;color:var(--mist);}
+  .locknote{font-size:13px;color:var(--faint);font-style:italic;margin-top:10px;opacity:.75;}
+  .readstory{display:inline-block;font-size:12px;color:var(--beacon);margin-top:9px;font-weight:600;}
+  .libhint{font-size:11px;color:var(--faint);margin-top:10px;letter-spacing:.02em;cursor:pointer;}
+  #sheet2 p{font-size:14px;line-height:1.62;color:var(--mist);margin:11px 0;}
+  #sheet2 h2{margin-bottom:2px;}
+  .mapwrap{background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:8px;margin:12px 0 14px;}
+  .mapwrap svg{display:block;border-radius:6px;}
+  .mapcap{font-size:11px;color:var(--faint);margin-top:7px;text-align:center;line-height:1.4;}
+  .vshelf .vrow{display:flex;gap:12px;align-items:center;padding:11px 2px;border-bottom:1px solid var(--line);}
+  .vshelf .vrow:last-child{border-bottom:0;}
+  .vshelf .vrow.lock{opacity:.5;}
+  .vshelf .vrow.done,.vshelf .vrow.cur{cursor:pointer;}
+  .vshelf .vrow .pname{font-size:15px;}
+  .vshelf .vrow.cur .pname{color:var(--amber);}
+  .vshelf .vsub{font-size:12px;color:var(--faint);margin-top:2px;}
+  .vshelf .pchev{margin-left:auto;color:var(--faint);font-size:13px;}
+  .btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;}
+  .btn.primary{background:var(--beacon);color:#06231f;}
+  .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--mist);}
+  .btn.quiet{background:transparent;color:var(--faint);font-weight:500;font-size:14px;padding:10px;}
+  .btn.danger{background:transparent;border:1px solid #50342f;color:var(--danger);}
+  .btn[disabled]{opacity:.55;}
+  .btn+.btn{margin-top:10px;}
+  .btn .small{display:block;font-size:12px;font-weight:500;opacity:.8;margin-top:2px;}
+  .field{margin:14px 0;}
+  .field label{display:block;font-size:12px;letter-spacing:.04em;color:var(--faint);margin-bottom:7px;}
+  .field input,.field textarea{width:100%;max-width:100%;min-width:0;-webkit-appearance:none;appearance:none;background:var(--ink);border:1px solid var(--line);color:var(--mist);border-radius:12px;padding:14px;font-size:16px;font-family:inherit;}
+  .field input[type=date]{text-align:left;}
+  .field .hint{font-size:11px;color:var(--faint);margin-top:6px;}
+  .two{display:flex;gap:12px;}.two .field{flex:1;}
+  .seg{display:flex;background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin:4px 0 16px;}
+  .seg button{flex:1;min-width:0;background:0;border:0;color:var(--faint);font-family:inherit;font-size:13px;font-weight:600;padding:9px 0;border-radius:9px;cursor:pointer;}
+  .seg button.on{background:var(--horizon);color:#fff;}
+  .qrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);}
+  .qrow:last-of-type{border-bottom:0;}
+  .qrow .meta{flex:1;min-width:0;}
+  .qrow .meta b{font-size:15px;font-weight:600;}
+  .qrow .meta small{display:block;color:var(--faint);font-size:11px;margin-top:2px;}
+  .mini{display:flex;align-items:center;gap:10px;}
+  .mini button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--ink);color:var(--mist);font-size:20px;cursor:pointer;}
+  .mini .val{min-width:28px;text-align:center;font-size:19px;font-variant-numeric:tabular-nums;}
+  .summary{background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:13px;margin:14px 0;text-align:center;font-size:14px;}
+  .summary b{color:var(--beacon);}
+  .day{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line);cursor:pointer;}
+  .day:last-child{border-bottom:0;}
+  .day .date{flex:1;font-size:14px;}
+  .day .date small{display:block;color:var(--faint);font-size:11px;margin-top:2px;}
+  .tag{font-size:11px;padding:4px 9px;border-radius:999px;border:1px solid var(--line);color:var(--faint);white-space:nowrap;}
+  .tag.clear{color:var(--beacon);border-color:#2b5650;}
+  .tag.dev{color:var(--amber);border-color:#574420;}
+  .hz{display:flex;align-items:center;gap:12px;padding:13px 2px;border-bottom:1px solid var(--line);cursor:pointer;}
+  .hz:last-of-type{border-bottom:0;}
+  .hz .meta{flex:1;}.hz .meta b{font-size:15px;}.hz .meta small{display:block;color:var(--faint);font-size:11px;margin-top:2px;font-style:italic;}
+  .hz .chev{color:var(--faint);}
+  .note{font-size:13px;line-height:1.55;color:var(--faint);}
+  .note b{color:var(--mist);font-weight:600;}
+  .safety{border:1px solid #2c4a4a;background:#13211f;border-radius:14px;padding:14px;margin:14px 0;font-size:13px;line-height:1.55;color:#bfe0d8;}
+  .safety b{color:var(--beacon);}
+  .chartwrap{background:var(--ink);border:1px solid var(--line);border-radius:14px;padding:12px 8px 6px;}
+  .chartwrap svg{width:100%;height:auto;display:block;}
+  .tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(14,26,43,.92);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:8px 0 calc(8px + var(--pad));display:flex;}
+  .tabs button{flex:1;background:0;border:0;color:var(--faint);font-family:inherit;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:6px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;}
+  .tabs button svg{width:22px;height:22px;stroke:var(--faint);fill:none;stroke-width:1.7;}
+  .tabs button.on{color:var(--beacon);}.tabs button.on svg{stroke:var(--beacon);}
+  .scrim{position:fixed;inset:0;background:rgba(6,12,20,.7);display:none;align-items:flex-end;justify-content:center;z-index:50;}
+  .scrim.on{display:flex;}
+  .sheet{background:var(--slate);border:1px solid var(--line);border-bottom:0;border-radius:22px 22px 0 0;width:100%;max-width:520px;padding:22px 20px calc(26px + var(--pad));animation:rise .28s ease;max-height:92vh;overflow-y:auto;overflow-x:hidden;}
+  @keyframes rise{from{transform:translateY(40px);opacity:.6}to{transform:none;opacity:1}}
+  .sheet h2{margin:0 0 6px;font-size:17px;}
+  .sheet p{font-size:14px;line-height:1.55;color:var(--faint);margin:0 0 16px;}
+  .toast{position:fixed;left:50%;bottom:calc(86px + var(--pad));transform:translateX(-50%);background:#06231f;color:var(--beacon);border:1px solid var(--beacon);padding:11px 18px;border-radius:999px;font-size:13px;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;}
+  .toast.on{opacity:1;}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <section id="s-deck" class="screen on">
+    <div class="eyebrow">Onward</div>
+    <h1>Helm</h1>
+    <div class="card" style="padding:14px">
+      <div class="chartwrap" style="padding:8px 4px 4px"><div id="routeChart"></div></div>
+      <div style="text-align:center;margin-top:12px">
+        <div class="bignum" id="dayNum">0</div>
+        <div class="biglabel">days made good</div>
+        <div class="sub" id="nextSub">—</div>
+        <div class="libhint" id="libHint">Tap the chart for the ship's library ›</div>
+      </div>
+    </div>
+    <div class="card"><div class="cond" id="conditions">—</div><div class="note" style="margin-top:8px" id="legTrim"></div></div>
+    <div class="ribbon">
+      <div class="pill"><div class="k">Trim · this leg</div><div class="v mono" id="pTrim">—</div></div>
+      <div class="pill"><div class="k">Salvage · banked</div><div class="v mono" id="pSaved">—</div></div>
+    </div>
+    <div style="margin-top:16px">
+      <button class="btn primary" id="completeBtn"><span>Close the day’s run</span><span class="small" id="completeSub"></span></button>
+      <button class="btn quiet" id="deviateBtn">Log a weather day</button>
+    </div>
+    <div class="card"><h2>Ports of call</h2><div id="wpList"></div></div>
+  </section>
+
+  <section id="s-trends" class="screen">
+    <div class="eyebrow">Onward</div>
+    <h1>Charts</h1>
+    <div class="seg" id="metricSeg">
+      <button data-m="trim" class="on">Trim</button>
+      <button data-m="money">Salvage</button>
+      <button data-m="units">Drift</button>
+    </div>
+    <div class="card">
+      <h2 id="cumTitle">Trim by leg</h2>
+      <div class="chartwrap"><div id="cumChart"></div></div>
+      <p class="note" id="cumNote" style="margin:12px 0 0">How clean you sailed each leg. A fresh leg starts at 100% — a weather day pulls that leg down, then the next leg starts clean again.</p>
+    </div>
+    <div class="card">
+      <h2>The ledger</h2>
+      <div class="stat-row"><span class="lbl">Career trim · all voyages</span><span class="mono" id="vTrim">—</span></div>
+      <div class="stat-row"><span class="lbl">Drift held off</span><span class="mono" id="vDrift">—</span></div>
+      <div class="stat-row"><span class="lbl">Salvage banked</span><span class="mono" id="vSalv">—</span></div>
+      <div class="stat-row"><span class="lbl">Ballast shed</span><span class="mono" id="vBallast">—</span></div>
+    </div>
+  </section>
+
+  <section id="s-log" class="screen">
+    <div class="eyebrow">Onward</div>
+    <h1>Log</h1>
+    <div class="ribbon">
+      <div class="pill"><div class="k">This leg</div><div class="v mono" id="lCur">0</div></div>
+      <div class="pill"><div class="k">Longest</div><div class="v mono" id="lBest">0</div></div>
+      <div class="pill"><div class="k">Made good</div><div class="v mono" id="lClear">0</div></div>
+    </div>
+    <div class="card"><h2>Recent days — tap to correct any</h2><div id="dayList"></div></div>
+    <p class="note" style="text-align:center">Missed opening the log? Clear days still count. Tap any day to set the record straight.</p>
+  </section>
+
+  <section id="s-more" class="screen">
+    <div class="eyebrow">Onward</div>
+    <h1>Locker</h1>
+    <div class="card">
+      <h2>Your hazards &amp; usual week</h2>
+      <p class="note" style="margin:0 0 12px">The hazards on your chart, and how often they crossed your bow in a usual week. Everything is reckoned from these.</p>
+      <button class="btn ghost" id="editDrinksBtn">The hazards</button>
+      <button class="btn ghost" id="editBaseBtn">Your usual week</button>
+    </div>
+    <div class="card">
+      <h2>The ship’s papers</h2>
+      <p class="note" style="margin:0 0 12px">Everything lives only on this vessel. Copy the papers now and then so a cleared deck can’t lose your passage.</p>
+      <button class="btn ghost" id="backupBtn">Copy the papers</button>
+      <button class="btn ghost" id="restoreBtn">Restore from papers</button>
+    </div>
+    <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
+    <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel</p>
+  </section>
+
+  <nav class="tabs">
+    <button data-go="deck" class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18" stroke-width="1.2"/><path d="M12 6 14 12 12 11 10 12z" fill="currentColor" stroke="none"/></svg>Helm</button>
+    <button data-go="trends"><svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>Charts</button>
+    <button data-go="log"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 9h8M8 13h8M8 17h5"/></svg>Log</button>
+    <button data-go="more"><svg viewBox="0 0 24 24"><path d="M3 7h18l-2 12H5zM3 7l2-3h14l2 3M9 11v4M15 11v4"/></svg>Locker</button>
+  </nav>
+</div>
+
+<div class="scrim" id="scrim" data-r="0"><div class="sheet" id="sheet"></div></div>
+<div class="scrim" id="scrim2" style="z-index:70"><div class="sheet" id="sheet2"></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+  const DAY=86400000;
+  const PASSAGES=[
+    {id:"classic",title:"Plain passage",era:"a clear run to landfall",len:365,ports:[
+      {name:"Cast Off",log:"Lines away. The home port slips astern."},
+      {name:"The Sound",log:"Through the narrows into open water; the glass holds steady."},
+      {name:"Open Sea",log:"A week logged. The watch settles into its rhythm."},
+      {name:"The Trades",log:"Steady winds find the sails — easier miles now."},
+      {name:"Mid-Ocean",log:"A month at sea; the old coast is well below the horizon."},
+      {name:"The Long Reaches",log:"Clean runs, day on day. The boat feels light."},
+      {name:"The Crossing",log:"The far shore is no longer a rumour."},
+      {name:"Distant Waters",log:"Deep in the passage now. Few wake out this far."},
+      {name:"Landfall",log:"Land ho. The full circuit — made good."}
+    ]},
+    {id:"shakedown",title:"The Shakedown",era:"a 7-day trial run",len:7,days:[1,2,3,5,7],
+      ship:"A small boat, a home harbour, and a week to find your sea-legs.",
+      crew:"Just you, learning the ropes.",
+      brief:[
+        "Every voyage begins with a shakedown \u2014 a short trial run to test the boat, learn the gear and find your rhythm before the real passages begin. This one lasts a week.",
+        "Close each day's run, watch your first ports go by, and get a feel for how the log works. Reach the seventh day and the shakedown is done \u2014 and the first real voyage, the Spray, opens ahead."
+      ],
+      sources:"",
+      ports:[
+      {name:"Cast Off",log:"Lines away from the home harbour. The first day is the hardest to leave \u2014 and the one that matters most.",
+        lore:["The shakedown is the short trial run sailors use to test a new boat before trusting her to open water. For you it is the same: a gentle first leg to learn how this log works and to bank that all-important first day.","Each evening, close the day's run to mark a clear day made good. That single habit \u2014 logging the day \u2014 is the whole engine of every voyage that follows."],
+        detail:"The hardest day of any passage is the first. Casting off at all is the win."},
+      {name:"Find Your Feet",log:"Two days made. A new deck stops pitching once you have your balance.",
+        lore:["By the second and third day the motion of a new boat starts to feel familiar \u2014 sailors call it finding your sea-legs. The early ports sit close together here, so the wins come quickly while the habit is still young.","If a day goes the other way, you log it as a weather day. It dents the leg, never the voyage; you simply sail on."],
+        detail:"Three clear days is a real milestone. Most of the work of a new habit is done in its first 72 hours."},
+      {name:"The First Watch",log:"Three days. The watch settles into its rhythm.",
+        lore:["A watch is a sailor's spell at the helm; standing your first few is how the rhythm of a voyage sets in. Three clear days on, the routine is starting to hold of its own accord.","From here the ports space out a little. The quick early wins give way to steadier sailing."],
+        detail:"Routine is the quiet hero of any long passage \u2014 it carries you when willpower runs thin."},
+      {name:"Steady As She Goes",log:"Five days. Open water now, and the boat holds her line.",
+        lore:["Five days clear, and the boat all but steers herself \u2014 'steady as she goes' is the order to hold exactly the present course. You have proof now that you can.","One short leg remains. The shakedown is nearly run."],
+        detail:"By day five the new pattern is less a struggle than a course you are already holding."},
+      {name:"Shakedown Done",log:"A full week made good. The boat is sound, the crew is ready \u2014 the real voyages begin.",
+        lore:["Seven clear days: the shakedown is complete. The boat has been tested and the rhythm is yours. This is the first true landfall of the whole journey.","Ahead lies the Spray \u2014 Joshua Slocum's solo voyage, and the first of the real passages. The sea opens out from here."],
+        detail:"A week is the foundation everything else is built on. From here the voyages get longer \u2014 but you have already done the hardest part once."}
+    ]},
+    {id:"endurance",title:"The Endurance",era:"Shackleton \u00b7 1914\u201316",len:180,
+      ship:"Endurance \u2014 a three-masted barquentine, once the Polaris, rebuilt for the ice.",
+      crew:"Sir Ernest Shackleton and 27 men (and one stowaway who stayed).",
+      brief:[
+        "In 1914, at the tail end of the Heroic Age of Antarctic exploration, Sir Ernest Shackleton set out to make the first crossing of the continent on foot \u2014 some 1,800 miles from the Weddell Sea to the Ross Sea. The expedition sailed just as the First World War broke out; the Admiralty's reply to his offer of ship and men was a single word \u2014 'Proceed.'",
+        "He never set foot on the continent. His ship, the Endurance, was frozen fast in the Weddell pack and then slowly crushed, and the expedition became something far greater than the one he had planned \u2014 a two-year fight simply to bring every man home alive.",
+        "What followed \u2014 the drifting ice camps, the open-boat voyage of the James Caird, the first crossing of South Georgia's mountains \u2014 is still reckoned among the finest survival stories ever told. Not one of the 28 men was lost. This passage follows that arc, port by port, from the whaling station at Grytviken to the rescue at Stromness."
+      ],
+      sources:"Drawn from Shackleton's own account, South (1919), Frank Worsley's writings, and expedition records. The wreck of Endurance was found on the Weddell seabed in 2022 \u2014 close to where Worsley's navigation said she would lie.",
+      ports:[
+      {name:"Grytviken",log:"The Norwegian whaling station on South Georgia \u2014 the expedition's last contact with the world, and a month's wait on the ice reports.",
+        lore:["South Georgia is a fang of rock and ice in the far South Atlantic, roughly 1,300 km east-south-east of the Falklands \u2014 a place sailors aptly called 'the Alps in mid-ocean'. Its mountainous spine is buried under glaciers that fall almost to the sea, and in 1914 the only human presence was a scatter of Norwegian whaling stations along the sheltered north coast. The largest, Grytviken, was the busiest whaling port in the Southern Ocean.","Shackleton came here at the tail end of the Heroic Age of Antarctic exploration. Amundsen had reached the South Pole in 1911 and Scott had died returning from it in 1912, so the last great prize left was to cross the whole continent on foot \u2014 some 1,800 miles from the Weddell Sea to the Ross Sea. His ship, the Endurance, would land a party on the Weddell side; a second ship, the Aurora, would lay supply depots from the Ross side to meet them.","The expedition sailed in August 1914, just as the First World War broke out. Shackleton offered his ship and men to the Admiralty; the reply was a single word \u2014 'Proceed.' So while Europe went to war, 28 men, 69 sledge-dogs and a ship's cat sailed south. South Georgia was their last link to the world: the place to take on final stores and, above all, to ask the whalers what the ice was doing further south.","The news was not good. The whaling captains warned that the Weddell pack lay heavier, and further north, than they had seen in years. Shackleton had meant to stay a few days; he stayed a month, waiting for the ice to loosen, the crew forming easy friendships with the Norwegians that would matter more than anyone could guess. On 5 December 1914 the Endurance finally bore away south. It was the last time any of them would stand on solid ground for 497 days."],
+        detail:"The ship had been built in Norway as the Polaris; Shackleton renamed her Endurance for his family motto, Fortitudine vincimus \u2014 'by endurance we conquer'. The name would prove the truer for the voyage going wrong."},
+      {name:"The Weddell Sea",log:"The ice-choked bay Shackleton had to cross to reach Antarctica. Within sight of land, the pack closed and held the ship fast.",
+        lore:["The Weddell Sea is a vast, almost landlocked gulf on the Atlantic side of Antarctica, and one of the most ice-choked bodies of water on the planet. A slow, clockwise current \u2014 the Weddell Gyre \u2014 sweeps the pack endlessly around the basin and jams it against the coast, so that even in summer a ship must thread a shifting maze of floes. Shackleton's intended landing was Vahsel Bay, at the sea's far southern end, where the shore party would step off to begin the crossing.","Two days out from South Georgia the Endurance met her first loose ice. For six weeks her captain, Frank Worsley, worked her south through narrowing lanes of open water, the lookout calling leads from the crow's nest. By mid-January 1915 they were tantalisingly close \u2014 perhaps a single day's sail from Vahsel Bay, with the cliffs of the continent in sight. Then the wind packed the floes tight around the hull, and the leads closed for good.","On 19 January 1915 the Endurance became beset \u2014 frozen fast, held like an almond in a block of toffee. She was no longer a ship under command but a passenger of the ice, drifting wherever the gyre carried her. Through the long polar autumn they tried everything to cut her free; nothing worked. As the sun sank for the winter and would not rise for four months, Shackleton quietly accepted that the crossing was lost before it had begun.","So they made the frozen ship a home. The dogs were moved to ice-block kennels the men nicknamed 'dogloos'; there were sledging races and football on the floe, lectures, haircuts, and a midwinter feast in the dark. Shackleton worked hardest at the thing that would save them all \u2014 morale, routine, the steady sense that the Boss had matters in hand. Beneath the calm, the ice was already beginning to squeeze."],
+        detail:"They glimpsed a stretch of new coastline they would never reach, and Shackleton named it the Caird Coast after Sir James Caird, the Dundee jute magnate whose money had made the expedition possible."},
+      {name:"Patience Camp",log:"A tent camp on a drifting floe, made after the crushed ship went down \u2014 home for over three months as the ice carried them north.",
+        lore:["Through the winter the pack tightened until the pressure grew unbearable \u2014 not to the men, but to the ship. Floes the size of cathedrals drove against the hull, lifting and twisting it until the timbers screamed and split. On 27 October 1915 Shackleton gave the order to abandon ship, and the men dragged stores, boats and dogs onto the ice. On 21 November the wreck finally slipped beneath the floe; the Boss simply said, 'She's gone, boys.'","They were now castaways on a raft of frozen sea, hundreds of miles from land, drifting north with the gyre toward open water. Twice they tried to march westward, hauling the heavy lifeboats across the ice \u2014 and twice the soft, ridged surface defeated them within a few miles. There was nothing for it but to stop, pitch the tents, and let the current do the work.","They called it Patience Camp, and the name was the whole of the plan. For more than three months the men lived on a shrinking floe, eating seal and penguin, scanning the horizon, with no control over their course and nothing to do but wait. Rations ran short; the dogs they had come to love were shot to save food, a day several of the men never forgot. Morale frayed, and Shackleton held it together by sheer force of will.","All the while the floe was rotting beneath them, melting and cracking as it drifted into warmer, rougher water. Everyone understood the arithmetic: when the ice finally broke up they would have to take to the three small boats \u2014 and they had better be near enough to land to reach it. It was a long, cold gamble against the sea, with no other hand to play."],
+        detail:"Among the men was a stowaway, nineteen-year-old Perce Blackborow, who had hidden aboard at Buenos Aires. Once discovered he was put to work, and he stayed with the expedition through everything that followed."},
+      {name:"Open Water",log:"When the floe split, the crew took to three small boats \u2014 seven days through pack ice and gales to the nearest land.",
+        lore:["On 9 April 1916 the floe at last cracked apart beneath Patience Camp, and the long wait gave way to sudden, violent action. The men launched their three lifeboats \u2014 the James Caird, the Dudley Docker and the Stancomb Wills \u2014 into a sea full of grinding ice. For seven days they rowed and sailed through it: soaked to the skin in freezing spray, frostbitten, parched because they could rarely melt ice for water, and sick from raw or half-cooked seal meat.","Their goal was the nearest solid land \u2014 Elephant Island, an outlying scrap of the South Shetlands, well off any shipping route. The water they crossed was among the worst imaginable for open boats: not the long ocean swell, but a chaos of broken floes and tide-rips where a wrong move could crush or capsize them in seconds. Worsley navigated by dead reckoning and the rare sun-sight, holding a course he could only half-trust.","At night they hauled the boats onto floes that sometimes split beneath the sleeping men. Killer whales surfaced and blew in the darkness around them. Few of the crew had ever known anything as hard as that week \u2014 colder and more dangerous, several later said, than all the long months on the ice. By the end some were hallucinating with exhaustion and thirst.","Yet they were, for the first time in over a year, moving under their own power toward a destination of their own choosing. After 497 days at the mercy of the ice \u2014 much of it simply drifting \u2014 the plain act of pulling on an oar toward land was its own kind of hope. On 15 April the boats closed at last on a dark line of cliffs."],
+        detail:"It had been roughly 170 days since they abandoned the Endurance and first camped on the floe. Every mile of that time, they had travelled sitting still."},
+      {name:"Elephant Island",log:"A bleak, uninhabited island off every shipping route \u2014 the first solid ground in 497 days, but no place a rescue would ever look.",
+        lore:["Elephant Island is a forbidding place \u2014 a steep, glacier-capped rock on the outer edge of the South Shetlands, lashed by wind and surf, with almost nowhere flat to stand. It lies far from the routes any ship would normally take, which was exactly the problem: the men had reached land, but land where no rescue would ever think to look for them.","They came ashore on 15 April 1916 and, for the first time in 497 days, stood on ground that did not move. The effect was overwhelming; men wept, or knelt, or simply stared. The first beach proved dangerous at high tide, so after a day they crowded into the boats again and moved to a narrow spit further along, which they named Point Wild after Frank Wild, Shackleton's steady second-in-command.","But reaching land was not the same as being saved. The outside world believed the Endurance lost and had no idea where her crew were; no search was coming. Two grim options remained: sit on the beach through the southern winter and slowly starve, or send a boat for help across 800 miles of the Southern Ocean to the whaling stations of South Georgia. Shackleton chose to gamble on the boat \u2014 and to take the risk himself.","Twenty-two men would remain at Point Wild under Wild's command, sheltering beneath the two upturned lifeboats, living on seal and penguin, keeping a fire and their spirits alive through more than four months of waiting. Each day Wild told them the Boss might come today, and kept the camp ready to leave at an hour's notice. It was a very long four months."],
+        detail:"The hut at Point Wild was barely larger than the boats that roofed it; the men slept packed together in the dark, with blubber-smoke staining everything black."},
+      {name:"The Southern Ocean",log:"The 800-mile open-boat passage of the James Caird to South Georgia, across the stormiest water on earth.",
+        lore:["On 24 April 1916 Shackleton and five companions launched the largest of the three lifeboats, the James Caird, from Elephant Island and pointed her bow at South Georgia, 800 nautical miles to the north-east. The carpenter, Harry McNish, had raised her sides, decked her over with canvas and packing-case lids, and ballasted her with rock and shingle. Into this 22-and-a-half-foot boat went six men and a few weeks' supplies, against the open Southern Ocean.","Their course lay straight through the 'Furious Fifties', the band of latitudes where the wind chases unbroken right around the globe and raises some of the largest seas on earth. There was no land to shelter behind for thousands of miles in any direction. To reach South Georgia they had to strike a target barely a hundred miles wide; miss it, and the next stop was the open Atlantic, and death.","For sixteen days the six men bailed almost without rest, slept in sodden reindeer-skin bags that shed hair into everything, and hacked ice off the rigging before its weight could roll the boat over. A single rogue wave, the largest Shackleton said he had seen in 26 years at sea, very nearly ended the voyage. Worsley, navigating, could catch the sun with his sextant only four times in the whole crossing, snatching sights through gaps in the racing cloud.","It should not have been possible to find a small island that way, and yet on 10 May the cliffs of South Georgia rose out of the haze almost dead ahead. Worsley's navigation had been very nearly perfect. Sailors who know those waters still rank the voyage of the James Caird among the greatest small-boat journeys ever made."],
+        detail:"The James Caird survives, and is kept today at Dulwich College in London \u2014 Shackleton's old school. She is startlingly small to have crossed that sea."},
+      {name:"King Haakon Bay",log:"Landfall on South Georgia's wild south coast \u2014 safe ashore, but the whaling stations lay over the mountains, on the far side.",
+        lore:["South Georgia is shaped like a long, jagged crescent, and its two coasts could hardly be more different. The whaling stations \u2014 and rescue \u2014 lay on the sheltered north-east side. The James Caird, driven in on a rising gale, could only reach the wild, uninhabited south-west: a coast of cliffs and glaciers with a spine of unmapped mountains standing between the men and the help they had crossed an ocean to find.","On 10 May 1916, after tacking again and again through reefs in worsening weather, they got the battered boat into the mouth of King Haakon Bay and finally ashore at a small cove. They had been at sea for over two weeks; some could barely stand. The Caird was too damaged for another voyage, and two of the six \u2014 McNish and Vincent \u2014 were too far gone to go any further.","They moved a short way to the head of the bay, hauled the boat up, and turned her over to make a shelter, which they christened Peggotty Camp. Here the three strongest would rest and gather themselves for the last, hardest stage \u2014 not another sea voyage, but a journey on foot over the mountainous interior of the island, something no one had ever done.","So near now, and yet the most dangerous part lay ahead. The sea was behind them; in front rose ridges and glaciers no map described, between Peggotty Camp and the whaling stations they could almost imagine on the far side. They had a few days' food, fifty feet of rope, and the carpenter's adze. It would have to be enough."],
+        detail:"They named the camp after Peggotty's upturned boat-home in Dickens's David Copperfield \u2014 a small, warm joke from home, made at the bottom of the world."},
+      {name:"The Crossing",log:"The first traverse of South Georgia's unmapped interior, on foot and without proper gear, to reach help.",
+        lore:["On 18 May 1916, Shackleton, Worsley and Crean set out to walk across South Georgia \u2014 a thing that had never been done, and which seasoned mountaineers would not seriously attempt for decades. They had no map of the interior, no tent, fifty feet of rope and the carpenter's adze for an ice-axe. For crampons, McNish had driven brass screws from the boat through the soles of their boots.","The island's interior is a tangle of glaciers, crevasses and saw-toothed ridges thrown up between the two coasts. The three men picked a line by guesswork, climbing toward each skyline only to find an impassable drop on the far side, and having to turn back and try again. Time after time they hauled themselves up to a col, looked over, and started down once more, daylight and strength both running out.","Caught near a summit as night and frost came on, with no way to survive a halt, they coiled the rope into a pad and simply slid \u2014 glissaded blind down a dark slope rather than freeze where they stood. Later, with the other two on the edge of collapse, Shackleton let them sleep just five minutes, then woke them and told them they had slept half an hour. To truly stop was to die, and he knew it.","For roughly 36 hours they went on without real rest, across some thirty miles of country as the crow flies and far more on the ground. Near the end they heard, faint and unmistakable, a steam-whistle \u2014 the first man-made sound in nearly eighteen months, calling the whalers of Stromness to their morning's work. It told them they were alive, and almost home."],
+        detail:"All three later said that throughout the crossing it had seemed to them that a fourth person walked at their side. Shackleton wrote of it with great care; the image found its way into T. S. Eliot's poem The Waste Land."},
+      {name:"Stromness",log:"The whaling station on the north coast, and the end of the ordeal \u2014 every one of the 28 brought home alive.",
+        lore:["Stromness was one of the Norwegian whaling stations on South Georgia's north coast \u2014 noise, smoke, machinery and men, the ordinary working world the three travellers had been cut off from for a year and a half. To reach it they still had to lower themselves down an icy stream and waterfall in their last hours, but on the morning of 20 May 1916 they walked in out of the mountains.","They were a frightful sight \u2014 blackened with blubber-smoke, hair matted, clothes in rags. The station manager, Thoralf S\u00f8rlle, had dined with Shackleton two years before and did not know the wild figure in front of him until he spoke. The first thing Shackleton asked was when the war had ended; he was told it still raged, and that millions were dead.","Help moved fast for the three men left at Peggotty Camp, picked up within a day. Reaching the 22 on Elephant Island was far harder: the pack ice turned back three separate rescue ships before, on 30 August 1916, the Chilean navy tug Yelcho under Captain Luis Pardo finally broke through. Shackleton counted the figures running down the beach and called out to ask if all were well.","'All safe, all well,' came the answer across the water. Every one of the 28 men who had sailed into the Weddell Sea came home alive. Shackleton had failed at the journey he set out to make, and is remembered instead for a greater one \u2014 that in two years of disaster, against odds that should have killed them all, he did not lose a single man."],
+        detail:"By endurance, they had conquered \u2014 exactly as the ship's name had promised. The Endurance herself lay undisturbed on the Weddell seabed until she was found, astonishingly well preserved, in 2022."}
+    ]},
+    {id:"magellan",title:"The Circuit",era:"Magellan\u2013Elcano \u00b7 1519\u201322",
+      ship:"Five ships \u2014 Trinidad (the flagship), San Antonio, Concepci\u00f3n, Victoria and Santiago \u2014 small carracks and a caravel, none much above 85 tons. Only the Victoria came home.",
+      crew:"About 270 men under Ferdinand Magellan; eighteen returned, three years later, under Juan Sebasti\u00e1n Elcano.",
+      brief:[
+        "In September 1519 five small ships left Spain to attempt the impossible: to reach the Spice Islands of the East by sailing west, around or through the unknown underside of the Americas. It had never been done. Three years later a single battered ship came home \u2014 having sailed, for the first time in history, the whole way around the world.",
+        "The fleet was led by Ferdinand Magellan, a Portuguese navigator sailing for the Spanish crown, in the great race for the spice trade. Of about 270 men who set out, the voyage would cost the lives of all but a handful \u2014 including Magellan himself, killed in the Philippines, who never saw the circle closed.",
+        "It was finished by Juan Sebasti\u00e1n Elcano, who brought the Victoria home with eighteen starving survivors and a hold of cloves that paid for the whole enterprise. The voyage proved the world was a single connected ocean \u2014 and far larger than anyone had dared imagine. We know it largely through one man who kept a careful diary the whole way: Antonio Pigafetta."
+      ],
+      sources:"Antonio Pigafetta, The First Voyage Around the World (c. 1525); the expedition's surviving logs and letters; later chronicles.",
+      ports:[
+      {name:"Sanl\u00facar",log:"Five ships and some 270 men sail from Sanl\u00facar, 20 September 1519, west for the Spice Islands by a route no one has ever found.",
+        lore:["The fleet dropped down the Guadalquivir from Seville to Sanl\u00facar de Barrameda, at the river's mouth on Spain's Atlantic coast, and on 20 September 1519 stood out to sea: five small ships \u2014 Trinidad, San Antonio, Concepci\u00f3n, Victoria and Santiago \u2014 and about 270 men.","Their object was the Spice Islands of the East Indies, source of the cloves and nutmeg worth their weight in gold in Europe. The Portuguese held the eastward route round Africa; Magellan's gamble was to reach the same islands by sailing west, and to find \u2014 somewhere \u2014 a way through the landmass of the Americas that everyone assumed must bar the path.","Ferdinand Magellan was himself Portuguese, but his own king had refused him; he sailed instead for the young Charles I of Spain. He was an experienced, stubborn, secretive commander, and the Spanish captains under him resented taking orders from a foreigner from the very first day. The seeds of mutiny were aboard before they cleared the harbour.","No one knew how far it was, whether a strait even existed, or what lay on the far side. The Pacific had never been crossed; its true width was unimagined. They were sailing, quite literally, off the edge of the known map \u2014 on a hunch, and a hope."],
+        detail:"Magellan never revealed his planned route, even to his captains \u2014 partly for secrecy, partly because he could not be certain the strait he was gambling everything on actually existed."},
+      {name:"Rio de Janeiro",log:"Across the Atlantic to the New World \u2014 a fortnight of plenty in Guanabara Bay before the long coast south into the unknown.",
+        lore:["After the Canaries and a hard, often becalmed crossing of the Atlantic, the fleet raised the coast of Brazil and, in December 1519, anchored in the great sheltered bay of Guanabara, at what is now Rio de Janeiro. After months at sea it was a paradise of fresh water, fruit and fish.","This was the New World, barely twenty-seven years after Columbus \u2014 still scarcely known, its coastline a rumour. The crews traded trinkets for food and marvelled at the land and its people. For a fortnight they rested and reprovisioned.","But Rio was only the start of the hard part. From here Magellan had to feel his way down a coast no European had charted, probing every bay and river-mouth for the strait that might \u2014 or might not \u2014 lead through to the western sea. The R\u00edo de la Plata raised hopes and dashed them: a river, not a passage.","As they worked south the weather worsened, the days shortened and the coast grew bleaker and colder. The easy abundance of Brazil fell behind, and with every empty inlet the doubt sharpened: was there any strait at all?"],
+        detail:"The vast estuary of the R\u00edo de la Plata looked, for a while, like the longed-for passage; exploring it cost weeks, and it proved a dead end \u2014 one of many false hopes down that endless coast."},
+      {name:"Port St Juli\u00e1n",log:"A bitter Patagonian winter, a mutiny crushed without mercy, and the 'giants' of a coast at the end of the world.",
+        lore:["By the end of March 1520, with winter closing in, Magellan halted the fleet in a bleak, wind-scoured harbour in Patagonia that he named Puerto San Juli\u00e1n. They would wait out the southern winter here, on short rations, on a coast that seemed to run on forever without a break.","It was here the long-simmering resentment boiled over. At Easter, three of the Spanish captains \u2014 Mendoza, Quesada and Cartagena \u2014 rose against their Portuguese commander, seizing three of the five ships. Magellan's response was swift and ruthless: Mendoza was killed, Quesada beheaded, and Cartagena, with a scheming priest, marooned on the empty shore and left to die. Lesser men were chained to hard labour, then pardoned \u2014 among them a Basque officer named Elcano.","Here too they met the native Tehuelche, tall fur-clad hunters whom the awed Europeans called giants \u2014 and the land, Patagonia, the 'land of the big-feet'. And here, scouting south, the little Santiago was wrecked in a storm, though her crew were saved. The fleet was down to four.","San Juli\u00e1n is where the romance of the voyage died and its true cost began. Magellan held his command by sheer force of will and an iron hand. The men who sailed on did so under no illusions about the kind of journey they were on."],
+        detail:"The name Patagonia comes from this winter \u2014 from the Europeans' name for the tall Tehuelche people of that shore; the 'giants' only grew taller with every retelling back home."},
+      {name:"The Strait",log:"Found at last \u2014 a freezing labyrinth of fire-lit channels, thirty-eight days long, into a calm new ocean Magellan named the Pacific.",
+        lore:["In October 1520 they found it: a narrow opening that led not to another dead-end bay but on, and on, into a labyrinth of channels twisting between black mountains and glaciers \u2014 the strait that now bears Magellan's name. To the south, fires glowed along the shore at night; the crews named that land Tierra del Fuego, the Land of Fire.","It took thirty-eight days to thread the 350-mile maze \u2014 tides, fogs, blind channels and savage squalls, never knowing whether the next turn opened westward or closed in rock. Magellan wept, it is said, when at last he saw open water at the far end. He had been right: the passage was real.","But the strait cost him another ship. Partway through, the San Antonio \u2014 the largest, carrying much of the fleet's food \u2014 turned in the dark and fled back east to Spain. Magellan pressed on with three. On 28 November 1520 they emerged into a vast, calm ocean which Magellan, after the storms behind him, named the Mar Pac\u00edfico, the peaceful sea.","It is one of the great feats of seamanship in history: a foreigner, half his fleet lost or mutinous, navigating an unknown maze at the bottom of the world on nothing but conviction. The hardest part, he must have thought, was behind them. It was not."],
+        detail:"Magellan named the Pacific for its calm \u2014 a cruel irony, for that 'peaceful sea' was about to come within an inch of killing them all, by its sheer, unimagined size."},
+      {name:"The Pacific",log:"Ninety-eight days of empty ocean \u2014 starvation, scurvy, and the boundless sea no one had guessed was so vast.",
+        lore:["Beyond the strait lay the Pacific \u2014 and it was monstrous, far wider than any geographer had dreamed. For ninety-eight days the three ships crossed it without sighting a single inhabited shore: a blank immensity of water that simply would not end.","Their food ran out. The men ate the leather chafing-gear off the rigging, soaked and grilled; they ate sawdust, and ship's biscuit crumbled to wormy powder, and paid one another high prices for rats. Their gums swelled over their teeth with scurvy, and many died. They drank stinking yellow water.","Through it all, a young Venetian gentleman named Antonio Pigafetta kept his diary \u2014 recording the suffering, the strange new stars of the southern sky, and the daily roll of the dead. His account is why we know this voyage at all: the patient, astonished witness of a man watching the true scale of the world reveal itself.","This crossing is the heart of the whole story. It was not a battle or a shipwreck that nearly ended the first circumnavigation, but distance itself \u2014 the brute, silent fact that the planet was vastly larger than anyone had imagined, and they were small upon it beyond all reckoning."],
+        detail:"The Pacific crossing revealed the true size of the Earth. Geographers had badly underestimated it \u2014 and Magellan's starving ships paid for that error in ninety-eight days and many lives."},
+      {name:"Guam",log:"Land at last \u2014 the Marianas \u2014 where canoes swarmed the ships and the starving crews found water, fruit and relief.",
+        lore:["In March 1521, near the very point of despair, the lookouts raised land: Guam, in the Mariana Islands of the western Pacific. After ninety-eight days of nothing, the green island and its swift sailing canoes were salvation \u2014 fresh water, fruit, and food at last.","The reception was double-edged. The islanders, expert seafarers with no notion of European property, came aboard and helped themselves \u2014 including to a ship's boat. The furious, half-starved Spaniards named the place the Islas de los Ladrones, the Islands of Thieves, and took bloody reprisal before sailing on, restocked.","However it ended, Guam meant survival. The crossing was over; men who had eaten leather and rats could eat real food again. The ocean had not, after all, been endless. The Spice Islands \u2014 the whole point of the voyage \u2014 were now within reach.","It is a small, sharp human moment in an epic: ravenous, frightened men falling on fresh fruit, and a collision of two peoples who could not begin to understand each other. The 'thieves' of Guam shared as they always had; the strangers from the sea answered with steel."],
+        detail:"Guam's people were among the finest sailors on Earth, in fast outrigger canoes \u2014 but their custom of free-sharing collided violently with European ideas of theft, and the Spaniards named the islands for it."},
+      {name:"Cebu",log:"The Philippines reached \u2014 and at Mactan, on 27 April 1521, Magellan is killed: the captain who never saw his own voyage finished.",
+        lore:["Within weeks they reached the Philippine islands. Here something extraordinary happened: Magellan's Malay interpreter, Enrique, found he could understand the local tongue. They had sailed so far west that they had come round to the edge of the Asian world Enrique had first come from. The far side of the globe had been touched.","At Cebu, Magellan struck an alliance with the local ruler, Rajah Humabon, who accepted Christianity along with hundreds of his people. Flush with success, Magellan agreed to help subdue a defiant neighbouring chief, Lapulapu, on the little island of Mactan \u2014 a fatal piece of overreach.","On the morning of 27 April 1521 he waded ashore at Mactan with about sixty men against far greater numbers. It was a disaster. Cut off in the shallows, Magellan was speared and hacked down, dying to let his men regain the boats. The commander who had conceived and forced through the greatest voyage in history did not live to complete it.","Days later many of the survivors were massacred at a banquet by their erstwhile ally Humabon. The expedition, leaderless and gutted, burned one of its three remaining ships for want of men to sail her. That the voyage went on at all, from this wreckage, is its own kind of miracle."],
+        detail:"Magellan's slave Enrique, who could speak with the Filipinos, may have been the first person ever to return to the lands of his own birth from the opposite direction \u2014 closing a human circle around the Earth before any ship did."},
+      {name:"The Moluccas",log:"Tidore, the Spice Islands at last \u2014 the goal Magellan died for, holds filled with cloves at the world's far side.",
+        lore:["In November 1521 the two surviving ships \u2014 Trinidad and Victoria \u2014 came at last to anchor at Tidore, in the Moluccas: the Spice Islands themselves, the fabled goal of the whole enterprise, a tiny clove-scented volcano in the eastern seas.","They traded for some twenty-six tons of cloves and cinnamon \u2014 a cargo worth, pound for pound, a fortune in Europe, and enough on its own to repay the cost of the entire expedition many times over. The point of it all, the spice, sat at last in the holds.","But the ships were worn out and the crews decimated. The Trinidad, leaking badly, stayed behind to refit, and would later try \u2014 and fail \u2014 to recross the Pacific eastward, to be captured by the Portuguese. Only the Victoria, under the Basque Juan Sebasti\u00e1n Elcano, was fit to attempt the long way home: westward, through seas the Portuguese controlled.","There is a quiet poignancy here. They had reached the place they set out for and achieved the thing they came to do \u2014 and it had cost a fleet and a commander. Now the smallest hope remained: that one leaking ship and a skeleton crew might somehow carry the prize all the way home."],
+        detail:"The cargo of one small ship \u2014 26 tons of cloves \u2014 paid for the whole expedition: five ships, three years and hundreds of lives. Such was the staggering value of spice in 16th-century Europe."},
+      {name:"Seville",log:"Sanl\u00facar, 6 September 1522 \u2014 one ship, eighteen starving men, and the first circle ever drawn around the world.",
+        lore:["Elcano took the Victoria west, and alone: across the Indian Ocean, round the Cape of Good Hope through Portuguese-controlled seas, and up the long Atlantic coast of Africa. It was a passage of pure attrition \u2014 storms, leaks and slow starvation. Some twenty more men died on the way; the rest lived on rice.","Putting in, desperate, at the Portuguese Cape Verde islands, they made a strange discovery: the date ashore was a day later than their own meticulous records said. They had lost a day \u2014 the first crew in history to feel, in their own logbook, the consequence of sailing right around a turning world. It baffled and delighted Pigafetta.","On 6 September 1522 the Victoria crept into Sanl\u00facar de Barrameda, from which five ships had sailed almost exactly three years before. Aboard were eighteen survivors, gaunt and barely able to stand. They had done it \u2014 the first human beings to circle the Earth.","Elcano was honoured; Magellan, dead and out of royal favour, was very nearly forgotten. But between them they had changed the world's idea of itself forever \u2014 proving it round, single and oceanic, and far larger than the old maps allowed. Eighteen men, one ship and a hold of cloves had redrawn the globe."],
+        detail:"Eighteen of about 270 came home. They also brought back a riddle \u2014 the missing day \u2014 that proved the Earth turns beneath a circumnavigator, and made plain the eventual need for what we now call the International Date Line."}
+    ]},
+    {id:"beagle",title:"The Beagle",era:"Darwin \u00b7 1831\u201336",
+      ship:"HMS Beagle \u2014 a 10-gun Cherokee-class brig-sloop, about 90 feet long, rebuilt and refitted for survey work under Captain Robert FitzRoy.",
+      crew:"FitzRoy, his officers and some seventy souls \u2014 and the supernumerary who made her famous, the young naturalist Charles Darwin.",
+      brief:[
+        "In December 1831 a small, twice-rebuilt survey brig sailed from Plymouth on a voyage meant only to chart the coasts of South America. She carried, almost as an afterthought, a 22-year-old gentleman naturalist who had nearly not come at all: Charles Darwin.",
+        "HMS Beagle's real business was hydrography \u2014 soundings, coastlines and a chain of chronometer readings carried right around the world for her captain, Robert FitzRoy. Darwin was aboard partly as a man of science and partly as company for FitzRoy, who dreaded the lonely command that had driven the Beagle's previous captain to suicide.",
+        "It became one of the most consequential journeys ever made. Over nearly five years, reading Lyell's new geology as he went, Darwin gathered the rocks, fossils, birds and reefs that would slowly \u2014 over the decades that followed \u2014 become On the Origin of Species. He went out a parson-in-waiting and came home the quiet architect of a revolution."
+      ],
+      sources:"Charles Darwin, Journal of Researches (later The Voyage of the Beagle, 1839); Darwin's diary and correspondence; FitzRoy's Narrative.",
+      ports:[
+      {name:"Devonport",log:"The Beagle sails from Plymouth, 27 December 1831 \u2014 a survey brig, a captain who dreads solitude, and a 22-year-old naturalist who almost stayed home.",
+        lore:["The voyage began at Devonport, the great naval dockyard at Plymouth on England's south-west coast, where the little Beagle had been hauled out and rebuilt almost from the keel up for the work ahead. After two false starts in the Christmas gales, she finally cleared the Sound on 27 December 1831.","Her mission was not discovery but survey: to chart the intricate coasts of South America for the Admiralty, and to carry a chain of precise chronometer readings around the globe. Twenty-two chronometers ticked in the captain's cabin. It was painstaking, unglamorous, vital work.","Charles Darwin, 22, was aboard almost by accident. Captain FitzRoy wanted an educated companion to share his table \u2014 he feared the crushing loneliness of command, which had driven the Beagle's previous captain to shoot himself \u2014 and a naturalist to examine the geology. Darwin, a recent graduate bound for the clergy, leapt at the chance to see the tropics; his father nearly forbade it.","So he came as a gentleman volunteer, paying his own way, with no inkling that the next five years would remake him. He was seasick almost the whole voyage and never grew used to it. He carried Lyell's brand-new Principles of Geology, which taught that the earth was shaped slowly, over unimaginable time \u2014 the idea that would unlock everything he was about to see."],
+        detail:"Darwin nearly missed the voyage entirely \u2014 his father objected, and FitzRoy, a believer in reading character from faces, almost rejected him on the shape of his nose. He was a last-minute, self-funded passenger on the journey that would make his name."},
+      {name:"Cape Verde",log:"St Jago \u2014 a white band of shells in a sea-cliff, lifted high and dry, and a young man's mind beginning to turn.",
+        lore:["The Cape Verde islands lie off the West African coast, the Beagle's first real landfall, in January 1832. She anchored at St Jago (Santiago), a sun-baked volcanic island, while FitzRoy's people set up their instruments. Darwin had three weeks ashore to wander and look.","In a sea-cliff he found a horizontal white band, high above the waves \u2014 a layer of compressed shells and coral, plainly once the sea floor, now baked into the rock far above the water. The land had risen.","Reading Lyell, Darwin understood what he was seeing: not a single catastrophe but the slow, patient work of the same forces still acting today, given only enough time. Here, on his first island, he resolved to write a book on the geology of the places he visited \u2014 and began to think like a geologist rather than a mere collector.","It is easy to pass over Cape Verde for the glamour of the Gal\u00e1pagos, but Darwin himself marked this as the moment the voyage became his own. A band of old shells in a cliff was the first loose thread; he would spend the rest of his life pulling on it."],
+        detail:"Darwin later said the geology of St Jago was what first made him a scientist \u2014 the moment he saw deep time written plainly in a cliff face."},
+      {name:"Bahia",log:"Brazil \u2014 the rainforest's overwhelming riot of life, and a bitter quarrel with the captain over slavery.",
+        lore:["Across the Atlantic lay Brazil. At Bahia (Salvador), and then Rio de Janeiro, Darwin walked for the first time into tropical rainforest \u2014 and was almost overcome. The sheer density and strangeness of life, the noise, the colour, the tangle of it, he called sublime; he filled notebooks and collecting jars to bursting.","For a naturalist trained on the tame hedgerows of England, the tropics were a revelation \u2014 every step turned up something unknown. The variety itself became a question: why so many forms, each so finely fitted to its place? He had no answer yet, only a growing hoard of specimens and a deepening sense of wonder.","But Brazil showed Darwin its other face. He saw slavery at close hand and was sickened by it. It led to a furious row with FitzRoy, a defender of the institution, so bitter that the captain told him to leave his table \u2014 then, ashamed, apologised. The two very different men rubbed along, mostly, for five years.","Darwin's hatred of slavery never left him, and threads quietly through everything he later wrote about the unity of living things. The forest gave him the abundance of life to explain; Brazil also gave him a moral conviction about the kinship of all people."],
+        detail:"Darwin's loathing of slavery was lifelong and nearly cost him his place aboard; his clash with FitzRoy over it was the sharpest quarrel of the whole voyage."},
+      {name:"Patagonia",log:"Punta Alta \u2014 Darwin digs the bones of vanished giants from a low cliff, and a deep question takes shape.",
+        lore:["On the bleak, wind-scoured coast of Patagonia, near Bah\u00eda Blanca, Darwin came in September 1832 to a low cliff at Punta Alta \u2014 and into one of the great fossil beds of South America. He spent days hacking enormous bones out of the soft rock with the crew's help.","They were the remains of huge, extinct beasts: Megatherium, a ground sloth the size of an elephant; Toxodon, a creature like nothing now alive; Macrauchenia; and the great bony shell of a glyptodont, an armadillo grown to the bulk of a small car. Vanished monsters, all of them.","And here was the riddle that would haunt him. These extinct giants plainly resembled the living animals of the very same ground \u2014 the sloths and armadillos still shuffling about Patagonia. Why should the dead and the living of one place be built to the same plan, unless the one had somehow given rise to the other?","Darwin had no theory yet \u2014 only an itch he could not scratch. He called it the 'law of the succession of types', and shipped the bones home to England, where they would sit in his mind for years, quietly insisting that species were not fixed after all."],
+        detail:"The Patagonian fossils \u2014 giant extinct cousins of the living local animals \u2014 were among the first hard clues that life changes over time: not a sudden idea, but a slow, gnawing puzzle."},
+      {name:"Tierra del Fuego",log:"FitzRoy brings three Fuegians home \u2014 the mission fails in days, and a year on, Jemmy Button has gone back to the sea.",
+        lore:["At the cold, storm-lashed bottom of the continent lay Tierra del Fuego \u2014 the Land of Fire, named by Magellan for the signal fires of its people. The Beagle came here in late 1832 on a strange and personal errand of her captain's.","On the Beagle's previous voyage FitzRoy had taken four Fuegians to England, had them educated and Christianised, and presented them at court. One, Boat Memory, had died of smallpox. The other three \u2014 Jemmy Button, York Minster and Fuegia Basket \u2014 he was now bringing home, with a missionary, to plant a Christian settlement among their people.","It collapsed almost at once. The mission at Wulaia was set up in January 1833 and looted within days; the missionary was taken off for his life. Returning a year later, the Beagle found Jemmy Button reverted entirely \u2014 long-haired, near-naked, with a wife, and wholly content. He dined aboard with perfect manners, then went back to his canoe and his people, wanting nothing of England.","It marked Darwin deeply. The gulf between the 'civilised' Jemmy of London and his kinsmen on the shore \u2014 and how easily Jemmy crossed back \u2014 pressed on him the thought that all people are one kind, raised or lowered only by circumstance. Decades later he drew on these days in The Descent of Man. FitzRoy, whose grand experiment it had been, was crushed by its failure."],
+        detail:"Jemmy Button \u2014 Orundellico \u2014 chose his homeland over England; the failure of FitzRoy's mission, and the easy humanity of the man at its centre, helped shape Darwin's later conviction that all peoples share one common descent."},
+      {name:"The Andes",log:"A great earthquake levels Concepci\u00f3n \u2014 and Darwin watches the land itself rise, the Andes building before his eyes.",
+        lore:["On the Pacific side of the continent, with Valpara\u00edso as her base, the Beagle worked the coast of Chile, the wall of the Andes always to the east. Here, on 20 February 1835, Darwin felt the ground move.","It was the great Concepci\u00f3n earthquake. Ashore near Valdivia, Darwin felt the solid earth turn liquid beneath him; riding north, he found the town of Concepci\u00f3n thrown down in ruins. And around the bay he saw something stranger than the wreckage: beds of mussels and shellfish lifted clear above the high-water mark. The land had been raised several feet in a single convulsion.","He had already found fossil seashells, and a forest of petrified trees, high up in the Andes \u2014 old sea floor hoisted thousands of feet into the sky. Now he had watched a piece of it happen. Mountains were not made all at once; they rose, earthquake by earthquake, over ages \u2014 Lyell's slow earth, proved before his own eyes.","This was Darwin's first great original synthesis, and it was about rock, not life. But the cast of mind was the same: small changes, repeated over vast time, build something immense. He would soon turn that very lens on living things."],
+        detail:"Darwin both felt the 1835 earthquake and measured its lasting uplift \u2014 rare, direct proof that the Andes are still rising, grain by grain, exactly as the gradualists claimed."},
+      {name:"The Gal\u00e1pagos",log:"Strange volcanic islands where tortoises and mockingbirds differ shore to shore \u2014 a doubt that would take years to ripen.",
+        lore:["Five hundred miles off Ecuador, straddling the equator, lie the Gal\u00e1pagos \u2014 a scatter of young, black volcanic islands the Beagle reached in September 1835. Darwin spent about five weeks among them, clambering over lava, among giant tortoises and the marine iguanas he called imps of darkness.","The islands' vice-governor mentioned, almost in passing, that he could tell which island any tortoise came from by its shell. Darwin noticed the same of the mockingbirds: subtly different, island to island. It struck him \u2014 but he was careless, and did not always label which bird had come from where.","The famous 'Darwin's finches' tell a more tangled story than the legend allows. He did not grasp their meaning on the islands; it was only back in London, in 1837, when the ornithologist John Gould showed that his jumbled specimens were many distinct species, that the pieces began to fall into place. The Gal\u00e1pagos did not hand Darwin his theory. They planted a doubt that germinated slowly, in England, in the years after.","That is what makes it real rather than mythic. The islands were not a thunderclap of revelation but a seed \u2014 a quiet wrongness about fixed species that nagged at him until, two decades on, it grew into the most consequential idea in all of biology."],
+        detail:"The Gal\u00e1pagos were a slow fuse, not a flash. The true turn came later, when Gould's analysis of his birds in 1837 forced Darwin to confront that species change \u2014 and to open his first notebook on the 'transmutation' of species."},
+      {name:"The Keeling Islands",log:"A coral atoll in the Indian Ocean \u2014 and Darwin works out how such rings are built, his first great theory proved.",
+        lore:["Far out in the Indian Ocean, the Beagle called in April 1836 at the Keeling, or Cocos, Islands \u2014 a true coral atoll: a ring of low reef and palm enclosing a lagoon, with no high land at all. FitzRoy surveyed it; Darwin studied the living reef, and the deep water just beyond it.","Coral animals can build only near the surface, in the light. So how could a reef stand on the deep ocean floor, in water far too deep for coral ever to have begun? The atolls were a genuine puzzle, and the explanations of the day were poor.","Darwin's answer was elegant and bold. The reef begins as a fringe around a volcanic island; as the island slowly sinks, the coral grows upward to stay in the light, generation building on the skeletons of the last \u2014 until the island has vanished entirely beneath the sea and only the ring of reef remains, marking where it once stood. An atoll is a monument to a drowned mountain.","It was the same idea once more \u2014 vast change wrought by tiny increments over deep time \u2014 and it was his first fully worked theory, published before he dared breathe a word about species. Much later, deep borings through Pacific atolls would prove him right."],
+        detail:"Darwin's subsidence theory of coral atolls \u2014 reefs growing upward as the land sinks beneath them \u2014 was his first theoretical triumph, built on the same gradual, deep-time logic he would later turn on life itself."},
+      {name:"Falmouth",log:"Falmouth, 2 October 1836 \u2014 home after nearly five years. Darwin never left Britain again, but the world had quietly changed.",
+        lore:["From the Keeling Islands the Beagle ran for home by way of Mauritius, the Cape of Good Hope, St Helena and Ascension \u2014 and then, to Darwin's intense frustration, doubled back across the Atlantic to Bahia in Brazil, so that FitzRoy could close his chain of chronometer readings, before turning at last for England.","She made Falmouth, in Cornwall, on a wild wet night, 2 October 1836. Darwin went ashore and took the mail coach home to Shrewsbury, nearly five years after he had left \u2014 seasick to the end, but no longer the young man who had sailed.","He never left Britain again; he did not need to. He had crates of fossils and specimens, notebooks crammed with observation, and a mind full of unresolved puzzles \u2014 risen coasts, vanished giants, islands of subtly different birds. Within a year he had opened his first secret notebook on the transmutation of species.","It would take him more than twenty years of patient work, and a rival breathing down his neck, before he published On the Origin of Species in 1859. But the voyage of the Beagle is where it all began \u2014 a slow, world-changing idea carried home in the hold of a little survey brig."],
+        detail:"Darwin sailed as a would-be country parson and came home a scientist; everything that followed \u2014 the notebooks, the long delay, and finally the Origin of 1859 \u2014 grew from these five years at sea."}
+    ]},
+    {id:"spray",title:"The Spray",era:"Slocum \u00b7 1895\u201398",
+      ship:"The Spray \u2014 a 37-foot gaff sloop, rebuilt by hand at Fairhaven, Massachusetts. So well balanced she would hold her own course for days with the helm lashed.",
+      crew:"Joshua Slocum, alone \u2014 the first man to sail single-handed around the world.",
+      brief:[
+        "In April 1895 a 51-year-old master mariner named Joshua Slocum sailed a small wooden sloop out of Boston harbour, entirely alone, meaning to do something no one had ever done: circle the world single-handed. Three years and some 46,000 miles later, he had.",
+        "Slocum belonged to the dying age of sail. Steam had taken his living; he had lost his last command, the barque Aquidneck, on a Brazilian sandbar, and sailed his stranded family home in a canoe he built himself. When a friend gave him a derelict oyster sloop rotting in a field, he spent thirteen months rebuilding her plank by plank \u2014 felling the oak for her keel with his own hands \u2014 and named her the Spray.",
+        "She was barely 37 feet, carried no chronometer worth the name (only a tin clock with broken hands), and could steer herself for days on end. In her, an ageing sailor with almost no money wrote one of the great adventures of the sea \u2014 and, without quite meaning to, the first chapter of every solo voyage since."
+      ],
+      sources:"Joshua Slocum, Sailing Alone Around the World (1900), and his own chapter logs; contemporary accounts.",
+      ports:[
+      {name:"Boston",log:"Lines cast off from Boston, 24 April 1895 \u2014 one ageing sailor, one rebuilt sloop, and a plan nobody had ever pulled off.",
+        lore:["The voyage began in the busy harbours of New England \u2014 Boston, and the boat-yards of Fairhaven across Buzzards Bay, where the Spray had been reborn. From here Slocum felt his way north to Nova Scotia, his birthplace, before letting go of the American coast for the open Atlantic.","Joshua Slocum was born in Nova Scotia in 1844 and had gone to sea as a boy, rising to command tall ships in the last great age of sail. But steam was killing that world. He lost his final command, the barque Aquidneck, on a sandbar in Brazil in 1887, and \u2014 penniless, with his family aboard \u2014 built a 35-foot canoe, the Liberdade, and sailed them all the way home.","Ashore and out of work at 51, Slocum was handed what looked like a joke: a derelict oyster sloop, the Spray, propped up in a field. He took it entirely seriously. He felled an oak for her keel, steamed and fitted her ribs, and over thirteen months rebuilt her almost from nothing, by his own hands.","What drove him was partly money \u2014 he meant to write and lecture about the trip \u2014 and partly that, for a sailing-ship man in a steam age, sailing alone around the world was the one adventure left. He carried no proper chronometer: his timepiece was a battered tin clock that had cost a dollar and a half, its hands broken off. He would navigate by dead reckoning and the sun and stars, as the old masters had."],
+        detail:"The Spray cost Slocum almost nothing in money and everything in labour \u2014 thirteen months, plank by plank. Rebuilt, she could sail for days with no hand on the helm, which would save him many times over."},
+      {name:"The Azores",log:"Eighteen days alone across the Atlantic to Horta \u2014 then a feast of cheese and plums, a fever, and a ghost at the wheel.",
+        lore:["The Azores are a scatter of green Portuguese islands in the mid-Atlantic, a thousand miles from anywhere. Slocum made Horta, on the island of Faial, eighteen days out \u2014 his first ocean crossed entirely alone, and proof that both he and the Spray could do this.","He was received like visiting royalty. The islanders loaded the Spray with fruit, and the American Consul-General pressed on him a great white Pico cheese. Sailing on for Gibraltar, Slocum did the one truly foolish thing of the whole voyage: he gorged on the plums and the unfamiliar cheese together.","By nightfall, with a gale rising, he was doubled up with cramps and a raging fever \u2014 calentura, the old sailors called it \u2014 and collapsed on the cabin floor while the Spray ran on unattended. Waking, he saw a tall, red-capped figure gripping the wheel, who named himself the pilot of Columbus's Pinta, come to steer the ship through the storm, and to scold him: you did wrong, captain, to mix cheese with plums.","When Slocum came round, the Spray was still dead on course \u2014 she had steered herself \u2014 and the worst had passed. He threw every remaining plum overboard. He told the tale with a straight face, and the pilot of the Pinta has been the patron saint of solo sailors ever since."],
+        detail:"The phantom helmsman is the most famous passage in all of small-boat sailing \u2014 a fever-dream, almost certainly, but Slocum, a hard-headed master mariner, swore the Spray was exactly on course when he woke."},
+      {name:"Gibraltar",log:"The gateway to the Mediterranean reached \u2014 then, warned of pirates, Slocum turned the entire voyage around.",
+        lore:["Gibraltar \u2014 the great rock at the mouth of the Mediterranean, between Spain and Morocco, one of the Pillars of Hercules that for the ancients marked the edge of the known world. The British Navy held it, and they welcomed the lone American warmly, feasting and feting him and taking him on a picnic across to the Moroccan shore.","Slocum had meant to go east \u2014 through the Mediterranean and the Suez Canal, the short way round. But the naval officers warned him the Red Sea and its approaches were thick with pirates, no place at all for a single-handed sailor in a small boat.","So at Gibraltar he tore up his plan and reversed it: he would go the other way, back across the Atlantic and down to round the storm-bound foot of South America. It nearly doubled the journey. The warning proved sound at once \u2014 leaving Gibraltar, the Spray was chased by a Moorish felucca, and only a sudden squall, which carried away the pirate's mast, let her escape.","It was a telling moment. The whole shape of the voyage \u2014 South America, the Pacific, the long way home \u2014 was settled here, on a warning and a chase, by a man willing to throw out months of planning the instant the sea told him to."],
+        detail:"The pirate chase off Morocco was real and close-run; Slocum, who freely admitted he could not swim, got clear only because a squall dismasted his pursuer."},
+      {name:"The Strait",log:"The Strait of Magellan \u2014 sailed twice over against the williwaws, with carpet tacks scattered on deck against night-raiders.",
+        lore:["The Strait of Magellan threads between the South American mainland and the islands of Tierra del Fuego \u2014 a cold, mountainous maze of channels at the bottom of the world, swept by williwaws, the sudden violent gusts that scream down off the glaciers without warning. Slocum chose it over the open horror of Cape Horn.","It was the hardest stretch of the entire voyage. He clawed through it for weeks, and after he had nearly cleared the western end a great gale blew the Spray back out into the Pacific and drove her south toward the Horn, among the rocks the sailors called the Milky Way. He had to fight his way round and transit the strait a second time.","The Fuegians who lived along the channels boarded vessels by night. Sleeping alone, Slocum could keep no watch \u2014 so before turning in he scattered carpet tacks across the Spray's deck. Barefoot raiders who climbed aboard in the dark trod on them and fled howling. He also salvaged a chance cargo of tallow from a wreck, which would pay its way later.","Single-handed, half-frozen, sailing the same brutal strait twice over, fending off boarders with a tin of tacks and a rifle \u2014 this is the passage that turned Slocum from a curiosity into a legend. It is ingenuity over force, from first to last."],
+        detail:"The carpet tacks are the voyage's most-quoted trick \u2014 a sleeping man's burglar alarm, and it worked every single time."},
+      {name:"Juan Fern\u00e1ndez",log:"Robinson Crusoe's own island \u2014 Slocum taught the islanders to fry doughnuts in salvaged tallow.",
+        lore:["Out in the Pacific, some 400 miles off Chile, lies the island of Juan Fern\u00e1ndez \u2014 better known as Robinson Crusoe's island. It was here that the castaway Alexander Selkirk really was marooned, alone, for four years, and from whose story Defoe drew his famous novel. After the Strait, it was paradise.","Slocum anchored in Crusoe's own bay, climbed to the mountain lookout where Selkirk had watched for sails, and visited the cave and the monument. He wandered the hills with the island's children. It was the gentlest interlude of the whole voyage.","He repaid the islanders' welcome in the most Yankee way imaginable. With the tallow salvaged back in the Strait he fried them a great batch of doughnuts, which they had never seen \u2014 and then, ever the trader, sold them the rest of the tallow at a tidy profit.","Then 'westward ho! with a friendly gale': a month of free, easy sailing across the empty Pacific, steering by the Southern Cross and the sun, until the Marquesas rose out of the sea ahead."],
+        detail:"Doughnuts fried in shipwreck tallow, on Robinson Crusoe's island \u2014 Slocum's own line was that he 'made a reasonable profit' on the deal."},
+      {name:"Samoa",log:"Seventy-two days without a port to Samoa \u2014 where Stevenson's widow gave him the writer's own sailing books.",
+        lore:["From the Marquesas, Slocum made the longest passage of the voyage: seventy-two days without sighting a port, alone on the Pacific, before the green hills of Samoa rose ahead and he came to anchor at Apia. He stayed five weeks, revelling in company after so long at sea.","Robert Louis Stevenson \u2014 author of Treasure Island and Kidnapped \u2014 had died at Vailima, his house above Apia, only the year before. His widow, Fanny van de Grift Stevenson, came down to meet the lone sailor, and the two found in one another a kindred restlessness.","She rowed out to the Spray, and took Slocum up to Vailima. There he was offered the use of Stevenson's own writing desk and quietly declined \u2014 it would be presumptuous, he felt, to sit where the 'Writer of Tales' had worked. Fanny gave him a finer gift instead: volumes of sailing directions that had belonged to Stevenson, inscribed to Slocum.","It is a lovely meeting of two kinds of voyager \u2014 the man living the adventures and the woman who had shared the writing of them \u2014 and the books she gave him sailed the rest of the way around the world in the Spray's cabin."],
+        detail:"Fanny Stevenson's gift \u2014 her late husband's own sailing directories, inscribed to Slocum \u2014 is among the most cherished objects in all the literature of the sea."},
+      {name:"Sydney",log:"Australia at last \u2014 low on funds, Slocum charged admission to come aboard the Spray and lectured for his supper.",
+        lore:["By way of Fiji, the Spray came down to Newcastle and then Sydney, in south-eastern Australia, and Slocum lingered for months in Australian and Tasmanian waters \u2014 Sydney, Melbourne, Tasmania \u2014 through the southern summer. The yachtsmen of Sydney took the weather-beaten little sloop to their hearts.","He was, by now, almost out of money. So Slocum turned the voyage into his living: he charged the curious a small coin to come aboard the famous Spray, and gave lectures, with lantern slides, on his adventures. The crowds came.","Ever the showman, in Melbourne he caught a large shark and exhibited it on deck for a fee \u2014 a grim but profitable attraction. The generous Commodore Foy of Sydney presented the Spray with a whole new suit of sails for the road ahead.","There is something very modern in it \u2014 the lone adventurer funding the next leg by selling the story of the last \u2014 and Slocum did it with humour and not a shred of self-pity: an old sailor making his own way in a world that had moved on without him."],
+        detail:"Slocum financed much of the voyage as he went, by exhibiting the Spray and lecturing \u2014 the original self-funded round-the-world expedition."},
+      {name:"Cape of Good Hope",log:"Across the Indian Ocean, much of it hands-off \u2014 then the Cape rounded, and tea with a president who knew the earth was flat.",
+        lore:["From Australia, Slocum crossed the Indian Ocean by way of Thursday Island, the Cocos (Keeling) Islands, Rodrigues, Mauritius and Durban. On the long run to the Cocos the Spray gave her most astonishing performance: she sailed some two thousand miles, for over three weeks, without Slocum once touching the helm \u2014 he read, slept and cooked while she steered herself across an ocean.","The Cape of Good Hope \u2014 the storm-bound southern corner of Africa \u2014 he rounded westward early in 1898, and put in at Cape Town for three months, repairing, resting and, as ever, raising funds.","Inland he was taken to meet Paul Kruger, President of the Transvaal \u2014 a famous and immovable believer that the earth was flat. When his host introduced Slocum as the man sailing 'round the world', Kruger corrected him sharply: impossible \u2014 you mean in the world. The Cape's Astronomer Royal, Dr Gill, arranged a lecture so well attended it paid for the rest of the voyage.","The contrast is perfect: the man quietly proving the earth round by sailing all the way around it, taking tea with the man who flatly refused to believe it could be done. Slocum, characteristically, just smiled and sailed on."],
+        detail:"Kruger's flat-earth conviction was sincere and well known; to him a voyage 'around' the world was a contradiction in terms, however far the little Spray had come to make it."},
+      {name:"Newport",log:"Newport, 27 June 1898 \u2014 46,000 miles, three years, alone. The first man ever to sail around the world by himself.",
+        lore:["From the Cape, Slocum crossed the Atlantic a third time \u2014 St Helena, Ascension, then up through the tropics toward home. Somewhere off the coast of Brazil in May 1898 the Spray crossed her own outbound track of three years before: the circle was closed, the globe encircled, by one man in a small boat.","He came in to Newport, Rhode Island, in the small hours of 27 June 1898, slipping quietly into the harbour he had set out from. He had sailed roughly 46,000 miles in three years and two months, entirely alone \u2014 the first human being ever to circle the world single-handed.","The world barely noticed. The Spanish\u2013American War had the headlines, and the harbour itself was mined against the Spanish fleet; the lone sailor's history-making homecoming passed almost unremarked. His book, Sailing Alone Around the World, would put that right \u2014 it became a classic and has never been out of print.","Slocum could never quite settle ashore. In 1909 he sailed the Spray out from the New England coast, bound south once more, and was never seen again \u2014 lost at sea, as perhaps he would have wished, aboard the boat he had built with his own hands."],
+        detail:"Slocum's feat went almost unnoticed in 1898, eclipsed by a war; it is now reckoned one of the supreme small-boat voyages in history, and the Spray's uncanny self-steering still puzzles naval architects."}
+    ]}
+  ];
+  function passageById(id){return PASSAGES.find(p=>p.id===id)||PASSAGES[0];}
+  // The progression: a short shakedown, then four voyages of rising length, all on ONE continuous clean-day timeline.
+  const LADDER=[
+    {id:"shakedown",len:7},
+    {id:"spray",len:30},
+    {id:"beagle",len:90},
+    {id:"endurance",len:180},
+    {id:"magellan",len:365}
+  ];
+  function ladderBounds(){let starts=[],ends=[],a=0;LADDER.forEach(r=>{starts.push(a);a+=r.len;ends.push(a);});return {starts,ends,total:a};}
+  // 9 front-loaded day-values 1..N (fixed first week 1.3.7, then geometric). The shakedown supplies its own short set.
+  function daySet(N){
+    N=Math.max(21,Math.round(N));
+    const out=[1,3,7];
+    for(let k=1;k<=6;k++)out.push(Math.round(7*Math.pow(N/7,k/6)));
+    let res=[],prev=0;for(let i=0;i<9;i++){let v=Math.max(out[i],prev+1);res.push(v);prev=v;}
+    res[8]=N;for(let i=7;i>=0;i--){if(res[i]>=res[i+1])res[i]=res[i+1]-1;}
+    for(let i=0;i<9;i++)if(res[i]<1)res[i]=1;
+    return res;
+  }
+  function localDays(rung){const P=passageById(LADDER[rung].id);return P.days?P.days.slice():daySet(LADDER[rung].len);}
+  function voyageContext(made){
+    const b=ladderBounds();const completed=b.ends.filter(e=>made>=e).length;
+    if(made>=b.total)return {openSea:true,rung:LADDER.length,start:b.total,length:0,made,madeIn:made-b.total,completed:LADDER.length};
+    let rung=b.ends.findIndex(e=>made<e);if(rung<0)rung=LADDER.length-1;
+    return {openSea:false,rung,id:LADDER[rung].id,start:b.starts[rung],end:b.ends[rung],length:LADDER[rung].len,made,madeIn:made-b.starts[rung],completed};
+  }
+  // Open sea: an endless run beyond the full circuit, a fresh marker every 90 days.
+  function openSeaPorts(made){
+    const b=ladderBounds(),step=90,reached=Math.floor((made-b.total)/step);
+    const names=["Open Water","The Trade Winds","Blue Water","The Far Reaches","A New Horizon","The Long Swell","Steady Seas","Calm Latitudes","Onward"];
+    const first=Math.max(0,reached-3),out=[];
+    for(let k=first;k<first+9;k++){const lap=Math.floor(k/names.length);out.push({d:b.total+(k+1)*step,name:names[k%names.length]+(lap?" "+(lap+1):""),log:"Beyond the full circuit \u2014 "+((k+1)*step)+" clear days past the circumnavigation, and still sailing."});}
+    return out;
+  }
+  function currentPorts(made){
+    if(!state)return [];
+    if(typeof made!=="number")made=aggregate().made;
+    const V=voyageContext(made);
+    if(V.openSea)return openSeaPorts(made);
+    const P=passageById(LADDER[V.rung].id),dv=localDays(V.rung);
+    return P.ports.map((pt,i)=>({d:V.start+dv[i],name:pt.name,log:pt.log}));
+  }
+  function stopReached(rung,i,made){const b=ladderBounds();if(made>=b.ends[rung])return true;if(made>=b.starts[rung])return (made-b.starts[rung])>=localDays(rung)[i];return false;}
+  let PORTS=[];
+  const $=s=>document.querySelector(s);
+  function localISO(dt){const y=dt.getFullYear(),m=String(dt.getMonth()+1).padStart(2,'0'),d=String(dt.getDate()).padStart(2,'0');return y+'-'+m+'-'+d;}
+  function todayISO(){return localISO(new Date());}
+  function parseISO(iso){const p=iso.split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
+  function daysBetween(a,b){return Math.round((parseISO(b)-parseISO(a))/DAY);}
+  function fmtDate(iso){return parseISO(iso).toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short'});}
+
+  let state=load();
+  let metric="trim";
+
+  function seed(){
+    return {v:3,startISO:todayISO(),currency:"£",
+      drinks:[
+        {id:"d1",alias:"Fog Bank",note:"Rolls in quiet and steals your bearings.",ml:440,abv:8,kcal:290,cost:4.00},
+        {id:"d2",alias:"Dropping Anchor",note:"Small — and suddenly you’re not moving.",ml:250,abv:5,kcal:120,cost:2.40},
+        {id:"d3",alias:"Red Sky",note:"Fair to look at; a warning all the same.",ml:250,abv:13,kcal:210,cost:4.00}
+      ],
+      baselineWeek:{},deviations:{},completed:[]};
+  }
+  function load(){try{const r=JSON.parse(localStorage.getItem("onward.v3"));if(r&&r.v===3)return r;}catch(e){}return null;}
+  function save(){try{localStorage.setItem("onward.v3",JSON.stringify(state));}catch(e){toast("Couldn’t save — storage blocked");}}
+
+  function dUnits(dr){return dr.abv*dr.ml/1000;}
+  function drinkMap(){const m={};state.drinks.forEach(d=>m[d.id]=d);return m;}
+  function rates(){let w={units:0,money:0,kcal:0};state.drinks.forEach(dr=>{const q=state.baselineWeek[dr.id]||0;w.units+=q*dUnits(dr);w.money+=q*dr.cost;w.kcal+=q*dr.kcal;});return {units:w.units/7,money:w.money/7,kcal:w.kcal/7};}
+  function basketTotals(b){const m=drinkMap();let c={units:0,money:0,kcal:0};Object.keys(b||{}).forEach(id=>{const dr=m[id],q=b[id]||0;if(dr&&q>0){c.units+=q*dUnits(dr);c.money+=q*dr.cost;c.kcal+=q*dr.kcal;}});return c;}
+
+  function dayInfo(iso){
+    const t=todayISO(),dev=state.deviations[iso];
+    let status;
+    if(dev)status='deviation';else if(iso<t)status='clear';else if(iso===t)status=(state.completed.indexOf(iso)>=0)?'clear':'pending';else status='future';
+    const counted=(status==='clear'||status==='deviation');
+    const r=rates();let avoided={units:0,money:0,kcal:0},consumed={units:0,money:0,kcal:0};
+    if(status==='clear')avoided=r;
+    else if(status==='deviation'){consumed=basketTotals(dev);avoided={units:Math.max(0,r.units-consumed.units),money:Math.max(0,r.money-consumed.money),kcal:Math.max(0,r.kcal-consumed.kcal)};}
+    return {iso,status,counted,avoided,consumed,dev};
+  }
+  function series(){if(!state)return[];const start=state.startISO,end=todayISO();if(start>end)return[];const out=[];let cur=parseISO(start);while(localISO(cur)<=end){out.push(dayInfo(localISO(cur)));cur=new Date(cur.getFullYear(),cur.getMonth(),cur.getDate()+1);if(out.length>4000)break;}return out;}
+  function aggregate(){
+    const s=series();let made=0,banked={units:0,money:0,kcal:0},best=0,run=0,nm=0,st=0;
+    s.forEach(d=>{
+      if(d.status==='clear'){made++;run++;if(run>best)best=run;st++;nm+=50+Math.min(50,(st-1)*5);}
+      else if(d.status==='deviation'){run=0;st=0;}
+      if(d.counted){banked.units+=d.avoided.units;banked.money+=d.avoided.money;banked.kcal+=d.avoided.kcal;}
+    });
+    let leg=0;for(let i=s.length-1;i>=0;i--){const st2=s[i].status;if(st2==='pending')continue;if(st2==='clear')leg++;else break;}
+    return {series:s,made,banked,best:Math.max(best,leg),leg,nm:Math.round(nm)};
+  }
+
+  // Stage = leg between ports. Tag each completed day by the port it was sailed toward, then score units avoided / units possible per stage. A reached port starts the next stage fresh at 100%.
+  function stageData(){
+    const A=aggregate(),r=rates();
+    const voyStart=voyageContext(A.made).start;
+    let made=0;const groups={};
+    A.series.forEach(d=>{
+      if(made>=voyStart){
+        let dest=PORTS.findIndex(p=>p.d>made);if(dest<0)dest=PORTS.length-1;
+        if(d.counted){if(!groups[dest])groups[dest]={av:0,days:0};groups[dest].av+=d.avoided.units;groups[dest].days++;}
+      }
+      if(d.status==='clear')made++;
+    });
+    const stages=Object.keys(groups).map(k=>{const g=groups[k],opt=g.days*r.units;return {destIdx:+k,name:PORTS[+k].name,trim:opt>0?g.av/opt:1,days:g.days};}).sort((a,b)=>a.destIdx-b.destIdx);
+    let curIdx=PORTS.findIndex(p=>p.d>A.made);if(curIdx<0)curIdx=PORTS.length-1;
+    const cg=groups[curIdx];
+    const current={destIdx:curIdx,name:PORTS[curIdx].name,days:cg?cg.days:0,trim:(cg&&cg.days*r.units>0)?cg.av/(cg.days*r.units):1};
+    const totOpt=A.series.filter(d=>d.counted).length*r.units;
+    const voyage=totOpt>0?A.banked.units/totOpt:1;
+    return {stages,current,curIdx,voyage,A,r,hasBase:(r.units+r.money+r.kcal)>0};
+  }
+
+  function chartStages(stages,curIdx){
+    if(!stages.length)return '<div class="muted" style="text-align:center;padding:34px 0">Sail a leg and your stage scores appear here.</div>';
+    const W=320,H=170,top=16,bottom=H-30,left=14,right=W-8,N=stages.length;
+    const gap=N>6?5:8,bw=Math.max(8,(right-left)/N-gap);
+    const ny=v=>bottom-(bottom-top)*Math.max(0,Math.min(1,v));
+    const by=ny(1);
+    let bars='';
+    stages.forEach((s,i)=>{
+      const x=left+(right-left)*(i/N)+gap/2,y=ny(s.trim),h=bottom-y;
+      const col=s.destIdx===curIdx?'#E8B65A':'#5FD0C5';
+      bars+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(0,h).toFixed(1)+'" rx="2" fill="'+col+'"/>';
+      bars+='<text x="'+(x+bw/2).toFixed(1)+'" y="'+(y-4).toFixed(1)+'" fill="#C9D6E5" font-size="8" text-anchor="middle">'+Math.round(s.trim*100)+'</text>';
+      bars+='<text x="'+(x+bw/2).toFixed(1)+'" y="'+(H-6)+'" fill="#7E92AB" font-size="7.5" text-anchor="middle">'+s.name.split(' ')[0]+'</text>';
+    });
+    return '<svg viewBox="0 0 '+W+' '+H+'">'
+      +'<line x1="'+left+'" y1="'+by.toFixed(1)+'" x2="'+right+'" y2="'+by.toFixed(1)+'" stroke="#C9D6E5" stroke-width="1" stroke-dasharray="3 4" opacity=".5"/>'
+      +'<text x="'+right+'" y="'+(by-3).toFixed(1)+'" fill="#7E92AB" font-size="8" text-anchor="end">100%</text>'
+      +'<line x1="'+left+'" y1="'+bottom+'" x2="'+right+'" y2="'+bottom+'" stroke="#26405C"/>'+bars+'</svg>';
+  }
+
+  function fmtMoney(n){return state.currency+Math.round(n).toLocaleString();}
+  function fmtK(n){const v=Math.round(n);return v>=1000?(v/1000).toFixed(1)+"k":String(v);}
+  function fmtU(u){return (Math.round(u*10)/10).toString();}
+  function fmtU2(u){return (Math.round(u*100)/100).toString();}
+
+  function nextPortIdx(made){const i=PORTS.findIndex(p=>made<p.d);return i;} // -1 if past all
+
+  /* ---- route chart ---- */
+  function regionalSVG(focus){
+    const P={horn:[30,57],falk:[93,23],sg:[261,44],eleph:[122,97],beset:[300,210],sink:[141,156],launch:[132,101],jc:[198,69]};
+    const dot=(p,r,c)=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="'+r+'" fill="'+c+'"/>';
+    const lab=(p,t,dx,dy,anc)=>'<text x="'+(p[0]+dx)+'" y="'+(p[1]+dy)+'" font-size="8" fill="#9fb3c8" text-anchor="'+(anc||'start')+'">'+t+'</text>';
+    let s='<svg viewBox="0 0 320 232" width="100%" style="display:block">';
+    s+='<rect x="0" y="0" width="320" height="232" rx="6" fill="#0b1622"/>';
+    s+='<path d="M0 232 L0 202 Q90 192 175 203 T320 200 L320 232 Z" fill="#16273a" opacity="0.6"/>';
+    s+='<path d="M62 232 L96 150 L110 158 L92 232 Z" fill="#16273a" opacity="0.45"/>';
+    s+='<path d="M0 28 L42 40 L34 66 L0 72 Z" fill="#16273a" opacity="0.45"/>';
+    s+='<text x="158" y="226" font-size="8" fill="#7b91a8" text-anchor="middle" letter-spacing="1">WEDDELL SEA</text>';
+    s+='<text x="14" y="40" font-size="8" fill="#7b91a8">S. AMERICA</text>';
+    s+='<polyline points="261,44 300,210" fill="none" stroke="#E8B65A" stroke-width="1.6" opacity="0.85"/>';
+    s+='<polyline points="300,210 141,156 132,101" fill="none" stroke="#9fb3c8" stroke-width="1.5" stroke-dasharray="2 3" opacity="0.85"/>';
+    s+='<polyline points="122,97 198,69 261,44" fill="none" stroke="#5FD0C5" stroke-width="1.6" stroke-dasharray="1 3.5" stroke-linecap="round"/>';
+    [['horn','Cape Horn',-4,4,'end'],['falk','Falklands',6,3,'start'],['sg','South Georgia',-6,-4,'end'],['eleph','Elephant I.',6,-3,'start'],['beset','beset 1915',-4,-4,'end']].forEach(o=>{const p=P[o[0]];s+=dot(p,2,'#9fb3c8')+lab(p,o[1],o[2],o[3],o[4]);});
+    if(focus&&P[focus==='drift'?'sink':focus]){const fp=P[focus==='drift'?'sink':focus];s+='<circle cx="'+fp[0]+'" cy="'+fp[1]+'" r="7" fill="none" stroke="#5FD0C5" stroke-width="1.4" opacity="0.6"/>'+dot(fp,3.4,'#5FD0C5');if(focus==='jamescaird')s+='<polyline points="122,97 198,69 261,44" fill="none" stroke="#5FD0C5" stroke-width="2.2" stroke-linecap="round"/>';}
+    s+='<g opacity="0.7"><line x1="284" y1="14" x2="284" y2="26" stroke="#7b91a8" stroke-width="1"/><path d="M284 12 l-3 5 h6 z" fill="#7b91a8"/><text x="284" y="36" font-size="7" fill="#7b91a8" text-anchor="middle">N</text></g>';
+    return s+'</svg>';
+  }
+  function southGeorgiaSVG(focus){
+    const KH=[92,132],STR=[214,103],GRY=[238,110],MID=[150,103];
+    const dot=(p,r,c)=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="'+r+'" fill="'+c+'"/>';
+    const lab=(p,t,dx,dy,anc)=>'<text x="'+(p[0]+dx)+'" y="'+(p[1]+dy)+'" font-size="8" fill="#9fb3c8" text-anchor="'+(anc||'start')+'">'+t+'</text>';
+    let s='<svg viewBox="0 0 320 184" width="100%" style="display:block">';
+    s+='<rect x="0" y="0" width="320" height="184" rx="6" fill="#0b1622"/>';
+    s+='<path d="M40 120 Q80 96 150 99 Q220 102 284 92 Q256 128 196 132 Q120 140 72 138 Q48 134 40 120 Z" fill="#16273a" stroke="#2a3f57" stroke-width="1"/>';
+    s+='<path d="M118 110 l7 -13 7 13 z M138 108 l6 -11 6 11 z M160 110 l7 -14 7 14 z M182 107 l6 -11 6 11 z" fill="#22364c"/>';
+    s+='<text x="160" y="150" font-size="8" fill="#7b91a8" text-anchor="middle" letter-spacing="1">SOUTH GEORGIA</text>';
+    s+='<path d="M92 132 Q126 96 214 103" fill="none" stroke="#5FD0C5" stroke-width="'+(focus==='crossing'?2.4:1.5)+'" stroke-dasharray="2 3"/>';
+    s+=dot(KH,2.4,'#9fb3c8')+lab(KH,'King Haakon Bay',-6,8,'middle');
+    s+=dot(STR,2.4,'#9fb3c8')+lab(STR,'Stromness',-2,-6,'end');
+    s+=dot(GRY,2.4,'#9fb3c8')+lab(GRY,'Grytviken',6,12,'start');
+    const F={haakon:KH,crossing:MID,stromness:STR,grytviken:GRY}[focus];
+    if(F)s+='<circle cx="'+F[0]+'" cy="'+F[1]+'" r="7" fill="none" stroke="#5FD0C5" stroke-width="1.4" opacity="0.6"/>'+dot(F,3.4,'#5FD0C5');
+    s+='<g opacity="0.7"><line x1="298" y1="16" x2="298" y2="28" stroke="#7b91a8" stroke-width="1"/><path d="M298 14 l-3 5 h6 z" fill="#7b91a8"/><text x="298" y="38" font-size="7" fill="#7b91a8" text-anchor="middle">N</text></g>';
+    return s+'</svg>';
+  }
+  // Hand-built equirectangular world chart for the Spray's circumnavigation (schematic coastlines, real port positions).
+  function worldMap(focus,route){
+    const MW=320,MH=160;
+    const px=lon=>((lon+180)/360*MW), py=lat=>((90-lat)/180*MH);
+    const land=[
+      [[70,-160],[68,-120],[60,-95],[50,-82],[44,-66],[40,-74],[33,-80],[26,-81],[25,-97],[30,-104],[33,-117],[40,-124],[48,-125],[58,-138],[66,-152]],
+      [[11,-72],[6,-58],[-3,-50],[-12,-38],[-23,-42],[-34,-54],[-50,-66],[-55,-70],[-46,-74],[-33,-72],[-20,-70],[-6,-81],[2,-79]],
+      [[83,-30],[80,-18],[70,-22],[62,-42],[70,-54],[78,-55]],
+      [[36,-6],[34,10],[31,25],[16,38],[11,51],[-1,42],[-16,38],[-26,33],[-34,26],[-34,18],[-22,14],[-6,9],[4,8],[5,-4],[12,-16],[21,-17],[30,-12]],
+      [[60,-8],[64,10],[70,28],[78,68],[77,105],[72,138],[66,172],[60,158],[52,142],[44,134],[35,122],[30,122],[22,109],[10,98],[16,90],[8,78],[20,72],[24,62],[30,50],[40,48],[45,38],[44,28],[40,26],[37,24],[36,12],[36,-2],[43,-9],[52,-2]],
+      [[-11,131],[-13,142],[-20,149],[-28,153],[-38,146],[-37,140],[-35,129],[-34,118],[-22,114],[-15,123]]
+    ];
+    const ports=route.ports, names=route.names;
+    let g='<rect x="0" y="0" width="320" height="160" fill="#0C1A2C"/>';
+    g+='<rect x="0" y="'+py(-66).toFixed(1)+'" width="320" height="'+(160-py(-66)).toFixed(1)+'" fill="#152740"/>';
+    g+='<line x1="0" y1="'+py(0).toFixed(1)+'" x2="320" y2="'+py(0).toFixed(1)+'" stroke="#22384f" stroke-width="0.6" stroke-dasharray="2 4"/>';
+    land.forEach(pts=>{g+='<path d="'+pts.map((p,i)=>(i?'L':'M')+px(p[1]).toFixed(1)+','+py(p[0]).toFixed(1)).join('')+'Z" fill="#1B3150"/>';});
+    // route, splitting any leg that crosses the dateline
+    function seg(a,b){
+      let la=a[1],lb=b[1];const ya=py(a[0]),yb=py(b[0]);
+      while(lb-la>180)lb-=360;while(lb-la<-180)lb+=360;
+      if(lb<-180||lb>180){const edge=lb<-180?-180:180;const f=(edge-la)/(lb-la);const yc=py(a[0]+f*(b[0]-a[0]));
+        return 'M'+px(la).toFixed(1)+','+ya.toFixed(1)+'L'+px(edge).toFixed(1)+','+yc.toFixed(1)+'M'+px(edge>0?-180:180).toFixed(1)+','+yc.toFixed(1)+'L'+px(b[1]).toFixed(1)+','+yb.toFixed(1);}
+      return 'M'+px(la).toFixed(1)+','+ya.toFixed(1)+'L'+px(b[1]).toFixed(1)+','+yb.toFixed(1);
+    }
+    let routeD='';for(let i=0;i<ports.length-1;i++)routeD+=seg(ports[i],ports[i+1]);
+    g+='<path d="'+routeD+'" fill="none" stroke="#E8B65A" stroke-width="1.4" stroke-opacity="0.85" stroke-linejoin="round"/>';
+    ports.forEach((p,i)=>{const x=px(p[1]),y=py(p[0]),on=(i===focus);
+      g+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+(on?4:2.4)+'" fill="'+(on?'#E8B65A':'#5FD0C5')+'"'+(on?' stroke="#0C1A2C" stroke-width="1"':'')+'/>';
+      if(on)g+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="7" fill="none" stroke="#E8B65A" stroke-width="1" stroke-opacity="0.6"/>';
+      else g+='<text x="'+(x+(x>300?-4:3.5)).toFixed(1)+'" y="'+(y-4).toFixed(1)+'" fill="#7E92AB" font-size="7" text-anchor="'+(x>300?'end':'start')+'">'+(i+1)+'</text>';
+    });
+    if(typeof focus==="number"&&focus>=0){const x=px(ports[focus][1]),y=py(ports[focus][0]);
+      const anc=x>248?'end':(x<74?'start':'middle'),lx=x>248?x-9:(x<74?x+9:x),ly=y>22?y-11:y+16;
+      g+='<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" fill="#E8B65A" font-size="9" font-weight="600" text-anchor="'+anc+'">'+names[focus]+'</text>';}
+    return '<svg viewBox="0 0 320 162">'+g+'</svg>';
+  }
+  const MAP_ROUTES={
+    spray:{ports:[[42.36,-71.06],[38.5,-28.6],[36.1,-5.4],[-53,-71],[-33.6,-78.8],[-13.8,-171.8],[-33.9,151.2],[-33.9,18.4],[41.5,-71.3]],
+      names:["Boston","The Azores","Gibraltar","The Strait","Juan Fern\u00e1ndez","Samoa","Sydney","Cape of Good Hope","Newport"],
+      cap:"The whole circumnavigation \u2014 Boston out by the Atlantic and the Strait, home to Newport three years and 46,000 miles later. Schematic chart; ports at their true positions."},
+    beagle:{ports:[[50.37,-4.14],[14.92,-23.51],[-12.97,-38.51],[-38.72,-62.27],[-55.05,-68.0],[-33.05,-71.62],[-0.6,-90.4],[-12.1,96.9],[50.15,-5.07]],
+      names:["Devonport","Cape Verde","Bahia","Patagonia","Tierra del Fuego","The Andes","The Gal\u00e1pagos","The Keeling Islands","Falmouth"],
+      cap:"Five years and nearly the whole globe \u2014 down the Atlantic, round South America, the Pacific and Indian Oceans, and home to Falmouth. Schematic chart; ports at their true positions."},
+    magellan:{ports:[[36.78,-6.35],[-22.9,-43.2],[-49.31,-67.7],[-53.0,-70.5],[-8.0,-150.0],[13.44,144.79],[10.31,123.96],[0.69,127.4],[37.39,-5.99]],
+      names:["Sanl\u00facar","Rio de Janeiro","Port St Juli\u00e1n","The Strait","The Pacific","Guam","Cebu","The Moluccas","Seville"],
+      cap:"The first voyage around the world \u2014 west from Spain, through Magellan's strait, across the vast Pacific to the Spice Islands, and home by the Cape three years later. Schematic chart; ports at their true positions."}
+  };
+  function passageMap(P,idx){
+    if(MAP_ROUTES[P.id]){const r=MAP_ROUTES[P.id],cap=(idx===-1)?r.cap:"";return '<div class="mapwrap">'+worldMap(idx,r)+(cap?'<div class="mapcap">'+cap+'</div>':'')+'</div>';}
+    if(P.id!=="endurance")return "";
+    let svg,cap;
+    if(idx===-1){svg=regionalSVG(null);cap="The whole passage — ship's track (amber), the ice drift (dashed) and the James Caird's boat journey (dotted).";}
+    else if(idx>=6){svg=southGeorgiaSVG(["haakon","crossing","stromness"][idx-6]);cap="South Georgia — the final stages, coast to coast.";}
+    else{svg=regionalSVG(["sg","beset","drift","launch","elephant","jamescaird"][idx]);cap="";}
+    return '<div class="mapwrap">'+svg+(cap?'<div class="mapcap">'+cap+'</div>':'')+'</div>';
+  }
+  function routeSVG(made){
+    const W=320,H=150,ml=18,mr=18,top=30,bot=H-26,midY=(top+bot)/2,amp=24,N=PORTS.length;
+    const ax=i=>ml+(W-ml-mr)*(i/(N-1)), ay=i=>midY+amp*Math.sin(i*1.05);
+    const anchors=PORTS.map((p,i)=>[ax(i),ay(i)]);
+    let g;
+    if(made<=0)g=0;
+    else if(made>=PORTS[N-1].d)g=1;
+    else{let i=0;for(let k=0;k<N-1;k++){if(made>=PORTS[k].d&&made<PORTS[k+1].d){i=k;break;}}const f=(made-PORTS[i].d)/(PORTS[i+1].d-PORTS[i].d);g=(i+f)/(N-1);}
+    const pos=g*(N-1),pi=Math.floor(pos),pf=pos-pi,ni=Math.min(pi+1,N-1);
+    const vx=anchors[pi][0]+(anchors[ni][0]-anchors[pi][0])*pf, vy=anchors[pi][1]+(anchors[ni][1]-anchors[pi][1])*pf;
+    const full='M'+anchors.map(a=>a[0].toFixed(1)+','+a[1].toFixed(1)).join(' L');
+    const sailedPts=anchors.slice(0,pi+1).concat([[vx,vy]]);
+    const sailed='M'+sailedPts.map(a=>a[0].toFixed(1)+','+a[1].toFixed(1)).join(' L');
+    const nIdx=nextPortIdx(made);
+    let grid='';for(let gx=ml;gx<=W-mr;gx+=44)grid+='<line x1="'+gx+'" y1="'+top+'" x2="'+gx+'" y2="'+bot+'" stroke="#19314a" stroke-width="1"/>';
+    grid+='<line x1="'+ml+'" y1="'+midY+'" x2="'+(W-mr)+'" y2="'+midY+'" stroke="#19314a" stroke-width="1"/>';
+    let dots='';PORTS.forEach((p,i)=>{const reached=made>=p.d,isNext=(i===nIdx);const fill=reached?'#5FD0C5':'#0E1A2B',stroke=reached?'#5FD0C5':(isNext?'#E8B65A':'#34506b');dots+='<circle cx="'+ax(i).toFixed(1)+'" cy="'+ay(i).toFixed(1)+'" r="'+(isNext?4.5:3.5)+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.5"/>';});
+    const boat='<circle cx="'+vx.toFixed(1)+'" cy="'+vy.toFixed(1)+'" r="4.5" fill="#fff"/><circle cx="'+vx.toFixed(1)+'" cy="'+vy.toFixed(1)+'" r="8" fill="none" stroke="#fff" stroke-opacity=".3"/>';
+    return '<svg viewBox="0 0 '+W+' '+H+'">'+grid
+      +'<path d="'+full+'" fill="none" stroke="#34506b" stroke-width="1.5" stroke-dasharray="2 5"/>'
+      +'<path d="'+sailed+'" fill="none" stroke="#5FD0C5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'
+      +dots+boat
+      +'<text x="'+ml+'" y="'+(top-12)+'" fill="#7E92AB" font-size="9">'+PORTS[0].name+'</text>'
+      +'<text x="'+(W-mr)+'" y="'+(top-12)+'" fill="#7E92AB" font-size="9" text-anchor="end">'+PORTS[N-1].name+'</text></svg>';
+  }
+
+  /* ---- line/bar charts ---- */
+  function chartLine(pts,fmt,unit){
+    if(pts.length<2)return '<div class="muted" style="text-align:center;padding:34px 0">Not enough logged yet — your first closed day plots here.</div>';
+    const W=320,H=170,top=14,bottom=H-24,left=10,right=W-10;
+    let maxY=1;pts.forEach(p=>{if(p.y>maxY)maxY=p.y;});
+    const nx=i=>left+(right-left)*(i/(pts.length-1)),ny=y=>bottom-(bottom-top)*(y/maxY);
+    const co=pts.map((p,i)=>[nx(i),ny(p.y)]);
+    const line=co.map((c,i)=>(i?'L':'M')+c[0].toFixed(1)+','+c[1].toFixed(1)).join(' ');
+    const area='M'+co[0][0].toFixed(1)+','+bottom+' '+co.map(c=>'L'+c[0].toFixed(1)+','+c[1].toFixed(1)).join(' ')+' L'+co[co.length-1][0].toFixed(1)+','+bottom+' Z';
+    return '<svg viewBox="0 0 '+W+' '+H+'"><defs><linearGradient id="g1" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#5FD0C5" stop-opacity=".35"/><stop offset="1" stop-color="#5FD0C5" stop-opacity="0"/></linearGradient></defs>'
+      +'<line x1="'+left+'" y1="'+bottom+'" x2="'+right+'" y2="'+bottom+'" stroke="#26405C"/>'
+      +'<path d="'+area+'" fill="url(#g1)"/><path d="'+line+'" fill="none" stroke="#5FD0C5" stroke-width="2.5" stroke-linejoin="round"/>'
+      +'<circle cx="'+co[co.length-1][0].toFixed(1)+'" cy="'+co[co.length-1][1].toFixed(1)+'" r="3.5" fill="#5FD0C5"/>'
+      +'<text x="'+left+'" y="11" fill="#7E92AB" font-size="9" font-family="ui-monospace,monospace">'+fmt(maxY)+unit+'</text>'
+      +'<text x="'+left+'" y="'+(H-6)+'" fill="#7E92AB" font-size="9">'+fmtDate(pts[0].label)+'</text>'
+      +'<text x="'+right+'" y="'+(H-6)+'" fill="#7E92AB" font-size="9" text-anchor="end">'+fmtDate(pts[pts.length-1].label)+'</text></svg>';
+  }
+  function chartBars(s,metric){
+    if(s.length<1)return '<div class="muted" style="text-align:center;padding:34px 0">No days yet.</div>';
+    const W=320,H=170,top=14,bottom=H-24,left=10,right=W-10;
+    const r=rates(),baseL=r[metric]||1;
+    let maxY=baseL*1.15;
+    const n=s.length,gap=n>40?0.5:2,bw=Math.max(1,Math.min(28,(right-left)/n-gap));
+    const ny=y=>bottom-(bottom-top)*(y/maxY);
+    let bars='';
+    s.forEach((d,i)=>{const x=left+(right-left)*(i/n),v=d.avoided[metric],y=ny(v),h=bottom-y;const col=d.status==='deviation'?'#E8B65A':'#4FB3A6';if(v>0)bars+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(0,h).toFixed(1)+'" rx="1" fill="'+col+'"/>';});
+    const by=ny(baseL);
+    return '<svg viewBox="0 0 '+W+' '+H+'">'
+      +'<line x1="'+left+'" y1="'+bottom+'" x2="'+right+'" y2="'+bottom+'" stroke="#26405C"/>'+bars
+      +'<line x1="'+left+'" y1="'+by.toFixed(1)+'" x2="'+right+'" y2="'+by.toFixed(1)+'" stroke="#C9D6E5" stroke-width="1.2" stroke-dasharray="4 4"/>'
+      +'<text x="'+right+'" y="'+(by-4).toFixed(1)+'" fill="#C9D6E5" font-size="9" text-anchor="end">a full clear day</text>'
+      +'<text x="'+left+'" y="'+(H-6)+'" fill="#7E92AB" font-size="9">'+fmtDate(s[0].iso)+'</text>'
+      +'<text x="'+right+'" y="'+(H-6)+'" fill="#7E92AB" font-size="9" text-anchor="end">'+fmtDate(s[s.length-1].iso)+'</text></svg>';
+  }
+
+  function basketLabel(b){const m=drinkMap();return Object.keys(b||{}).filter(id=>b[id]>0).map(id=>b[id]+'×'+(m[id]?m[id].alias:'?')).join(' · ');}
+
+  function conditions(A,todayInfo){
+    if(A.made===0&&(!todayInfo||todayInfo.status!=='deviation'))return {lead:"Lines singled up.",rest:"Ready to cast off — close your first day’s run to get under way."};
+    if(A.leg===0)return {lead:"Hove to.",rest:"Heavy weather astern. Fair winds return the moment your next day runs clear."};
+    if(A.leg<7)return {lead:"Making way.",rest:"Steady on the helm — "+A.leg+" day"+(A.leg===1?"":"s")+" on this leg."};
+    if(A.leg<30)return {lead:"Fair winds and a following sea.",rest:A.leg+" clean days on this leg; the miles come easy."};
+    return {lead:"Trade winds.",rest:"Strong, steady progress — "+A.leg+" days and running."};
+  }
+
+  function render(){
+    if(!state){openSetup(true);return;}
+    const A=aggregate(),r=rates(),t=todayISO();
+    const V=voyageContext(A.made);
+    PORTS=currentPorts(A.made);
+    if(state.seenVoyages===undefined){state.seenVoyages=V.completed;save();}
+    else if(state.seenVoyages<V.completed){state.seenVoyages=V.completed;save();celebrateLanding(V.completed-1);}
+    const todayIdx=(state.startISO<=t)?daysBetween(state.startISO,t)+1:0;
+    const todayInfo=state.startISO<=t?dayInfo(t):null;
+
+    $("#routeChart").innerHTML=routeSVG(A.made);
+    $("#routeChart").style.cursor="pointer";
+    $("#routeChart").onclick=openLibrary;
+    $("#libHint").onclick=openLibrary;
+    $("#dayNum").textContent=A.made;
+    const nIdx=nextPortIdx(A.made);
+    if(V.openSea){$("#nextSub").innerHTML="<b>Open sea</b> · "+V.madeIn+" day"+(V.madeIn===1?"":"s")+" beyond the full circuit"+(nIdx>=0?" · next marker in "+(PORTS[nIdx].d-A.made)+"d":"");}
+    else{const vt=passageById(V.id).title,vlab="<b>"+vt+"</b> · voyage "+(V.rung+1)+" of "+LADDER.length+" · day "+V.madeIn+" of "+V.length;
+      if(nIdx<0)$("#nextSub").innerHTML=vlab+" — landfall ahead";
+      else{const p=PORTS[nIdx],to=p.d-A.made;$("#nextSub").innerHTML=vlab+" — next port "+p.name+" in "+to+"d";}}
+
+    const c=conditions(A,todayInfo);
+    $("#conditions").innerHTML='<span class="lead">'+c.lead+'</span> '+c.rest;
+
+    const SD=stageData();
+    if(!SD.hasBase){$("#pTrim").textContent="—";$("#legTrim").innerHTML='Set <b>Your usual week</b> in the Locker to reckon Trim and Salvage.';}
+    else{
+      $("#pTrim").textContent=Math.round(SD.current.trim*100)+"%";
+      const dest=PORTS[Math.min(SD.curIdx,PORTS.length-1)].name;
+      $("#legTrim").innerHTML = SD.current.days===0
+        ? 'This leg → <b>'+dest+'</b> · fresh start, sailing clean.'
+        : 'This leg → <b>'+dest+'</b> · sailed <b>'+Math.round(SD.current.trim*100)+'%</b> clean over '+SD.current.days+' day'+(SD.current.days===1?'':'s')+'.';
+    }
+    $("#pSaved").textContent=fmtMoney(A.banked.money);
+
+    const cBtn=$("#completeBtn"),cLbl=cBtn.querySelector("span"),cSub=$("#completeSub");
+    if(!todayInfo){cBtn.disabled=true;cLbl.textContent="Not yet under way";cSub.textContent="";}
+    else if(todayInfo.status==='clear'){cBtn.disabled=true;cLbl.textContent="Today’s run is logged ✓";cSub.textContent="logged "+fmtMoney(r.money)+" salvage · "+fmtU(r.units)+" drift";}
+    else if(todayInfo.status==='deviation'){cBtn.disabled=true;cLbl.textContent="Weather logged today";cSub.textContent="amend it in the Log";}
+    else{cBtn.disabled=false;cLbl.textContent="Close the day’s run";cSub.textContent="today’s gain: +"+fmtMoney(r.money)+" · +"+fmtU(r.units)+" drift";}
+
+    $("#wpList").innerHTML=PORTS.map((p,i)=>{
+      const done=A.made>=p.d,isNext=(i===nIdx),cls=done?"done":(isNext?"next":"future");
+      const mark=done?"✓":(isNext?"›":"");
+      const line=done?'<div class="plog">'+p.log+'</div>':(isNext?'<div class="pwhen">'+(p.d-A.made)+' day'+((p.d-A.made)===1?'':'s')+' to run</div>':'');
+      const chev=done?'›':'🔒';
+      return '<div class="port '+cls+'" data-i="'+i+'"><div class="dot">'+mark+'</div><div class="pgrow"><div class="pname">'+p.name+'</div>'+line+'</div><div class="pchev">'+chev+'</div></div>';
+    }).join("");
+    document.querySelectorAll('#wpList .port').forEach(el=>el.onclick=()=>{const i=+el.dataset.i;if(V.openSea){modal('<div class="eyebrow">Open sea</div><h2>'+PORTS[i].name+'</h2><p>'+PORTS[i].log+'</p><button class="btn quiet" id="mClose">Close</button>');$("#mClose").onclick=closeModal;}else openChapter(V.rung,i,false);});
+
+    $("#lCur").textContent=A.leg;$("#lBest").textContent=A.best;$("#lClear").textContent=A.made;
+    const recent=A.series.slice().reverse().slice(0,60);
+    $("#dayList").innerHTML=recent.length?recent.map(d=>{
+      let tag,cls,sub="";
+      if(d.status==='clear'){tag="Clear";cls="clear";}
+      else if(d.status==='deviation'){tag="Weather";cls="dev";sub=basketLabel(d.dev)+" · salvaged "+fmtMoney(d.avoided.money);}
+      else{tag="Today";cls="";sub="under way";}
+      return '<div class="day" data-iso="'+d.iso+'"><div class="date">'+fmtDate(d.iso)+(sub?'<small>'+sub+'</small>':'')+'</div><span class="tag '+cls+'">'+tag+'</span></div>';
+    }).join(""):'<div class="muted" style="padding:10px 0">No days yet.</div>';
+    document.querySelectorAll('.day').forEach(el=>el.onclick=()=>editDay(el.dataset.iso));
+    renderTrends();
+  }
+  function renderTrends(){
+    if(!state)return;
+    const SD=stageData(),A=SD.A,r=SD.r;
+    const titles={trim:'Trim by leg',money:'Salvage banked',units:'Drift held off'};
+    $("#cumTitle").textContent=titles[metric];
+    $("#cumNote").style.display=(metric==='trim')?'block':'none';
+    // ledger (always)
+    if(SD.hasBase){
+      $("#vTrim").textContent=Math.round(SD.voyage*100)+"%";
+      $("#vDrift").textContent=fmtU(A.banked.units)+" units";
+      $("#vSalv").textContent=fmtMoney(A.banked.money);
+      $("#vBallast").textContent=fmtK(A.banked.kcal)+" kcal (~"+(A.banked.kcal/3500).toFixed(1)+" lb)";
+    } else {["vTrim","vDrift","vSalv","vBallast"].forEach(id=>$("#"+id).textContent="—");}
+    if(!SD.hasBase){$("#cumChart").innerHTML='<div class="muted" style="text-align:center;padding:30px 14px;line-height:1.5">Set <b>Your usual week</b> in the Locker — then your Trim, Salvage and Drift chart here.</div>';return;}
+    if(metric==='trim'){$("#cumChart").innerHTML=chartStages(SD.stages,SD.curIdx);return;}
+    const counted=A.series.filter(d=>d.counted).length;
+    let cum=0;const pts=[{label:state.startISO,y:0}];
+    A.series.forEach(d=>{if(d.counted)cum+=d.avoided[metric];pts.push({label:d.iso,y:cum});});
+    const fmt=metric==='money'?(v=>state.currency+Math.round(v)):(v=>fmtU(v));
+    $("#cumChart").innerHTML=counted===0?'<div class="muted" style="text-align:center;padding:34px 0">Close your first day’s run to start the line.</div>':chartLine(pts,fmt,'');
+  }
+
+  /* ---- actions ---- */
+  function completeToday(){const t=todayISO();if(state.deviations[t]){toast("Today already logged as weather");return;}if(state.completed.indexOf(t)<0){state.completed.push(t);save();toast("Day’s run logged ✓");render();}}
+
+  function stepperRows(values){
+    return state.drinks.map(dr=>{const q=values[dr.id]||0;
+      return '<div class="qrow"><div class="meta"><b>'+dr.alias+'</b><small>'+fmtU2(dUnits(dr))+' drift · '+state.currency+dr.cost+'</small></div><div class="mini"><button data-act="dec" data-id="'+dr.id+'">–</button><div class="val" id="q_'+dr.id+'">'+q+'</div><button data-act="inc" data-id="'+dr.id+'">+</button></div></div>';
+    }).join("");
+  }
+  function bindSteppers(values,onchange){document.querySelectorAll('.mini button').forEach(b=>{b.onclick=()=>{const id=b.dataset.id;let q=values[id]||0;q=b.dataset.act==='inc'?q+1:Math.max(0,q-1);values[id]=q;const el=$("#q_"+id);if(el)el.textContent=q;onchange();};});}
+
+  function openSetup(first){
+    const values=Object.assign({},state.baselineWeek);
+    const head=first
+      ? "<h2>Set your bearings</h2><p>Two things before you cast off, then you're under way. Your journey is a progression \u2014 a 7-day shakedown first, then voyages of rising length. It starts itself; you just sail.</p>"
+      : "<h2>Your usual week</h2><p>In a usual week <i>before you cast off</i>, how often did each cross your bow? Rough is fine \u2014 it sets your reckoning.</p>";
+    sheet(
+      head
+      +'<div class="field"><label>Departure date</label><input id="f_start" type="date" value="'+state.startISO+'" max="'+todayISO()+'"></div>'
+      +(first?'<p class="note" style="margin:2px 0 14px">Your usual week before you cast off \u2014 how often did each cross your bow? Rough is fine; it sets your reckoning.</p>':'')
+      +'<div id="wkRows">'+stepperRows(values)+'</div>'
+      +'<div class="summary" id="wkSum"></div>'
+      +'<button class="btn ghost" id="editDr">Edit the hazards</button>'
+      +(first?'<p class="note" style="margin:12px 0">If you\u2019re leaving a long, hard run behind, read <b>Before you cast off</b> in the Locker first.</p>':'')
+      +'<button class="btn primary" id="saveSetup">'+(first?"Get under way":"Save")+'</button>'
+      +(first?'':'<button class="btn quiet" id="cancelSetup">Cancel</button>')
+    );
+    function sum(){let w={units:0,money:0,kcal:0};state.drinks.forEach(dr=>{const q=values[dr.id]||0;w.units+=q*dUnits(dr);w.money+=q*dr.cost;w.kcal+=q*dr.kcal;});$("#wkSum").innerHTML="A usual week \u2248 <b>"+fmtU(w.units)+" drift</b> \u00b7 "+fmtMoney(w.money)+" \u00b7 "+fmtK(w.kcal)+" ballast";}
+    bindSteppers(values,sum);sum();
+    $("#editDr").onclick=()=>{state.baselineWeek=values;drinksList(()=>openSetup(first));};
+    $("#saveSetup").onclick=()=>{
+      const total=state.drinks.reduce((a,dr)=>a+(values[dr.id]||0),0);
+      if(total===0){toast("Add at least one hazard to your usual week");return;}
+      state.baselineWeek=values;state.startISO=$("#f_start").value||todayISO();
+      save();closeSheet();render();if(first)goTab('deck');toast(first?"Under way":"Bearings set");
+    };
+    const c=$("#cancelSetup");if(c)c.onclick=closeSheet;
+  }
+
+  function drinksList(back){
+    sheet(
+      "<h2>The hazards</h2><p>Each one on your chart, and what it costs you to meet it. Tap to edit.</p>"+
+      '<div id="drList">'+state.drinks.map(dr=>'<div class="hz" data-id="'+dr.id+'"><div class="meta"><b>'+dr.alias+'</b><small>'+(dr.note||'')+'</small></div><div class="chev">›</div></div>').join("")+'</div>'+
+      '<button class="btn ghost" id="addDr">+ Add a hazard</button>'+
+      '<button class="btn primary" id="drDone">Done</button>'
+    );
+    document.querySelectorAll('.hz').forEach(el=>el.onclick=()=>editDrink(el.dataset.id,back));
+    $("#addDr").onclick=()=>{const id="d"+Date.now();state.drinks.push({id:id,alias:"New hazard",note:"",ml:330,abv:5,kcal:150,cost:2.00});save();editDrink(id,back);};
+    $("#drDone").onclick=()=>{save();closeSheet();render();if(back)back();};
+  }
+  function editDrink(id,back){
+    const dr=state.drinks.find(d=>d.id===id);if(!dr){drinksList(back);return;}
+    sheet(
+      "<h2>Edit hazard</h2>"+
+      '<div class="field"><label>Name on the chart</label><input id="dr_alias" value="'+(dr.alias||'').replace(/"/g,'&quot;')+'"></div>'+
+      '<div class="field"><label>Note (your own annotation)</label><input id="dr_note" value="'+(dr.note||'').replace(/"/g,'&quot;')+'"></div>'+
+      '<div class="two"><div class="field"><label>Size (ml)</label><input id="dr_ml" type="number" inputmode="numeric" value="'+dr.ml+'"></div>'+
+      '<div class="field"><label>Strength (%)</label><input id="dr_abv" type="number" inputmode="decimal" value="'+dr.abv+'"></div></div>'+
+      '<div class="two"><div class="field"><label>Cost ('+state.currency+')</label><input id="dr_cost" type="number" inputmode="decimal" value="'+dr.cost+'"></div>'+
+      '<div class="field"><label>Ballast (kcal)</label><input id="dr_kcal" type="number" inputmode="numeric" value="'+dr.kcal+'"></div></div>'+
+      '<div class="summary" id="dr_u"></div>'+
+      '<button class="btn primary" id="dr_save">Save</button>'+
+      (state.drinks.length>1?'<button class="btn danger" id="dr_del">Strike it from the chart</button>':'')
+    );
+    function calc(){const ml=+$("#dr_ml").value||0,abv=+$("#dr_abv").value||0;$("#dr_u").innerHTML="= <b>"+fmtU2(abv*ml/1000)+" drift</b> each time you meet it";}
+    ["dr_ml","dr_abv"].forEach(i=>$("#"+i).addEventListener('input',calc));calc();
+    $("#dr_save").onclick=()=>{dr.alias=$("#dr_alias").value||dr.alias;dr.note=$("#dr_note").value;dr.ml=Math.max(1,+$("#dr_ml").value||1);dr.abv=Math.max(0,+$("#dr_abv").value||0);dr.cost=Math.max(0,+$("#dr_cost").value||0);dr.kcal=Math.max(0,+$("#dr_kcal").value||0);save();drinksList(back);};
+    const del=$("#dr_del");if(del)del.onclick=()=>{state.drinks=state.drinks.filter(d=>d.id!==id);save();drinksList(back);};
+  }
+
+  function editDay(iso){
+    const values=Object.assign({},state.deviations[iso]||{});
+    const existing=!!state.deviations[iso];
+    sheet(
+      "<h2>"+fmtDate(iso)+"</h2><p>What weather did this day bring? Leave all at zero for a clear day.</p>"+
+      '<div class="field"><label>Date</label><input id="e_date" type="date" value="'+iso+'" max="'+todayISO()+'"></div>'+
+      '<div id="e_rows">'+stepperRows(values)+'</div>'+
+      '<div class="summary" id="e_calc"></div>'+
+      '<button class="btn primary" id="e_save">Save</button>'+
+      (existing?'<button class="btn quiet" id="e_clear">Set as a clear day</button>':'')
+    );
+    function calc(){const c=basketTotals(values),r=rates();const total=Object.keys(values).reduce((a,k)=>a+(values[k]||0),0);if(total===0){$("#e_calc").innerHTML="A <b>clear day</b> — fair sailing.";}else{$("#e_calc").innerHTML="This day <b>"+fmtU(c.units)+" drift</b> · "+fmtMoney(c.money)+" · "+Math.round(c.kcal)+" ballast<br><span style='color:var(--faint)'>still salvaged "+fmtMoney(Math.max(0,r.money-c.money))+" against your usual</span>";}}
+    bindSteppers(values,calc);calc();
+    $("#e_save").onclick=()=>{const d=$("#e_date").value||iso;if(d!==iso){delete state.deviations[iso];const ci=state.completed.indexOf(iso);if(ci>=0)state.completed.splice(ci,1);}const basket={};let total=0;Object.keys(values).forEach(k=>{if(values[k]>0){basket[k]=values[k];total+=values[k];}});if(total>0){state.deviations[d]=basket;const ci=state.completed.indexOf(d);if(ci>=0)state.completed.splice(ci,1);}else{delete state.deviations[d];if(d===todayISO()&&state.completed.indexOf(d)<0)state.completed.push(d);}save();closeSheet();render();toast("Logged");};
+    const ec=$("#e_clear");if(ec)ec.onclick=()=>{delete state.deviations[iso];save();closeSheet();render();toast("Set clear");};
+  }
+
+  function backup(){const data=JSON.stringify(state);sheet("<h2>The papers</h2><p>Copy this somewhere safe. Paste into Restore on any device to bring the whole passage back.</p>"+'<div class="field"><textarea id="bk" rows="5" readonly>'+data+'</textarea></div>'+'<button class="btn primary" id="copyBk">Copy to clipboard</button><button class="btn quiet" id="closeBk">Done</button>');$("#copyBk").onclick=()=>{const ta=$("#bk");ta.select();(navigator.clipboard?navigator.clipboard.writeText(ta.value):Promise.reject()).then(()=>toast("Copied")).catch(()=>{document.execCommand("copy");toast("Copied");});};$("#closeBk").onclick=closeSheet;}
+  function restore(){sheet("<h2>Restore</h2><p>Paste the papers below. This replaces what’s aboard now.</p>"+'<div class="field"><textarea id="rs" rows="5" placeholder="Paste papers…"></textarea></div>'+'<button class="btn primary" id="doRs">Restore</button><button class="btn quiet" id="closeRs">Cancel</button>');$("#doRs").onclick=()=>{try{const r=JSON.parse($("#rs").value.trim());if(r&&r.v===3){state=r;save();closeSheet();render();toast("Restored");}else toast("Not valid papers");}catch(e){toast("Couldn’t read that");}};$("#closeRs").onclick=closeSheet;}
+  function wipe(){sheet("<h2>Scuttle and start over?</h2><p>This sends the whole passage to the bottom, for good. Copy the papers first if there’s any doubt.</p>"+'<button class="btn danger" id="doWipe">Scuttle it</button><button class="btn quiet" id="closeWipe">Belay that</button>');$("#doWipe").onclick=()=>{localStorage.removeItem("onward.v3");state=seed();save();closeSheet();render();openSetup(true);toast("A clean slate");};$("#closeWipe").onclick=closeSheet;}
+
+  function sheet(html){$("#sheet").innerHTML=html;$("#scrim").classList.add("on");$("#sheet").scrollTop=0;}
+  function closeSheet(){$("#scrim").classList.remove("on");}
+  $("#scrim").addEventListener("click",e=>{if(e.target===$("#scrim"))closeSheet();});
+  function modal(html){$("#sheet2").innerHTML=html;$("#scrim2").classList.add("on");$("#sheet2").scrollTop=0;}
+  function closeModal(){$("#scrim2").classList.remove("on");}
+  $("#scrim2").addEventListener("click",e=>{if(e.target===$("#scrim2"))closeModal();});
+
+  function loreOf(P){return {brief:(P.brief&&P.brief.length)?P.brief:["This passage follows "+P.title+" — "+P.era+". The full story is still being written."],ship:P.ship||"",crew:P.crew||"",sources:P.sources||""};}
+  function factsHTML(L){return (L.ship||L.crew)?'<div class="facts">'+(L.ship?'<div><b>Ship</b>'+L.ship+'</div>':'')+(L.crew?'<div><b>Crew</b>'+L.crew+'</div>':'')+'</div>':'';}
+  function chapterBody(P,pt,reached,to){
+    if(reached){const paras=(pt.lore&&pt.lore.length?pt.lore:[pt.log]).map(t=>'<p>'+t+'</p>').join("");return paras+(pt.detail?'<div class="detail">'+pt.detail+'</div>':'');}
+    return '<p class="muted">Still ahead \u2014 '+to+' day'+(to===1?'':'s')+' to run. Reach this port to read its chapter.</p><div class="locknote">'+pt.log+'</div>';
+  }
+  function openChapter(rung,i,fromVoyage){
+    const A=aggregate(),P=passageById(LADDER[rung].id),pt=P.ports[i],reached=stopReached(rung,i,A.made);
+    const b=ladderBounds(),absD=b.starts[rung]+localDays(rung)[i],to=Math.max(0,absD-A.made);
+    let h='<div class="eyebrow">'+P.title+' \u00b7 '+(reached?'Port '+(i+1):'Uncharted')+'</div><h2>'+pt.name+'</h2>'+passageMap(P,i)+chapterBody(P,pt,reached,to)+(fromVoyage?'<button class="btn ghost" id="mBack">\u2039 The passage</button>':'')+'<button class="btn quiet" id="mClose">Close</button>';
+    modal(h);
+    if(fromVoyage){const V=voyageContext(A.made);$("#mBack").onclick=()=>voyageSheet(rung,rung===V.rung);}
+    $("#mClose").onclick=closeModal;
+  }
+  function voyageStopsHTML(rung,made){
+    const P=passageById(LADDER[rung].id);
+    return P.ports.map((pt,i)=>{const done=stopReached(rung,i,made);return '<div class="lrow '+(done?'done':'lock')+'" data-r="'+rung+'" data-i="'+i+'"><div class="dot">'+(done?'\u2713':'\u2217')+'</div><div><div class="pname">'+pt.name+'</div><div class="'+(done?'plog':'pwhen')+'">'+(done?'read the chapter \u203a':'reach to unlock')+'</div></div><div class="pchev">\u203a</div></div>';}).join("");
+  }
+  function voyagesShelfHTML(made){
+    const b=ladderBounds();
+    const rows=LADDER.map((r,i)=>{const P=passageById(r.id);const done=made>=b.ends[i];const cur=made>=b.starts[i]&&made<b.ends[i];const cls=done?'done':(cur?'cur':'lock');const status=done?'\u2713 complete':(cur?'under way \u00b7 day '+(made-b.starts[i])+' of '+r.len:'locked \u00b7 '+b.starts[i]+' clean days to reach');return '<div class="vrow '+cls+'" data-r="'+i+'"><div><div class="pname">'+P.title+'</div><div class="vsub">'+r.len+'-day voyage \u00b7 '+status+'</div></div><div class="pchev">'+(done||cur?'\u203a':'\ud83d\udd12')+'</div></div>';}).join("");
+    return '<div class="lh">The voyages</div><div class="vshelf">'+rows+'</div>';
+  }
+  function voyageSheet(rung,isHub){
+    const A=aggregate(),made=A.made,P=passageById(LADDER[rung].id),L=loreOf(P);
+    let h='<div class="eyebrow">'+(isHub?'The passage':'Voyage '+(rung+1)+' of '+LADDER.length)+'</div><h2>'+P.title+'</h2><div class="sub2">'+P.era+'</div>'+passageMap(P,-1)+L.brief.map(t=>'<p>'+t+'</p>').join("")+factsHTML(L)+'<div class="lh">The stops</div><div class="lstops">'+voyageStopsHTML(rung,made)+'</div>'+(L.sources?'<div class="srcs">'+L.sources+'</div>':'');
+    if(isHub)h+=voyagesShelfHTML(made);
+    h+=(isHub?'':'<button class="btn ghost" id="mBack">\u2039 The voyages</button>')+'<button class="btn quiet" id="mClose">Close</button>';
+    modal(h);
+    document.querySelectorAll('.lstops .lrow').forEach(el=>el.onclick=()=>openChapter(+el.dataset.r,+el.dataset.i,true));
+    document.querySelectorAll('.vshelf .vrow').forEach(el=>{if(!el.classList.contains('lock'))el.onclick=()=>voyageSheet(+el.dataset.r,false);});
+    const bk=$("#mBack");if(bk)bk.onclick=openLibrary;
+    $("#mClose").onclick=closeModal;
+  }
+  function openLibrary(){const V=voyageContext(aggregate().made);if(V.openSea){openOpenSea();return;}voyageSheet(V.rung,true);}
+  function openOpenSea(){
+    const A=aggregate(),made=A.made,b=ladderBounds();
+    let h='<div class="eyebrow">The passage</div><h2>Open sea</h2><div class="sub2">beyond the circumnavigation</div><p>You have sailed every voyage on the chart and closed the full circuit \u2014 '+b.total+' clear days, the whole world under the keel. There is no last port now; only open water, and the next day, and the next.</p><p><b>'+made+'</b> clear days made good, and counting.</p>'+voyagesShelfHTML(made)+'<button class="btn quiet" id="mClose">Close</button>';
+    modal(h);
+    document.querySelectorAll('.vshelf .vrow').forEach(el=>{if(!el.classList.contains('lock'))el.onclick=()=>voyageSheet(+el.dataset.r,false);});
+    $("#mClose").onclick=closeModal;
+  }
+  function celebrateLanding(rung){
+    const P=passageById(LADDER[rung].id),A=aggregate(),b=ladderBounds(),last=(rung===LADDER.length-1);
+    let h='<div class="eyebrow">Landfall</div><h2>'+P.title+' \u2014 complete</h2>';
+    h+=last?'<p>You have closed the full circuit \u2014 every voyage on the chart, '+b.total+' clear days, the whole world sailed. From here the sea is open and endless, and entirely yours.</p>':'<p>You have made landfall. '+P.title+' is done, and a new voyage opens ahead \u2014 <b>'+A.made+'</b> clear days made good so far.</p>';
+    if(!last){const n=rung+1;h+='<p class="muted">Next: '+passageById(LADDER[n].id).title+' \u2014 a '+LADDER[n].len+'-day passage. Trim resets to a fresh 100%; everything you have banked stays banked.</p>';}
+    h+='<button class="btn primary" id="mClose">Sail on</button>';
+    modal(h);$("#mClose").onclick=closeModal;
+  }
+    let toastT;function toast(m){const el=$("#toast");el.textContent=m;el.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("on"),1600);}
+
+  function goTab(go){document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x.dataset.go===go));document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));$("#s-"+go).classList.add("on");window.scrollTo(0,0);}
+  document.querySelectorAll(".tabs button").forEach(b=>{b.onclick=()=>goTab(b.dataset.go);});
+  document.querySelectorAll("#metricSeg button").forEach(b=>{b.onclick=()=>{metric=b.dataset.m;document.querySelectorAll("#metricSeg button").forEach(x=>x.classList.toggle("on",x===b));renderTrends();};});
+
+  $("#completeBtn").onclick=completeToday;
+  $("#deviateBtn").onclick=()=>editDay(todayISO());
+  $("#editDrinksBtn").onclick=()=>drinksList(null);
+  $("#editBaseBtn").onclick=()=>openSetup(false);
+  $("#backupBtn").onclick=backup;
+  $("#restoreBtn").onclick=restore;
+  $("#wipeBtn").onclick=wipe;
+
+  if(!state){state=seed();save();render();openSetup(true);}else{render();}
+})();
+</script>
+</body>
+</html>
