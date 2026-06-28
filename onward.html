@@ -146,7 +146,7 @@
   .toast.on{opacity:1;}
   #splash{position:fixed;inset:0;z-index:300;background:var(--ink);display:flex;align-items:center;justify-content:center;transition:opacity .55s ease;}
   #splash.gone{opacity:0;pointer-events:none;}
-  #splash .mark{display:flex;flex-direction:column;align-items:center;gap:16px;opacity:0;transform:scale(.95);transition:opacity .5s ease,transform .6s ease;}
+  #splash .mark{display:flex;flex-direction:column;align-items:center;gap:16px;opacity:0;transform:scale(.95);transition:opacity .65s ease,transform .8s ease;}
   #splash.lit .mark{opacity:1;transform:scale(1);}
   #splash svg{width:92px;height:92px;}
   #splash .wm{font-size:21px;letter-spacing:.34em;text-transform:uppercase;color:var(--mist);font-weight:600;padding-left:.34em;}
@@ -1048,9 +1048,10 @@
 
   if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
   if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(function(){});}
-  function runSplash(after){var sp=document.getElementById('splash');if(!sp){if(after)after();return;}setTimeout(function(){sp.classList.add('lit');},20);setTimeout(function(){sp.classList.add('gone');setTimeout(function(){if(sp.parentNode)sp.parentNode.removeChild(sp);if(after)after();},560);},880);}
-  if(!state){state=seed();save();render();openSetup(true);runSplash();}
-  else{render();runSplash(maybeDailyGreeting);}
+  function runSplash(after){var sp=document.getElementById('splash');if(!sp){if(after)after();return;}requestAnimationFrame(function(){requestAnimationFrame(function(){sp.classList.add('lit');});});setTimeout(function(){sp.classList.add('gone');setTimeout(function(){if(sp.parentNode)sp.parentNode.removeChild(sp);if(after)after();},580);},1000);}
+  var returning=!!state;
+  try{if(!state){state=seed();save();render();openSetup(true);}else{render();}}catch(e){}
+  runSplash(returning?maybeDailyGreeting:undefined);
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')maybeDailyGreeting();});
   window.addEventListener('focus',maybeDailyGreeting);
 })();
