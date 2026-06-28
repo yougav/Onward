@@ -9,6 +9,7 @@
 <meta name="apple-mobile-web-app-title" content="Onward">
 <title>Onward</title>
 <link rel="apple-touch-icon" href="icon-180.png">
+<link rel="apple-touch-startup-image" media="screen and (device-width: 402px) and (device-height: 874px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)" href="launch-iphone17pro.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="mobile-web-app-capable" content="yes">
 <style>
@@ -156,7 +157,6 @@
 </style>
 </head>
 <body>
-<div id="splash"><div class="mark"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="none" stroke="#5FD0C5" stroke-opacity="0.5" stroke-width="2"/><path d="M50,10 L54,50 L50,90 L46,50 Z" fill="#E8B65A"/><path d="M10,50 L50,46 L90,50 L50,54 Z" fill="#4FA39B"/><circle cx="50" cy="50" r="5.5" fill="#0E1A2B" stroke="#5FD0C5" stroke-opacity="0.7" stroke-width="1.6"/><circle cx="50" cy="10" r="2.4" fill="#E8B65A"/></svg><div class="wm">Onward</div><div class="tg">chart your passage</div></div></div>
 <div class="app">
 
   <section id="s-deck" class="screen on">
@@ -234,7 +234,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">build 28e</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">build 28g</span></p>
   </section>
 
   <nav class="tabs">
@@ -1049,10 +1049,9 @@
 
   if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
   if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(function(){});}
-  function runSplash(after){var sp=document.getElementById('splash');if(!sp){if(after)after();return;}requestAnimationFrame(function(){requestAnimationFrame(function(){sp.classList.add('lit');});});setTimeout(function(){sp.classList.add('gone');setTimeout(function(){if(sp.parentNode)sp.parentNode.removeChild(sp);if(after)after();},580);},1000);}
   var returning=!!state;
   try{if(!state){state=seed();save();render();openSetup(true);}else{render();}}catch(e){}
-  runSplash(returning?maybeDailyGreeting:undefined);
+  if(returning)maybeDailyGreeting();
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')maybeDailyGreeting();});
   window.addEventListener('focus',maybeDailyGreeting);
 })();
