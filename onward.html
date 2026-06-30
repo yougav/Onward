@@ -18,9 +18,13 @@
   html,body{margin:0;height:100%;background:#000;}
   body{background:radial-gradient(120% 60% at 50% -10%,#1A3047 0%,var(--ink) 55%) fixed;color:var(--mist);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior:none;}
   .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;}
-  .app{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;}
+  .app{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;overflow-x:clip;}
   .screen{flex:1;padding:calc(22px + env(safe-area-inset-top,0px)) 20px 104px;display:none;animation:fade .35s ease;}
   .screen.on{display:block;}
+  @keyframes slideInR{from{opacity:0;transform:translateX(64px)}to{opacity:1;transform:none}}
+  @keyframes slideInL{from{opacity:0;transform:translateX(-64px)}to{opacity:1;transform:none}}
+  .screen.from-r{animation:slideInR .38s cubic-bezier(.22,.61,.36,1);}
+  .screen.from-l{animation:slideInL .38s cubic-bezier(.22,.61,.36,1);}
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   @media (prefers-reduced-motion:reduce){.screen{animation:none}}
   .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--faint);}
@@ -30,7 +34,7 @@
   .biglabel{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-top:6px;}
   .sub{margin-top:8px;font-size:13px;color:var(--beacon);}
   .ribbon{display:flex;justify-content:center;gap:10px;margin:16px 0 4px;}
-  .pill{background:var(--slate);border:1px solid var(--line);border-radius:14px;padding:12px 10px;flex:1;min-width:0;text-align:center;}
+  .pill{background:var(--slate);border:1px solid var(--line);border-radius:14px;padding:12px 10px;flex:1;min-width:0;text-align:center;display:flex;flex-direction:column;justify-content:center;}
   .pill .k{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);}
   .pill .v{font-size:17px;margin-top:5px;font-variant-numeric:tabular-nums;}
   .card{background:var(--slate);border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0;}
@@ -145,45 +149,115 @@
   .sheet p{font-size:14px;line-height:1.55;color:var(--faint);margin:0 0 16px;}
   .toast{position:fixed;left:50%;bottom:calc(86px + var(--pad));transform:translateX(-50%);background:#06231f;color:var(--beacon);border:1px solid var(--beacon);padding:11px 18px;border-radius:999px;font-size:13px;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;}
   .toast.on{opacity:1;}
-  #splash{position:fixed;inset:0;z-index:300;background-color:#000;display:flex;align-items:center;justify-content:center;transition:background-color .85s ease,opacity .58s ease;}
-  #splash.lit{background-color:var(--ink);}
-  #splash.gone{opacity:0;pointer-events:none;}
-  #splash .mark{display:flex;flex-direction:column;align-items:center;gap:16px;opacity:0;transform:scale(.95);transition:opacity .65s ease,transform .8s ease;}
-  #splash.lit .mark{opacity:1;transform:scale(1);}
-  #splash svg{width:92px;height:92px;}
-  #splash .wm{font-size:21px;letter-spacing:.34em;text-transform:uppercase;color:var(--mist);font-weight:600;padding-left:.34em;}
-  #splash .tg{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);padding-left:.2em;}
-  @media (prefers-reduced-motion:reduce){#splash,#splash .mark{transition:none;}#splash{background-color:var(--ink);}#splash .mark{opacity:1;transform:none;}}
-  .screen,.tabs{transition:opacity .6s ease;}
-  body.boot .screen,body.boot .tabs{opacity:0;}
-  @media (prefers-reduced-motion:reduce){.screen,.tabs{transition:none;}body.boot .screen,body.boot .tabs{opacity:1;}}
+  #gate{position:fixed;inset:0;z-index:400;background:#0A1525 url(launch-iphone17pro.png) center/cover no-repeat;touch-action:none;transition:transform .52s cubic-bezier(.4,0,.2,1);will-change:transform;}
+  #gate .hint{position:absolute;left:0;right:0;bottom:calc(60px + var(--pad));display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--faint);opacity:0;animation:gateHint .45s ease .12s forwards;}
+  #gate .hint span{font-size:11px;letter-spacing:.22em;text-transform:uppercase;}
+  #gate .chev{width:26px;height:26px;stroke:var(--beacon);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;animation:chevBob 1.9s ease-in-out infinite;}
+  @keyframes gateHint{to{opacity:1;}}
+  @keyframes chevBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+  @media (prefers-reduced-motion:reduce){#gate{transition:none;}#gate .hint{animation:none;opacity:1;}#gate .chev{animation:none;}}
+  .bvrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #1b2c40;cursor:pointer;}
+  .bvrow:first-child{border-top:0;}
+  .bvn{flex:1;min-width:0;}
+  .bvn b{font-size:14px;color:var(--mist);}
+  .bvn small{display:block;color:var(--faint);font-size:11px;margin-top:2px;}
+  .bvfig{text-align:right;font-variant-numeric:tabular-nums;font-size:14px;color:var(--mist);white-space:nowrap;}
+  .bvfig small{display:block;color:var(--faint);font-size:11px;margin-top:2px;}
+  .bvchev{color:var(--faint);font-size:16px;flex:none;}
+  .bvtag{font-size:9.5px;color:#E8B65A;border:1px solid #E8B65A;border-radius:6px;padding:1px 5px;margin-left:6px;vertical-align:middle;letter-spacing:.04em;}
+  .vstats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+  .vstat{background:rgba(95,208,197,.06);border:1px solid #1b2c40;border-radius:10px;padding:9px 11px;}
+  .vk{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);}
+  .vv{font-size:18px;color:var(--mist);font-variant-numeric:tabular-nums;margin-top:3px;}
+  .awgrp{margin-top:15px;}
+  .awgrp:first-child{margin-top:2px;}
+  .awhd{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;}
+  .awwrap{display:flex;flex-wrap:wrap;gap:7px;}
+  .award{display:flex;flex-direction:column;border:1px solid #1f3147;border-radius:9px;padding:6px 9px;opacity:.42;}
+  .award b{font-size:12px;color:var(--mist);font-weight:600;line-height:1.2;}
+  .award small{font-size:9.5px;color:var(--faint);margin-top:2px;}
+  .award.on{opacity:1;border-color:#2C6B65;background:rgba(95,208,197,.10);}
+  .award.on b{color:#7FE0D5;}
+  .award.next{opacity:.85;border-style:dashed;border-color:#7a5a25;}
+  .award.next b{color:#E8B65A;}
+  .award.next small{color:#caa25e;}
+  .subseg{margin:0 0 12px;font-size:12px;}
+  .subseg button{padding:5px 10px;}
+  .helmhead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:16px;}
+  .helmhead h1{margin:0;}
+  .clocks{display:flex;flex-direction:column;align-items:flex-end;gap:4px;padding-bottom:3px;}
+  .clk{display:flex;align-items:baseline;gap:7px;line-height:1.05;white-space:nowrap;}
+  .clk .cl{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);}
+  .clk .cv{font-variant-numeric:tabular-nums;letter-spacing:.02em;font-size:13px;color:var(--faint);}
+  .clk.hero .cv{font-size:18px;color:var(--mist);}
+  .clk .sec{opacity:.5;}
+  .fill{font-size:10.5px;color:var(--faint);font-variant-numeric:tabular-nums;margin-top:4px;letter-spacing:.01em;}
+  .hero{text-align:center;margin:4px 0 18px;}
+  .goal{padding:15px 17px;}
+  .gv{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--beacon);}
+  .gdiv{height:1px;background:#21364f;margin:11px 0 12px;}
+  .grow{display:flex;justify-content:space-between;align-items:baseline;}
+  .gk{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);}
+  .gto{font-size:12px;color:var(--faint);}
+  .gport{font-size:22px;font-weight:600;color:var(--mist);margin-top:3px;}
+  .gbar{height:8px;border-radius:4px;background:#20344d;margin-top:12px;overflow:hidden;}
+  .gbar > i{display:block;height:100%;border-radius:4px;background:var(--beacon);width:0;}
+  .gcap{font-size:11px;color:var(--faint);margin-top:8px;}
+  .vstrip{margin-top:14px;}
+  .vslab{font-size:8.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin-bottom:6px;}
+  .vstrip svg,.legwrap svg{display:block;}
+  .legwrap{margin-top:15px;}
+  .leglab{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+  .leglab .l{font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);}
+  .leglab .r{font-size:9px;letter-spacing:.03em;color:var(--faint);}
+  .gcrumb{font-size:11.5px;margin-top:14px;line-height:1.4;color:var(--faint);}
+  .gcrumb .tgt{color:var(--amber);}
+  .gcrumb .nx,.gcrumb .ar{color:#4a5d78;}
+  .liblink{font-size:11.5px;color:var(--beacon);margin-top:13px;padding-top:12px;border-top:1px solid #21364f;cursor:pointer;letter-spacing:.02em;}
+  .statusline{font-size:13.5px;line-height:1.5;margin:2px 2px 12px;color:var(--mist);}
+  .statusline .lead{color:var(--beacon);font-weight:600;}
+  .statusline.weather .lead{color:var(--amber);}
+  .weatherlink{text-align:center;font-size:12px;color:var(--faint);margin-top:11px;padding:6px;cursor:pointer;letter-spacing:.02em;}
+  .portshead{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:0 0 4px;}
+  .port.landfall .dot{border-color:var(--amber);color:var(--amber);}
+  .afterlf{margin-top:8px;padding-top:14px;border-top:1px dashed var(--line);}
+  .afterlf .alk{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);opacity:.7;}
+  .afterlf .alv{font-size:15px;font-style:italic;color:var(--faint);margin-top:4px;}
+  .afterlf .als{font-size:11px;color:var(--faint);opacity:.7;margin-top:3px;}
 </style>
 </head>
-<body class="boot">
+<body>
 <div class="app">
 
   <section id="s-deck" class="screen on">
-    <div class="eyebrow">Onward</div>
-    <h1>Helm</h1>
-    <div class="card" style="padding:14px">
-      <div class="chartwrap" style="padding:8px 4px 4px"><div id="routeChart"></div></div>
-      <div style="text-align:center;margin-top:12px">
-        <div class="bignum" id="dayNum">0</div>
-        <div class="biglabel">days made good</div>
-        <div class="sub" id="nextSub">—</div>
-        <div class="libhint" id="libHint">Tap the chart for the ship's library ›</div>
-      </div>
+    <div class="helmhead">
+      <div><div class="eyebrow">Onward</div><h1>Helm</h1></div>
+      <div id="clocks" class="clocks"></div>
     </div>
-    <div class="card"><div class="cond" id="conditions">—</div><div class="note" style="margin-top:8px" id="legTrim"></div></div>
+    <div class="hero">
+      <div class="bignum" id="dayNum">0</div>
+      <div class="biglabel">days made good</div>
+    </div>
+    <div class="card goal">
+      <div class="gv" id="goalVoyage">&mdash;</div>
+      <div class="gdiv"></div>
+      <div class="grow"><span class="gk" id="goalKick">Next port</span><span class="gto" id="goalToRun"></span></div>
+      <div class="gport" id="goalPort">&mdash;</div>
+      <div class="vstrip"><div class="vslab" id="goalVoyLab"></div><div id="goalVoyStrip"></div></div>
+      <div class="legwrap"><div class="leglab"><span class="l" id="goalLegLab"></span><span class="r" id="goalLegUnit"></span></div><div id="goalLegBar"></div></div>
+      <div class="gcrumb" id="goalCrumb"></div>
+    </div>
+    <div class="statusline" id="conditions">&mdash;</div>
+    <div class="note" id="legTrim" style="margin:0 2px 6px"></div>
     <div class="ribbon">
-      <div class="pill"><div class="k">Trim · this leg</div><div class="v mono" id="pTrim">—</div></div>
-      <div class="pill"><div class="k">Salvage · banked</div><div class="v mono" id="pSaved">—</div></div>
+      <div class="pill"><div class="k">Trim &middot; this leg</div><div class="v mono" id="pTrim">&mdash;</div></div>
+      <div class="pill"><div class="k">Salvage &middot; banked</div><div class="v mono" id="pSaved">&mdash;</div><div class="fill" id="salvFill" style="display:none"></div></div>
     </div>
     <div style="margin-top:16px">
-      <button class="btn primary" id="completeBtn"><span>Close the day’s run</span><span class="small" id="completeSub"></span></button>
-      <button class="btn quiet" id="deviateBtn">Log a weather day</button>
+      <button class="btn primary" id="completeBtn"><span>Close the day&rsquo;s run</span></button>
+      <div class="weatherlink" id="deviateBtn">Log today as weather</div>
     </div>
-    <div class="card"><h2>Ports of call</h2><div id="wpList"></div></div>
+    <div class="card portscard" style="margin-top:18px"><div class="portshead" id="portsHead">Ports of call</div><div id="wpList"></div><div id="afterLandfall"></div><div class="liblink" id="libHint">Tap for the ship&rsquo;s library &rsaquo;</div></div>
   </section>
 
   <section id="s-trends" class="screen">
@@ -191,20 +265,34 @@
     <h1>Charts</h1>
     <div class="seg" id="metricSeg">
       <button data-m="trim" class="on">Trim</button>
-      <button data-m="money">Salvage</button>
-      <button data-m="units">Drift</button>
+      <button data-m="haul">Haul</button>
+      <button data-m="honours">Honours</button>
     </div>
-    <div class="card">
+    <div class="card" id="cumCard">
       <h2 id="cumTitle">Trim by leg</h2>
+      <div class="seg subseg" id="haulSeg" style="display:none">
+        <button data-h="money" class="on">Salvage £</button>
+        <button data-h="units">Drift</button>
+      </div>
       <div class="chartwrap"><div id="cumChart"></div></div>
       <p class="note" id="cumNote" style="margin:12px 0 0">How clean you sailed each leg. A fresh leg starts at 100% — a weather day pulls that leg down, then the next leg starts clean again.</p>
     </div>
-    <div class="card">
+    <div class="card" id="byVoyageCard">
+      <h2>By voyage</h2>
+      <div id="byVoyage"></div>
+    </div>
+    <div class="card" id="ledgerCard">
       <h2>The ledger</h2>
       <div class="stat-row"><span class="lbl">Career trim · all voyages</span><span class="mono" id="vTrim">—</span></div>
       <div class="stat-row"><span class="lbl">Drift held off</span><span class="mono" id="vDrift">—</span></div>
       <div class="stat-row"><span class="lbl">Salvage banked</span><span class="mono" id="vSalv">—</span></div>
       <div class="stat-row"><span class="lbl">Ballast shed</span><span class="mono" id="vBallast">—</span></div>
+      <div class="stat-row"><span class="lbl">Longest clear run</span><span class="mono" id="vBest">—</span></div>
+      <p class="note" id="ledgerNote" style="margin:10px 0 0">—</p>
+    </div>
+    <div class="card" id="honoursCard">
+      <h2>Honours</h2>
+      <div id="awards"></div>
     </div>
   </section>
 
@@ -237,7 +325,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">build 28h</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">build 30a</span></p>
   </section>
 
   <nav class="tabs">
@@ -250,6 +338,7 @@
 
 <div class="scrim" id="scrim" data-r="0"><div class="sheet" id="sheet"></div></div>
 <div class="scrim" id="scrim2" style="z-index:70"><div class="sheet" id="sheet2"></div></div>
+<div id="gate"><div class="hint"><svg class="chev" viewBox="0 0 24 24"><path d="M7 14l5-5 5 5"/></svg><span>Swipe up to set sail</span></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -500,6 +589,7 @@
 
   let state=load();
   let metric="trim";
+  let haulUnit="money";
 
   function seed(){
     return {v:3,startISO:todayISO(),currency:"£",
@@ -508,7 +598,7 @@
         {id:"d2",alias:"Dropping Anchor",note:"Small — and suddenly you’re not moving.",ml:250,abv:5,kcal:120,cost:2.40},
         {id:"d3",alias:"Red Sky",note:"Fair to look at; a warning all the same.",ml:250,abv:13,kcal:210,cost:4.00}
       ],
-      baselineWeek:{},deviations:{},completed:[]};
+      baselineWeek:{},deviations:{},completed:[],startAt:Date.now(),weatherAt:{}};
   }
   function load(){try{const r=JSON.parse(localStorage.getItem("onward.v3"));if(r&&r.v===3)return r;}catch(e){}return null;}
   function save(){try{localStorage.setItem("onward.v3",JSON.stringify(state));}catch(e){toast("Couldn’t save — storage blocked");}}
@@ -587,6 +677,35 @@
   function fmtU2(u){return (Math.round(u*100)/100).toString();}
 
   function nextPortIdx(made){const i=PORTS.findIndex(p=>made<p.d);return i;} // -1 if past all
+  function intervalFor(L){return L<=8?1:L<=16?2:L<=24?3:L<=60?7:L<=120?14:28;}
+  function marksLabel(iv){return ({1:"daily marks",2:"2-day marks",3:"3-day marks",7:"weekly marks",14:"2-week marks",28:"4-week marks"})[iv]||"";}
+  function voyStripSVG(startDay,span,made,nIdx){
+    const bx0=6,bx1=314,y=8,W=320,Hh=15;span=Math.max(1,span);
+    const xOf=d=>bx0+(bx1-bx0)*Math.max(0,Math.min(1,(d-startDay)/span));
+    const here=bx0+(bx1-bx0)*Math.max(0,Math.min(1,(made-startDay)/span));
+    let g='<svg viewBox="0 0 '+W+' '+Hh+'" preserveAspectRatio="none" style="width:100%;height:15px;overflow:visible">';
+    g+='<rect x="'+bx0+'" y="'+(y-2)+'" width="'+(bx1-bx0)+'" height="4" rx="2" fill="#20344d"/>';
+    g+='<rect x="'+bx0+'" y="'+(y-2)+'" width="'+(here-bx0).toFixed(1)+'" height="4" rx="2" fill="#5FD0C5" opacity="0.6"/>';
+    PORTS.forEach((p,i)=>{const x=xOf(p.d);
+      if(i===PORTS.length-1){g+='<line x1="'+x.toFixed(1)+'" y1="'+(y-5)+'" x2="'+x.toFixed(1)+'" y2="'+(y+3)+'" stroke="#E8B65A" stroke-width="1.1"/><path d="M'+x.toFixed(1)+','+(y-5)+' L'+(x+6).toFixed(1)+','+(y-2.5)+' L'+x.toFixed(1)+','+y+' Z" fill="#E8B65A"/>';}
+      else if(i===nIdx){g+='<circle cx="'+x.toFixed(1)+'" cy="'+y+'" r="3.6" fill="#16263B" stroke="#E8B65A" stroke-width="1.6"/>';}
+      else if(made>=p.d){g+='<circle cx="'+x.toFixed(1)+'" cy="'+y+'" r="2.8" fill="#5FD0C5"/>';}
+      else{g+='<circle cx="'+x.toFixed(1)+'" cy="'+y+'" r="2.2" fill="#3a5170"/>';}});
+    g+='<circle cx="'+here.toFixed(1)+'" cy="'+y+'" r="3.4" fill="#EAF2FA"/></svg>';
+    return g;
+  }
+  function legBarSVG(prevDay,nextDay,made){
+    const bx0=8,bx1=312,y=8,W=320,Hh=16,legLen=Math.max(1,nextDay-prevDay);
+    const frac=Math.max(0,Math.min(1,(made-prevDay)/legLen)),here=bx0+(bx1-bx0)*frac,iv=intervalFor(legLen);
+    let g='<svg viewBox="0 0 '+W+' '+Hh+'" preserveAspectRatio="none" style="width:100%;height:16px;overflow:visible">';
+    g+='<rect x="'+bx0+'" y="'+(y-4)+'" width="'+(bx1-bx0)+'" height="8" rx="4" fill="#20344d"/>';
+    g+='<rect x="'+bx0+'" y="'+(y-4)+'" width="'+(here-bx0).toFixed(1)+'" height="8" rx="4" fill="#5FD0C5"/>';
+    for(let off=iv;off<legLen;off+=iv){const tx=bx0+(bx1-bx0)*(off/legLen);g+='<line x1="'+tx.toFixed(1)+'" y1="'+(y-4)+'" x2="'+tx.toFixed(1)+'" y2="'+(y+4)+'" stroke="#0e1d31" stroke-width="1.4"/>';}
+    g+='<circle cx="'+bx0+'" cy="'+y+'" r="5" fill="#5FD0C5"/>';
+    g+='<circle cx="'+bx1+'" cy="'+y+'" r="6" fill="#16263B" stroke="#E8B65A" stroke-width="2"/><circle cx="'+bx1+'" cy="'+y+'" r="2.4" fill="#E8B65A"/>';
+    g+='<circle cx="'+here.toFixed(1)+'" cy="'+y+'" r="7" fill="none" stroke="#EAF2FA" stroke-width="1" opacity="0.5"/><circle cx="'+here.toFixed(1)+'" cy="'+y+'" r="4.5" fill="#EAF2FA"/></svg>';
+    return g;
+  }
 
   /* ---- route chart ---- */
   function regionalSVG(focus){
@@ -748,61 +867,95 @@
 
   function conditions(A,todayInfo){
     if(A.made===0&&(!todayInfo||todayInfo.status!=='deviation'))return {lead:"Lines singled up.",rest:"Ready to cast off — close your first day’s run to get under way."};
-    if(A.leg===0)return {lead:"Hove to.",rest:"Heavy weather astern. Fair winds return the moment your next day runs clear."};
-    if(A.leg<7)return {lead:"Making way.",rest:"Steady on the helm — "+A.leg+" day"+(A.leg===1?"":"s")+" on this leg."};
-    if(A.leg<30)return {lead:"Fair winds and a following sea.",rest:A.leg+" clean days on this leg; the miles come easy."};
-    return {lead:"Trade winds.",rest:"Strong, steady progress — "+A.leg+" days and running."};
+    if(A.leg===0)return {lead:"Hove to.",rest:"Heavy weather astern — fair winds return the moment your next day runs clear."};
+    if(A.leg<7)return {lead:"Making way.",rest:"Steady on the helm, holding your course."};
+    if(A.leg<30)return {lead:"Fair winds and a following sea.",rest:"The miles come easy now."};
+    return {lead:"Trade winds.",rest:"Strong and steady, mile after mile."};
   }
 
+  function clockFmt(ms){ms=Math.max(0,ms);const s=Math.floor(ms/1000);const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),sec=s%60;const p=n=>String(n).padStart(2,'0');return (d>0?d+'d ':'')+p(h)+':'+p(m)+':'+p(sec);}
+  function castOffMs(){return (state&&state.startAt)||(state&&state.startISO?parseISO(state.startISO).getTime():Date.now());}
+  function lastWeatherMs(){if(!state||!state.deviations)return null;const isos=Object.keys(state.deviations);if(!isos.length)return null;isos.sort();const last=isos[isos.length-1];if(state.weatherAt&&state.weatherAt[last])return state.weatherAt[last];return parseISO(last).getTime()+86400000;}
+  function clockParts(ms){ms=Math.max(0,ms);const s=Math.floor(ms/1000);const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),sec=s%60;const p=n=>String(n).padStart(2,'0');return {main:(d>0?d+'d ':'')+p(h)+':'+p(m),sec:':'+p(sec)};}
+  function tickClocks(){if(!state)return;const pre=state.startISO>todayISO();if(_pre===true&&!pre){_pre=pre;render();return;}_pre=pre;const now=Date.now();const a=$("#ckA");if(a){const P=clockParts(now-castOffMs());a.innerHTML=P.main+'<span class="sec">'+P.sec+'</span>';}const lw=lastWeatherMs(),b=$("#ckB");if(b&&lw){const P=clockParts(now-lw);b.innerHTML=P.main+'<span class="sec">'+P.sec+'</span>';}updateSalvFill();}
+  function renderClocks(){const el=$("#clocks");if(!el||!state)return;const lw=lastWeatherMs();let h='<div class="clk hero"><span class="cl">Under way</span><span class="cv" id="ckA">\u2014</span></div>';if(lw)h+='<div class="clk"><span class="cl">Clean run</span><span class="cv" id="ckB">\u2014</span></div>';el.innerHTML=h;tickClocks();}
+  let clockTimer=null,_pre=null,salvToday=0;
+  function startClocks(){if(clockTimer)return;tickClocks();clockTimer=setInterval(tickClocks,1000);}
+  function stopClocks(){if(clockTimer){clearInterval(clockTimer);clockTimer=null;}}
+  function updateSalvFill(){const sf=$("#salvFill");if(!sf)return;if(salvToday>0){const n=new Date(),mid=new Date(n.getFullYear(),n.getMonth(),n.getDate()).getTime();const frac=Math.max(0,Math.min(1,(Date.now()-mid)/86400000));sf.textContent="+"+((state&&state.currency)||"£")+(salvToday*frac).toFixed(2)+" today · filling";sf.style.display="";}else{sf.style.display="none";}}
   function render(){
     if(!state){openSetup(true);return;}
     const A=aggregate(),r=rates(),t=todayISO();
     const V=voyageContext(A.made);
     PORTS=currentPorts(A.made);
-    if(state.seenVoyages===undefined){state.seenVoyages=V.completed;save();}
-    else if(state.seenVoyages<V.completed){state.seenVoyages=V.completed;save();celebrateLanding(V.completed-1);}
-    const todayIdx=(state.startISO<=t)?daysBetween(state.startISO,t)+1:0;
+    renderClocks();
+    if(state.seenVoyages!==V.completed){state.seenVoyages=V.completed;save();}
+    syncAwards();
+    const preSail=state.startISO>t;const todayIdx=preSail?0:daysBetween(state.startISO,t)+1;
     const todayInfo=state.startISO<=t?dayInfo(t):null;
 
-    $("#routeChart").innerHTML=routeSVG(A.made);
-    $("#routeChart").style.cursor="pointer";
-    $("#routeChart").onclick=openLibrary;
     $("#libHint").onclick=openLibrary;
     $("#dayNum").textContent=A.made;
     const nIdx=nextPortIdx(A.made);
-    if(V.openSea){$("#nextSub").innerHTML="<b>Open sea</b> · "+V.madeIn+" day"+(V.madeIn===1?"":"s")+" beyond the full circuit"+(nIdx>=0?" · next marker in "+(PORTS[nIdx].d-A.made)+"d":"");}
-    else{const vt=passageById(V.id).title,vlab="<b>"+vt+"</b> · voyage "+(V.rung+1)+" of "+LADDER.length+" · day "+V.madeIn+" of "+V.length;
-      if(nIdx<0)$("#nextSub").innerHTML=vlab+" — landfall ahead";
-      else{const p=PORTS[nIdx],to=p.d-A.made;$("#nextSub").innerHTML=vlab+" — next port "+p.name+" in "+to+"d";}}
-
-    const c=conditions(A,todayInfo);
-    $("#conditions").innerHTML='<span class="lead">'+c.lead+'</span> '+c.rest;
-
-    const SD=stageData();
-    if(!SD.hasBase){$("#pTrim").textContent="—";$("#legTrim").innerHTML='Set <b>Your usual week</b> in the Locker to reckon Trim and Salvage.';}
-    else{
-      $("#pTrim").textContent=Math.round(SD.current.trim*100)+"%";
-      const dest=PORTS[Math.min(SD.curIdx,PORTS.length-1)].name;
-      $("#legTrim").innerHTML = SD.current.days===0
-        ? 'This leg → <b>'+dest+'</b> · fresh start, sailing clean.'
-        : 'This leg → <b>'+dest+'</b> · sailed <b>'+Math.round(SD.current.trim*100)+'%</b> clean over '+SD.current.days+' day'+(SD.current.days===1?'':'s')+'.';
+    const gV=$("#goalVoyage"),gK=$("#goalKick"),gTo=$("#goalToRun"),gP=$("#goalPort"),gCr=$("#goalCrumb"),gVS=$("#goalVoyStrip"),gVL=$("#goalVoyLab"),gLB=$("#goalLegBar"),gLL=$("#goalLegLab"),gLU=$("#goalLegUnit");
+    const vt=V.openSea?"Open water":passageById(V.id).title;
+    gV.textContent=vt;
+    // day-in-progress: while today is live and not yet a banked clean day, show the day you're on (banked + 1). Anchored to banked days, so a skipped/weather day never inflates it.
+    const bump=(todayInfo&&todayInfo.status!=='clear')?1:0;
+    // port counter = ports actually reached (matches the teal dots on the strip)
+    const reached=PORTS.filter(pp=>A.made>=pp.d).length;
+    if(preSail){
+      gK.textContent="First light";gTo.textContent="day one tomorrow";gP.textContent="Cast off";
+      gVL.textContent="";gVS.innerHTML="";gLL.textContent="";gLU.textContent="";gLB.innerHTML="";
+      gCr.innerHTML="the voyage begins at first light";
+    } else if(nIdx<0){
+      const last=PORTS[PORTS.length-1],span=V.openSea?(last.d-V.start):V.length;
+      gK.textContent="Landfall";gTo.textContent="reached";gP.textContent=last.name;
+      gVL.textContent="Voyage \u00b7 day "+(V.openSea?(V.madeIn+bump):Math.min(V.length,V.madeIn+bump))+(V.openSea?"":" of "+V.length)+" \u00b7 landfall reached";
+      gVS.innerHTML=voyStripSVG(V.start,span,A.made,-1);
+      gLL.textContent="";gLU.textContent="";gLB.innerHTML="";
+      gCr.innerHTML='<span class="tgt">'+last.name+'</span><span class="nx"> \u2192 \u2026</span>';
+    } else {
+      const p=PORTS[nIdx],to=p.d-A.made,prevDay=nIdx>0?PORTS[nIdx-1].d:V.start;
+      const legLen=Math.max(1,p.d-prevDay),iv=intervalFor(legLen);
+      const span=V.openSea?(PORTS[PORTS.length-1].d-V.start):V.length;
+      gK.textContent="Next port";gTo.textContent=to+" day"+(to===1?"":"s")+" to run";gP.textContent=p.name;
+      const vday=V.openSea?(V.madeIn+bump):Math.min(V.length,V.madeIn+bump);
+      gVL.textContent="Voyage \u00b7 day "+vday+(V.openSea?"":" of "+V.length)+" \u00b7 port "+reached+" of "+PORTS.length;
+      gVS.innerHTML=voyStripSVG(V.start,span,A.made,nIdx);
+      gLL.textContent="This leg \u00b7 "+legLen+" day"+(legLen===1?"":"s");
+      gLU.textContent=marksLabel(iv);
+      gLB.innerHTML=legBarSVG(prevDay,p.d,A.made);
+      const fromName=nIdx>0?PORTS[nIdx-1].name:(V.rung>0?"Departure":"Cast off");
+      const nextName=(nIdx+1<PORTS.length)?PORTS[nIdx+1].name:null;
+      gCr.innerHTML='<span>'+fromName+'</span><span class="ar"> \u2192 </span><span class="tgt">'+p.name+'</span>'+(nextName?'<span class="nx"> \u2192 '+nextName+'</span>':'');
     }
-    $("#pSaved").textContent=fmtMoney(A.banked.money);
-
-    const cBtn=$("#completeBtn"),cLbl=cBtn.querySelector("span"),cSub=$("#completeSub");
-    if(!todayInfo){cBtn.disabled=true;cLbl.textContent="Not yet under way";cSub.textContent="";}
-    else if(todayInfo.status==='clear'){cBtn.disabled=true;cLbl.textContent="Today’s run is logged ✓";cSub.textContent="logged "+fmtMoney(r.money)+" salvage · "+fmtU(r.units)+" drift";}
-    else if(todayInfo.status==='deviation'){cBtn.disabled=true;cLbl.textContent="Weather logged today";cSub.textContent="amend it in the Log";}
-    else{cBtn.disabled=false;cLbl.textContent="Close the day’s run";cSub.textContent="today’s gain: +"+fmtMoney(r.money)+" · +"+fmtU(r.units)+" drift";}
-
+    const sl=$("#conditions");
+    if(preSail){sl.className="statusline";sl.innerHTML='<span class="lead">Making ready.</span> Lines slipped \u2014 first light brings day one, and the clock is already running.';}
+    else{const c=conditions(A,todayInfo),isW=todayInfo&&todayInfo.status==='deviation';sl.className="statusline"+(isW?" weather":"");sl.innerHTML='<span class="lead">'+c.lead+'</span> '+c.rest;}
+    const SD=stageData();
+    if(!SD.hasBase){$("#pTrim").textContent="\u2014";$("#legTrim").innerHTML='Set <b>Your usual week</b> in the Locker to reckon Trim and Salvage.';$("#legTrim").style.display="";}
+    else{$("#pTrim").textContent=Math.round(SD.current.trim*100)+"%";$("#legTrim").innerHTML="";$("#legTrim").style.display="none";}
+    $("#pSaved").textContent=state.currency+A.banked.money.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});
+    salvToday=(todayInfo&&todayInfo.status==='pending'&&SD.hasBase&&r.money>0)?r.money:0;updateSalvFill();
+    const cBtn=$("#completeBtn"),cLbl=cBtn.querySelector("span"),wLink=$("#deviateBtn");
+    if(!todayInfo){cBtn.disabled=true;cLbl.textContent="Cast off at first light";wLink.style.display="none";}
+    else if(todayInfo.status==='clear'){cBtn.disabled=true;cLbl.textContent="Today\u2019s run is logged \u2713";wLink.style.display="none";}
+    else if(todayInfo.status==='deviation'){cBtn.disabled=true;cLbl.textContent="Weather logged today";wLink.style.display="none";}
+    else{cBtn.disabled=false;cLbl.textContent="Close the day\u2019s run";wLink.style.display="";}
+    $("#portsHead").textContent=V.openSea?"Ports of call \u00b7 Open water":("Ports of call \u00b7 "+passageById(V.id).title);
     $("#wpList").innerHTML=PORTS.map((p,i)=>{
-      const done=A.made>=p.d,isNext=(i===nIdx),cls=done?"done":(isNext?"next":"future");
-      const mark=done?"✓":(isNext?"›":"");
-      const line=done?'<div class="plog">'+p.log+'</div>':(isNext?'<div class="pwhen">'+(p.d-A.made)+' day'+((p.d-A.made)===1?'':'s')+' to run</div>':'');
-      const chev=done?'›':'🔒';
+      const done=A.made>=p.d,isNext=(i===nIdx),isLast=(i===PORTS.length-1);
+      const cls=done?"done":(isNext?"next":(isLast?"landfall":"future"));
+      const mark=done?"\u2713":(isNext?"\u203a":(isLast?"\u2691":""));
+      const line=done?'<div class="plog">'+p.log+'</div>':(isNext?'<div class="pwhen">'+(p.d-A.made)+' day'+((p.d-A.made)===1?'':'s')+' to run</div>':(isLast?'<div class="pwhen">the voyage\u2019s landfall \u2014 reach day '+p.d+'</div>':''));
+      const chev=done?'\u203a':(cls==="future"?'\ud83d\udd12':'\u203a');
       return '<div class="port '+cls+'" data-i="'+i+'"><div class="dot">'+mark+'</div><div class="pgrow"><div class="pname">'+p.name+'</div>'+line+'</div><div class="pchev">'+chev+'</div></div>';
     }).join("");
     document.querySelectorAll('#wpList .port').forEach(el=>el.onclick=()=>{const i=+el.dataset.i;if(V.openSea){modal('<div class="eyebrow">Open sea</div><h2>'+PORTS[i].name+'</h2><p>'+PORTS[i].log+'</p><button class="btn quiet" id="mClose">Close</button>');$("#mClose").onclick=closeModal;}else openChapter(V.rung,i,false);});
+    const alf=$("#afterLandfall");
+    if(!V.openSea&&V.rung<LADDER.length-1){const nv=passageById(LADDER[V.rung+1].id).title,thisT=passageById(V.id).title;alf.innerHTML='<div class="afterlf"><div class="alk">After landfall</div><div class="alv">Voyage '+(V.rung+2)+' \u2014 '+nv+'</div><div class="als">a new voyage to embark when '+thisT+' is done</div></div>';}
+    else{alf.innerHTML='';}
 
     $("#lCur").textContent=A.leg;$("#lBest").textContent=A.best;$("#lClear").textContent=A.made;
     const recent=A.series.slice().reverse().slice(0,60);
@@ -816,30 +969,217 @@
     document.querySelectorAll('.day').forEach(el=>el.onclick=()=>editDay(el.dataset.iso));
     renderTrends();
   }
+  function voyageBreakdown(){
+    const r=rates(),b=ladderBounds();const buckets={};let made=0;
+    series().forEach(d=>{
+      let key;if(made>=b.total)key='open';else{let rg=b.ends.findIndex(e=>made<e);if(rg<0)rg=LADDER.length-1;key=rg;}
+      if(d.counted){if(!buckets[key])buckets[key]={clean:0,counted:0,money:0,units:0,kcal:0,first:d.iso,last:d.iso};const B=buckets[key];B.counted++;B.money+=d.avoided.money;B.units+=d.avoided.units;B.kcal+=d.avoided.kcal;B.last=d.iso;if(d.status==='clear')B.clean++;}
+      if(d.status==='clear')made++;
+    });
+    const out=[];
+    for(let rg=0;rg<LADDER.length;rg++){if(buckets[rg]){const B=buckets[rg],opt=B.counted*r.units;out.push({rung:rg,id:LADDER[rg].id,name:passageById(LADDER[rg].id).title,clean:B.clean,money:B.money,units:B.units,kcal:B.kcal,trim:opt>0?B.units/opt:1,first:B.first,last:B.last});}}
+    if(buckets['open']){const B=buckets['open'],opt=B.counted*r.units;out.push({rung:99,id:'open',name:'Open water',clean:B.clean,money:B.money,units:B.units,kcal:B.kcal,trim:opt>0?B.units/opt:1,first:B.first,last:B.last});}
+    return out;
+  }
+  function renderByVoyage(){
+    const bd=voyageBreakdown(),A=aggregate(),b=ladderBounds();
+    if(!bd.length){$("#byVoyage").innerHTML='<div class="muted" style="padding:6px 0 2px;line-height:1.5">Your first voyage\u2019s figures appear here once you\u2019re under way.</div>';return;}
+    $("#byVoyage").innerHTML=bd.map(v=>{
+      const under=(v.rung===99)?(A.made>=b.total):(A.made>=b.starts[v.rung]&&A.made<b.ends[v.rung]);
+      return '<div class="bvrow" data-rung="'+v.rung+'"><div class="bvn"><b>'+v.name+'</b>'+(under?'<span class="bvtag">under way</span>':'')+'<small>'+v.clean+' day'+(v.clean===1?'':'s')+' made good \u00b7 '+Math.round(v.trim*100)+'% trim</small></div>'
+        +'<div class="bvfig">'+fmtMoney(v.money)+'<small>'+fmtU(v.units)+' drift held off</small></div><span class="bvchev">\u203a</span></div>';
+    }).join("");
+    document.querySelectorAll('#byVoyage .bvrow').forEach(el=>el.onclick=()=>voyageDetail(+el.dataset.rung));
+  }
+  function legTrims(rung){
+    const r=rates(),b=ladderBounds(),start=b.starts[rung],end=b.ends[rung];
+    const P=passageById(LADDER[rung].id),dv=localDays(rung);
+    const ports=P.ports.map((pt,i)=>({d:start+dv[i],name:pt.name}));
+    let made=0;const groups={};
+    series().forEach(d=>{
+      if(made>=start&&made<end){let dest=ports.findIndex(p=>p.d>made);if(dest<0)dest=ports.length-1;if(d.counted){if(!groups[dest])groups[dest]={av:0,days:0};groups[dest].av+=d.avoided.units;groups[dest].days++;}}
+      if(d.status==='clear')made++;
+    });
+    return ports.map((p,i)=>{const g=groups[i],opt=g?g.days*r.units:0;return {name:p.name,trim:opt>0?g.av/opt:null,days:g?g.days:0};});
+  }
+  function chartLegMini(legs){
+    const N=legs.length;if(!N)return '';
+    const W=300,H=150,top=22,bottom=H-24,left=14,right=W-8;
+    const slotW=(right-left)/N,bw=Math.min(24,slotW*0.6),ny=v=>bottom-(bottom-top)*Math.max(0,Math.min(1,v)),by=ny(1);
+    let s='<svg viewBox="0 0 '+W+' '+H+'">';
+    s+='<line x1="'+left+'" y1="'+by.toFixed(1)+'" x2="'+right+'" y2="'+by.toFixed(1)+'" stroke="#C9D6E5" stroke-dasharray="3 4" opacity=".35"/>';
+    s+='<text x="'+right+'" y="'+(by-3).toFixed(1)+'" fill="#7E92AB" font-size="8" text-anchor="end">100%</text>';
+    s+='<line x1="'+left+'" y1="'+bottom+'" x2="'+right+'" y2="'+bottom+'" stroke="#26405C"/>';
+    legs.forEach((lg,i)=>{const cx=left+slotW*i+slotW/2,x=cx-bw/2;
+      if(lg.trim!=null){const y=ny(lg.trim);s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-y).toFixed(1)+'" rx="2" fill="#5FD0C5"/><text x="'+cx.toFixed(1)+'" y="'+(y-3).toFixed(1)+'" fill="#9fb3c8" font-size="7" text-anchor="middle">'+Math.round(lg.trim*100)+'</text>';}
+      else{const y=ny(1);s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-y).toFixed(1)+'" rx="2" fill="none" stroke="#26405C" stroke-dasharray="2 3"/>';}
+      s+='<text x="'+cx.toFixed(1)+'" y="'+(H-7)+'" fill="#7E92AB" font-size="7.5" text-anchor="middle">'+(i+1)+'</text>';});
+    return s+'</svg>';
+  }
+  function voyStatsHTML(bd,best){
+    let h='<div class="vstats">'
+      +'<div class="vstat"><div class="vk">Days made good</div><div class="vv">'+bd.clean+'</div></div>'
+      +'<div class="vstat"><div class="vk">Voyage trim</div><div class="vv">'+Math.round(bd.trim*100)+'%</div></div>'
+      +'<div class="vstat"><div class="vk">Salvage</div><div class="vv">'+fmtMoney(bd.money)+'</div></div>'
+      +'<div class="vstat"><div class="vk">Drift held off</div><div class="vv">'+fmtU(bd.units)+'</div></div></div>';
+    if(best)h+='<p class="note" style="margin-top:10px">Cleanest leg: <b>'+best.name+'</b> at '+Math.round(best.trim*100)+'%.</p>';
+    return h;
+  }
+  function voyageDetail(rung){
+    const b=ladderBounds(),A=aggregate(),bd=voyageBreakdown().find(v=>v.rung===rung);
+    if(!bd)return;
+    if(rung===99){
+      let h='<div class="eyebrow">Beyond the circuit</div><h2>Open water</h2>'+(bd.first?'<div class="sub2">'+fmtDate(bd.first)+' \u2013 now</div>':'')+voyStatsHTML(bd)+'<button class="btn quiet" id="mClose">Close</button>';
+      modal(h);$("#mClose").onclick=closeModal;return;
+    }
+    const P=passageById(LADDER[rung].id),legs=legTrims(rung);
+    const done=A.made>=b.ends[rung],cur=A.made>=b.starts[rung]&&A.made<b.ends[rung];
+    let best=null;legs.forEach(l=>{if(l.trim!=null&&(!best||l.trim>best.trim))best=l;});
+    let h='<div class="eyebrow">Voyage '+(rung+1)+' of '+LADDER.length+(done?' \u00b7 complete':(cur?' \u00b7 under way':''))+'</div><h2>'+P.title+'</h2>';
+    if(bd.first)h+='<div class="sub2">'+fmtDate(bd.first)+' \u2013 '+(done?fmtDate(bd.last):'now')+'</div>';
+    h+='<div class="chartwrap" style="margin-top:10px">'+chartLegMini(legs)+'</div>';
+    h+=voyStatsHTML(bd,best);
+    h+='<button class="btn primary" id="mLog">Read the log</button><button class="btn quiet" id="mClose">Close</button>';
+    modal(h);
+    $("#mLog").onclick=()=>voyageSheet(rung,false);
+    $("#mClose").onclick=closeModal;
+  }
+  function chartTrack(SD){
+    const ports=PORTS,N=ports.length;
+    if(!N)return '<div class="muted" style="text-align:center;padding:34px 0">Sail a leg and your stage scores appear here.</div>';
+    const trimByIdx={};SD.stages.forEach(s=>{trimByIdx[s.destIdx]=s.trim;});
+    const curIdx=SD.curIdx;
+    const W=320,H=190,top=34,bottom=H-26,left=16,right=W-10;
+    const slotW=(right-left)/N,bw=Math.min(26,slotW*0.6);
+    const ny=v=>bottom-(bottom-top)*Math.max(0,Math.min(1,v));
+    const by=ny(1),cur=ports[curIdx]||ports[N-1];
+    let s='<svg viewBox="0 0 '+W+' '+H+'">';
+    s+='<text x="'+left+'" y="14" fill="#5FD0C5" font-size="10">Leg '+(curIdx+1)+' of '+N+' \u00b7 '+cur.name+'</text>';
+    s+='<line x1="'+left+'" y1="'+by.toFixed(1)+'" x2="'+right+'" y2="'+by.toFixed(1)+'" stroke="#C9D6E5" stroke-dasharray="3 4" opacity=".4"/>';
+    s+='<text x="'+right+'" y="'+(by-3).toFixed(1)+'" fill="#7E92AB" font-size="8" text-anchor="end">100%</text>';
+    s+='<line x1="'+left+'" y1="'+bottom+'" x2="'+right+'" y2="'+bottom+'" stroke="#26405C"/>';
+    for(let i=0;i<N;i++){
+      const cx=left+slotW*i+slotW/2,x=cx-bw/2;
+      if(i<curIdx){const t=trimByIdx[i]!=null?trimByIdx[i]:1,y=ny(t);
+        s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-y).toFixed(1)+'" rx="2" fill="#5FD0C5"/>';
+        s+='<text x="'+cx.toFixed(1)+'" y="'+(y-3).toFixed(1)+'" fill="#9fb3c8" font-size="7.5" text-anchor="middle">'+Math.round(t*100)+'</text>';}
+      else if(i===curIdx){const has=SD.current.days>0,t=has?SD.current.trim:1,y=ny(t);
+        if(has){s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-y).toFixed(1)+'" rx="2" fill="#E8B65A"/>';
+          s+='<text x="'+cx.toFixed(1)+'" y="'+(y-3).toFixed(1)+'" fill="#E8B65A" font-size="7.5" text-anchor="middle">'+Math.round(t*100)+'</text>';}
+        else{const gy=ny(1);s+='<rect x="'+x.toFixed(1)+'" y="'+gy.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-gy).toFixed(1)+'" rx="2" fill="none" stroke="#E8B65A" stroke-opacity=".55" stroke-dasharray="2 3"/>';}}
+      else {const y=ny(1);s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-y).toFixed(1)+'" rx="2" fill="none" stroke="#26405C" stroke-dasharray="2 3"/>';}
+      s+='<text x="'+cx.toFixed(1)+'" y="'+(H-8)+'" fill="#7E92AB" font-size="8" text-anchor="middle">'+(i+1)+'</text>';
+    }
+    return s+'</svg>';
+  }
+  function chartVoyages(metric){
+    const r=rates(),b=ladderBounds(),A=aggregate(),bd=voyageBreakdown(),byRung={};bd.forEach(v=>byRung[v.rung]=v);
+    const base=metric==='money'?r.money:r.units,key=metric;
+    const slots=LADDER.map((L,rg)=>({name:passageById(L.id).title,potential:L.len*base,actual:byRung[rg]?byRung[rg][key]:0,reached:A.made>=b.ends[rg],current:A.made>=b.starts[rg]&&A.made<b.ends[rg]}));
+    if(A.made>=b.total&&byRung[99])slots.push({name:'Open',potential:byRung[99][key],actual:byRung[99][key],reached:false,current:true});
+    const W=320,H=190,top=24,bottom=H-26,left=16,right=W-10,N=slots.length;
+    let maxP=1;slots.forEach(s=>{maxP=Math.max(maxP,s.potential,s.actual);});
+    const ny=v=>bottom-(bottom-top)*Math.min(1,v/maxP);
+    const slotW=(right-left)/N,bw=Math.min(30,slotW*0.6);
+    const fmt=metric==='money'?(v=>fmtMoney(v)):(v=>fmtU(v)+' drift');
+    let s='<svg viewBox="0 0 '+W+' '+H+'">';
+    s+='<text x="'+left+'" y="13" fill="#7E92AB" font-size="9">'+fmt(A.banked[key])+' banked all told</text>';
+    s+='<line x1="'+left+'" y1="'+bottom+'" x2="'+right+'" y2="'+bottom+'" stroke="#26405C"/>';
+    slots.forEach((sl,i)=>{
+      const cx=left+slotW*i+slotW/2,x=cx-bw/2,potY=ny(sl.potential),actY=ny(sl.actual);
+      if(sl.current){
+        if(sl.potential>0)s+='<rect x="'+x.toFixed(1)+'" y="'+potY.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-potY).toFixed(1)+'" rx="2" fill="#E8B65A" opacity="0.10"/><rect x="'+x.toFixed(1)+'" y="'+potY.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-potY).toFixed(1)+'" rx="2" fill="none" stroke="#E8B65A" stroke-opacity="0.55" stroke-dasharray="2 3"/>';
+        if(sl.actual>0)s+='<rect x="'+x.toFixed(1)+'" y="'+actY.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-actY).toFixed(1)+'" rx="2" fill="#E8B65A"/>';
+      } else if(sl.reached){
+        if(sl.potential>0)s+='<rect x="'+x.toFixed(1)+'" y="'+potY.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-potY).toFixed(1)+'" rx="2" fill="#5FD0C5" opacity="0.13"/>';
+        if(sl.actual>0)s+='<rect x="'+x.toFixed(1)+'" y="'+actY.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-actY).toFixed(1)+'" rx="2" fill="#5FD0C5"/>';
+      } else if(sl.potential>0){
+        s+='<rect x="'+x.toFixed(1)+'" y="'+potY.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-potY).toFixed(1)+'" rx="2" fill="none" stroke="#26405C" stroke-dasharray="2 3"/>';
+      }
+      s+='<text x="'+cx.toFixed(1)+'" y="'+(H-8)+'" fill="#7E92AB" font-size="8" text-anchor="middle">'+(i+1)+'</text>';
+    });
+    return s+'</svg>';
+  }
+  const AW_DAYS=[[1,'Under Way'],[3,'Finding Your Feet'],[7,'First Week'],[14,'A Fortnight On'],[30,'Able Seaman'],[60,'Seasoned Hand'],[100,'The Hundred'],[150,'Old Salt'],[200,'Far From Shore'],[300,'Master Mariner'],[365,'A Year and a Day'],[500,'Deep Water'],[672,'Round the World'],[1000,'The Thousand']];
+  const AW_SALV=[[25,'First Salvage'],[100,'A Full Chest'],[250,'Quartermaster'],[500,'Treasure Hold'],[1000,'King\u2019s Ransom']];
+  const AW_DRIFT=[[25,'Steady Hand'],[100,'True Course'],[250,'Weathered Sailor'],[500,'Iron Helm'],[1000,'Unshakeable']];
+  function portMarks(){
+    const A=aggregate(),b=ladderBounds(),made=A.made,marks=[];
+    for(let rung=0;rung<LADDER.length;rung++){const P=passageById(LADDER[rung].id),dv=localDays(rung),start=b.starts[rung];P.ports.forEach((pt,i)=>marks.push({key:'v'+rung+'p'+i,name:pt.name,day:start+dv[i]}));}
+    const osN=["Open Water","The Trade Winds","Blue Water","The Far Reaches","A New Horizon","The Long Swell","Steady Seas","Calm Latitudes","Onward"];
+    for(let idx=0;idx<800;idx++){const day=b.total+(idx+1)*90;const lap=Math.floor(idx/osN.length);marks.push({key:'os'+idx,name:osN[idx%osN.length]+(lap?" "+(lap+1):""),day});if(day>made)break;}
+    const out=[];
+    for(const m of marks){if(made>=m.day)out.push(Object.assign({reached:true},m));else{out.push(Object.assign({reached:false,next:true},m));break;}}
+    return out;
+  }
+  function allAwards(){
+    const A=aggregate(),list=[];
+    AW_DAYS.forEach(t=>list.push({key:'d'+t[0],cat:'Days made good',label:t[1],sub:t[0]+(t[0]===1?' day':' days'),earned:A.made>=t[0]}));
+    portMarks().forEach(m=>list.push({key:m.key,cat:'Landfalls',label:m.name,sub:m.reached?'made good':'next landfall',earned:!!m.reached,next:!!m.next}));
+    AW_SALV.forEach(t=>list.push({key:'s'+t[0],cat:'Salvage banked',label:t[1],sub:fmtMoney(t[0]),earned:A.banked.money>=t[0]}));
+    AW_DRIFT.forEach(t=>list.push({key:'u'+t[0],cat:'Drift held off',label:t[1],sub:fmtU(t[0])+' drift',earned:A.banked.units>=t[0]}));
+    return list;
+  }
+  function renderAwards(){
+    if(!$("#awards"))return;
+    const list=allAwards(),cats=['Days made good','Landfalls','Salvage banked','Drift held off'];
+    let h='';
+    cats.forEach(cat=>{const items=list.filter(a=>a.cat===cat);if(!items.length)return;
+      h+='<div class="awgrp"><div class="awhd">'+cat+'</div><div class="awwrap">'+items.map(a=>'<span class="award '+(a.earned?'on':(a.next?'next':''))+'"><b>'+a.label+'</b><small>'+a.sub+'</small></span>').join('')+'</div></div>';});
+    $("#awards").innerHTML=h;
+  }
+  function earnedAwardKeys(){return allAwards().filter(a=>a.earned).map(a=>a.key);}
+  function syncAwards(){
+    const earned=earnedAwardKeys(),seen=state.seenAwards||[];
+    const fresh=earned.filter(k=>seen.indexOf(k)<0),dropped=seen.filter(k=>earned.indexOf(k)<0);
+    if(fresh.length||dropped.length||state.seenAwards===undefined){state.seenAwards=earned.slice();save();}
+    return fresh;
+  }
+  function awardCelebrationKeys(keys){const items=allAwards().filter(a=>keys.indexOf(a.key)>=0);if(items.length)awardCelebration(items);}
+  function awardFlavour(a){
+    if(a.cat==='Landfalls')return 'Safe landfall at '+a.label+'. The chart fills in behind you \u2014 find it in your honours.';
+    if(a.cat==='Days made good')return 'Another mark on a long, clean run. Logged to your honours in the Charts.';
+    if(a.cat==='Salvage banked')return 'Salvage banked and counted \u2014 it adds up, mile after mile.';
+    return 'Drift held off, watch after watch. Steady sailing.';
+  }
+  function awardCelebration(items){
+    const one=items.length===1;
+    let h='<div class="eyebrow">'+(one?'A new honour':'New honours')+'</div>';
+    if(one){h+='<h2>'+items[0].label+'</h2><p>'+awardFlavour(items[0])+'</p>';}
+    else{h+='<h2>Well earned</h2><p>You\u2019ve come into '+items.length+' new honours:</p><div class="awwrap" style="margin:10px 0">'+items.map(i=>'<span class="award on"><b>'+i.label+'</b><small>'+i.cat+'</small></span>').join('')+'</div>';}
+    h+='<button class="btn primary" id="mClose">Log it with pride</button>';
+    modal(h);$("#mClose").onclick=closeModal;
+  }
   function renderTrends(){
     if(!state)return;
+    PORTS=currentPorts(aggregate().made);
+    const honours=(metric==='honours');
+    $("#cumCard").style.display=honours?'none':'';
+    $("#byVoyageCard").style.display=honours?'none':'';
+    $("#ledgerCard").style.display=honours?'none':'';
+    $("#honoursCard").style.display=honours?'':'none';
+    if(honours){renderAwards();return;}
     const SD=stageData(),A=SD.A,r=SD.r;
-    const titles={trim:'Trim by leg',money:'Salvage banked',units:'Drift held off'};
-    $("#cumTitle").textContent=titles[metric];
-    $("#cumNote").style.display=(metric==='trim')?'block':'none';
-    // ledger (always)
+    const haul=(metric==='haul');
+    $("#haulSeg").style.display=haul?'':'none';
+    $("#cumTitle").textContent=haul?'Haul by voyage':'Trim by leg';
+    $("#cumNote").style.display=haul?'none':'block';
     if(SD.hasBase){
       $("#vTrim").textContent=Math.round(SD.voyage*100)+"%";
       $("#vDrift").textContent=fmtU(A.banked.units)+" units";
       $("#vSalv").textContent=fmtMoney(A.banked.money);
-      $("#vBallast").textContent=fmtK(A.banked.kcal)+" kcal (~"+(A.banked.kcal/3500).toFixed(1)+" lb)";
+      $("#vBallast").textContent=(A.banked.kcal/7700).toFixed(1)+" kg ("+fmtK(A.banked.kcal)+" kcal)";
     } else {["vTrim","vDrift","vSalv","vBallast"].forEach(id=>$("#"+id).textContent="—");}
-    if(!SD.hasBase){$("#cumChart").innerHTML='<div class="muted" style="text-align:center;padding:30px 14px;line-height:1.5">Set <b>Your usual week</b> in the Locker — then your Trim, Salvage and Drift chart here.</div>';return;}
-    if(metric==='trim'){$("#cumChart").innerHTML=chartStages(SD.stages,SD.curIdx);return;}
-    const counted=A.series.filter(d=>d.counted).length;
-    let cum=0;const pts=[{label:state.startISO,y:0}];
-    A.series.forEach(d=>{if(d.counted)cum+=d.avoided[metric];pts.push({label:d.iso,y:cum});});
-    const fmt=metric==='money'?(v=>state.currency+Math.round(v)):(v=>fmtU(v));
-    $("#cumChart").innerHTML=counted===0?'<div class="muted" style="text-align:center;padding:34px 0">Close your first day’s run to start the line.</div>':chartLine(pts,fmt,'');
+    $("#vBest").textContent=A.best+(A.best===1?" day":" days");
+    {const _slip=localISO(new Date(state.startAt||parseISO(state.startISO).getTime()));$("#ledgerNote").textContent="Slipped the lines "+fmtDate(_slip)+" · "+Math.max(0,daysBetween(_slip,todayISO()))+" days at sea.";}
+    renderByVoyage();
+    if(!SD.hasBase){$("#cumChart").innerHTML='<div class="muted" style="text-align:center;padding:30px 14px;line-height:1.5">Set <b>Your usual week</b> in the Locker — then your charts appear here.</div>';return;}
+    if(haul){$("#cumChart").innerHTML=chartVoyages(haulUnit);return;}
+    $("#cumChart").innerHTML=chartTrack(SD);
   }
 
   /* ---- actions ---- */
-  function completeToday(){const t=todayISO();if(state.deviations[t]){toast("Today already logged as weather");return;}if(state.completed.indexOf(t)>=0)return;const before=voyageContext(aggregate().made).completed;state.completed.push(t);save();render();const after=voyageContext(aggregate().made).completed;if(after>before)return;dayClosedSummary();}
+  function completeToday(){const t=todayISO();if(state.deviations[t]){toast("Today already logged as weather");return;}if(state.completed.indexOf(t)>=0)return;const beforeEarned=earnedAwardKeys(),beforeVoy=voyageContext(aggregate().made).completed;state.completed.push(t);save();const afterEarned=earnedAwardKeys(),afterVoy=voyageContext(aggregate().made).completed;const fresh=afterEarned.filter(k=>beforeEarned.indexOf(k)<0);render();if(afterVoy>beforeVoy){celebrateLanding(afterVoy-1);return;}if(fresh.length){awardCelebrationKeys(fresh);return;}dayClosedSummary();}
 
   function stepperRows(values){
     return state.drinks.map(dr=>{const q=values[dr.id]||0;
@@ -850,12 +1190,16 @@
 
   function openSetup(first){
     const values=Object.assign({},state.baselineWeek);
+    const _slipISO=first?todayISO():localISO(new Date(parseISO(state.startISO).getTime()-86400000));
+    const _sd=new Date(state.startAt||Date.now());const _stime=String(_sd.getHours()).padStart(2,"0")+":"+String(_sd.getMinutes()).padStart(2,"0");
     const head=first
       ? "<h2>Set your bearings</h2><p>Two things before you cast off, then you're under way. Your journey is a progression \u2014 a 7-day shakedown first, then voyages of rising length. It starts itself; you just sail.</p>"
       : "<h2>Your usual week</h2><p>In a usual week <i>before you cast off</i>, how often did each cross your bow? Rough is fine \u2014 it sets your reckoning.</p>";
     sheet(
       head
-      +'<div class="field"><label>Departure date</label><input id="f_start" type="date" value="'+state.startISO+'" max="'+todayISO()+'"></div>'
+      +'<div class="field"><label>Slipped the lines — date</label><input id="f_start" type="date" value="'+_slipISO+'" max="'+todayISO()+'"></div>'
+      +'<div class="field"><label>Slipped the lines — time</label><input id="f_starttime" type="time" value="'+_stime+'"></div>'
+      +(first?'<p class="note" style="margin:2px 0 14px">The clock starts the moment you slip the lines. You <b>cast off</b> \u2014 day one \u2014 at first light the next morning.</p>':'')
       +(first?'<p class="note" style="margin:2px 0 14px">Your usual week before you cast off \u2014 how often did each cross your bow? Rough is fine; it sets your reckoning.</p>':'')
       +'<div id="wkRows">'+stepperRows(values)+'</div>'
       +'<div class="summary" id="wkSum"></div>'
@@ -870,7 +1214,7 @@
     $("#saveSetup").onclick=()=>{
       const total=state.drinks.reduce((a,dr)=>a+(values[dr.id]||0),0);
       if(total===0){toast("Add at least one hazard to your usual week");return;}
-      state.baselineWeek=values;state.startISO=$("#f_start").value||todayISO();
+      state.baselineWeek=values;const _slip=$("#f_start").value||todayISO();const _tv=($("#f_starttime")&&$("#f_starttime").value)||"00:00";state.startAt=new Date(_slip+"T"+_tv).getTime();state.startISO=localISO(new Date(parseISO(_slip).getTime()+86400000));
       save();closeSheet();render();if(first)goTab('deck');toast(first?"Under way":"Bearings set");
     };
     const c=$("#cancelSetup");if(c)c.onclick=closeSheet;
@@ -910,9 +1254,12 @@
   function editDay(iso){
     const values=Object.assign({},state.deviations[iso]||{});
     const existing=!!state.deviations[iso];
+    const _wt=(state.weatherAt&&state.weatherAt[iso])?new Date(state.weatherAt[iso]):(iso===todayISO()?new Date():new Date(parseISO(iso).getTime()+20*3600000));
+    const _wtime=String(_wt.getHours()).padStart(2,'0')+':'+String(_wt.getMinutes()).padStart(2,'0');
     sheet(
       "<h2>"+fmtDate(iso)+"</h2><p>What weather did this day bring? Leave all at zero for a clear day.</p>"+
       '<div class="field"><label>Date</label><input id="e_date" type="date" value="'+iso+'" max="'+todayISO()+'"></div>'+
+      '<div class="field"><label>When the weather set in (optional)</label><input id="e_time" type="time" value="'+_wtime+'"></div>'+
       '<div id="e_rows">'+stepperRows(values)+'</div>'+
       '<div class="summary" id="e_calc"></div>'+
       '<button class="btn primary" id="e_save">Save</button>'+
@@ -920,8 +1267,8 @@
     );
     function calc(){const c=basketTotals(values),r=rates();const total=Object.keys(values).reduce((a,k)=>a+(values[k]||0),0);if(total===0){$("#e_calc").innerHTML="A <b>clear day</b> — fair sailing.";}else{$("#e_calc").innerHTML="This day <b>"+fmtU(c.units)+" drift</b> · "+fmtMoney(c.money)+" · "+Math.round(c.kcal)+" ballast<br><span style='color:var(--faint)'>still salvaged "+fmtMoney(Math.max(0,r.money-c.money))+" against your usual</span>";}}
     bindSteppers(values,calc);calc();
-    $("#e_save").onclick=()=>{const d=$("#e_date").value||iso;if(d!==iso){delete state.deviations[iso];const ci=state.completed.indexOf(iso);if(ci>=0)state.completed.splice(ci,1);}const basket={};let total=0;Object.keys(values).forEach(k=>{if(values[k]>0){basket[k]=values[k];total+=values[k];}});if(total>0){state.deviations[d]=basket;const ci=state.completed.indexOf(d);if(ci>=0)state.completed.splice(ci,1);}else{delete state.deviations[d];if(d===todayISO()&&state.completed.indexOf(d)<0)state.completed.push(d);}const newWeatherToday=(d===todayISO()&&total>0&&!existing);save();closeSheet();render();if(newWeatherToday){weatherReassurance();}else{toast("Logged");}};
-    const ec=$("#e_clear");if(ec)ec.onclick=()=>{delete state.deviations[iso];save();closeSheet();render();toast("Set clear");};
+    $("#e_save").onclick=()=>{const d=$("#e_date").value||iso;if(d!==iso){delete state.deviations[iso];const ci=state.completed.indexOf(iso);if(ci>=0)state.completed.splice(ci,1);}const basket={};let total=0;Object.keys(values).forEach(k=>{if(values[k]>0){basket[k]=values[k];total+=values[k];}});if(!state.weatherAt)state.weatherAt={};if(d!==iso)delete state.weatherAt[iso];if(total>0){state.deviations[d]=basket;const ci=state.completed.indexOf(d);if(ci>=0)state.completed.splice(ci,1);const _et=($("#e_time")&&$("#e_time").value)||"20:00";state.weatherAt[d]=new Date(d+"T"+_et).getTime();}else{delete state.deviations[d];delete state.weatherAt[d];if(d===todayISO()&&state.completed.indexOf(d)<0)state.completed.push(d);}const newWeatherToday=(d===todayISO()&&total>0&&!existing);save();closeSheet();render();if(newWeatherToday){weatherReassurance();}else{toast("Logged");}};
+    const ec=$("#e_clear");if(ec)ec.onclick=()=>{delete state.deviations[iso];if(state.weatherAt)delete state.weatherAt[iso];save();closeSheet();render();toast("Set clear");};
   }
 
   function backup(){const data=JSON.stringify(state);sheet("<h2>The papers</h2><p>Copy this somewhere safe. Paste into Restore on any device to bring the whole passage back.</p>"+'<div class="field"><textarea id="bk" rows="5" readonly>'+data+'</textarea></div>'+'<button class="btn primary" id="copyBk">Copy to clipboard</button><button class="btn quiet" id="closeBk">Done</button>');$("#copyBk").onclick=()=>{state.lastBackupISO=todayISO();save();const ta=$("#bk");ta.select();(navigator.clipboard?navigator.clipboard.writeText(ta.value):Promise.reject()).then(()=>toast("Copied")).catch(()=>{document.execCommand("copy");toast("Copied");});};$("#closeBk").onclick=closeSheet;}
@@ -956,14 +1303,53 @@
     h+='<button class="btn primary" id="mClose">Take the helm</button>';
     modal(h);$("#mClose").onclick=closeModal;
   }
+  function watchGreeting(){
+    const A=aggregate();PORTS=currentPorts(A.made);const V=voyageContext(A.made);
+    const recentWeather=(A.leg===0&&A.made>0);
+    let h='<div class="eyebrow">The evening watch</div>';
+    if(recentWeather){
+      h+='<h2>Take the helm again</h2>';
+      h+='<p>After weather, it\u2019s the next clean evening that turns the voyage back \u2014 and this is it. '+progressLine(A,V)+'</p>';
+      h+='<p>You don\u2019t have to sail the whole passage tonight \u2014 just hold the helm through these few hours. '+nextStepLine(A,V)+'</p>';
+    } else {
+      h+='<h2>Hold your course</h2>';
+      h+='<p>The evening watch is often the hardest stretch \u2014 the wind gets up just as the light goes. But you\u2019ve stood it before: '+progressLine(A,V)+'</p>';
+      h+='<p>'+nextStepLine(A,V)+' Hold your course through tonight, and the day is yours to log.</p>';
+    }
+    h+='<button class="btn primary" id="mClose">Steady on</button>';
+    modal(h);$("#mClose").onclick=closeModal;
+  }
+  function duskGreeting(){
+    const A=aggregate();PORTS=currentPorts(A.made);const V=voyageContext(A.made),ti=dayInfo(todayISO());
+    let h='<div class="eyebrow">Close of day</div>';
+    if(ti.status==='clear'){
+      h+='<h2>Rest easy.</h2><p>Today\u2019s run is already logged \u2014 well sailed. '+progressLine(A,V)+'</p><p>Nothing more to do tonight. A fresh horizon comes at dawn.</p><button class="btn primary" id="mClose">Goodnight</button>';
+      modal(h);$("#mClose").onclick=closeModal;
+    } else if(ti.status==='deviation'){
+      h+='<h2>Weather astern.</h2><p>Today was logged as a weather day \u2014 done, and no shame in it. What you\u2019ve banked stands: '+progressLine(A,V)+'</p><p>Rest now; the next clean day starts a fresh leg at dawn.</p><button class="btn primary" id="mClose">Goodnight</button>';
+      modal(h);$("#mClose").onclick=closeModal;
+    } else {
+      h+='<h2>Close the day\u2019s run</h2><p>'+progressLine(A,V)+' Close today out and make it count.</p><p class="muted">'+nextStepLine(A,V)+'</p>';
+      h+='<button class="btn primary" id="mCloseDay">Close the day\u2019s run</button><button class="btn quiet" id="mClose">Not just yet</button>';
+      modal(h);
+      $("#mCloseDay").onclick=function(){completeToday();};
+      $("#mClose").onclick=closeModal;
+    }
+  }
+  function currentSlot(){const h=new Date().getHours();return h<12?'d':(h<21?'w':'u');}
   function maybeDailyGreeting(){
     if(!state)return;
     if($("#scrim").classList.contains("on")||$("#scrim2").classList.contains("on"))return;
     const started=aggregate().made>0||Object.keys(state.deviations).length>0;
     if(!started)return;
-    if(state.lastSeenDay===todayISO())return;
-    state.lastSeenDay=todayISO();save();
-    dailyGreeting();
+    const t=todayISO();
+    if(state.greetDay!==t){state.greetDay=t;state.greetSlots="";}
+    const slot=currentSlot();
+    if((state.greetSlots||"").indexOf(slot)>=0)return;
+    state.greetSlots=(state.greetSlots||"")+slot;save();
+    if(slot==='d')dailyGreeting();
+    else if(slot==='w')watchGreeting();
+    else duskGreeting();
   }
   function dayClosedSummary(){
     const A=aggregate();PORTS=currentPorts(A.made);const V=voyageContext(A.made),r=rates();
@@ -1038,9 +1424,61 @@
   }
     let toastT;function toast(m){const el=$("#toast");el.textContent=m;el.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("on"),1600);}
 
-  function goTab(go){document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x.dataset.go===go));document.querySelectorAll(".screen").forEach(s=>s.classList.remove("on"));$("#s-"+go).classList.add("on");window.scrollTo(0,0);}
+  const TAB_ORDER=["deck","trends","log","more"];
+  function goTab(go){
+    const cur=document.querySelector(".screen.on");
+    const ci=cur?TAB_ORDER.indexOf(cur.id.slice(2)):-1,ti=TAB_ORDER.indexOf(go);
+    document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x.dataset.go===go));
+    document.querySelectorAll(".screen").forEach(sc=>sc.classList.remove("on","from-l","from-r"));
+    const tgt=$("#s-"+go);
+    if(ci>=0&&ti>=0&&ci!==ti)tgt.classList.add(ti>ci?"from-r":"from-l");
+    tgt.classList.add("on");window.scrollTo(0,0);
+  }
   document.querySelectorAll(".tabs button").forEach(b=>{b.onclick=()=>goTab(b.dataset.go);});
+  // ---- swipe between tabs (horizontal flick, adjacent only) ----
+  (function(){
+    const ORDER=["deck","trends","log","more"];
+    let sx=0,sy=0,st=0,track=false;
+    function curIdx(){const on=document.querySelector(".screen.on");return on?ORDER.indexOf(on.id.slice(2)):-1;}
+    document.addEventListener("touchstart",function(e){
+      track=false;
+      if(e.touches.length!==1)return;                                  // ignore pinch / multi-touch
+      if(document.querySelector(".scrim.on"))return;                    // a sheet is open
+      if(window.__gate)return;                                          // landing gate still up
+      const t=e.touches[0];
+      if(t.clientX<16||t.clientX>window.innerWidth-16)return;           // leave iOS edge gestures alone
+      sx=t.clientX;sy=t.clientY;st=Date.now();track=true;
+    },{passive:true});
+    document.addEventListener("touchend",function(e){
+      if(!track)return;track=false;
+      const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy,dt=Date.now()-st;
+      if(dt>700)return;                                                 // too slow to be a flick
+      if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.6)return;         // must be a clear horizontal swipe
+      const i=curIdx();if(i<0)return;
+      const ni=dx<0?i+1:i-1;                                            // swipe left = next, right = previous
+      if(ni<0||ni>=ORDER.length)return;                                 // already at an end
+      goTab(ORDER[ni]);
+    },{passive:true});
+  })();
+  // ---- landing gate: swipe up (or tap the hint) to set sail ----
+  (function(){
+    var gate=document.getElementById('gate');
+    if(!gate){window.__gate=false;return;}
+    window.__gate=true;
+    var y0=0,t0=0,trk=false,done=false;
+    function enter(){
+      if(done)return;done=true;window.__gate=false;
+      gate.style.transition='transform .5s cubic-bezier(.4,0,.2,1)';
+      gate.style.transform='translateY(-100%)';
+      setTimeout(function(){gate.style.display='none';},520);
+    }
+    gate.addEventListener('touchstart',function(e){if(e.touches.length!==1){trk=false;return;}y0=e.touches[0].clientY;t0=Date.now();trk=true;gate.style.transition='none';},{passive:true});
+    gate.addEventListener('touchmove',function(e){if(!trk)return;var dy=e.touches[0].clientY-y0;gate.style.transform='translateY('+(dy<0?dy:dy*0.22)+'px)';},{passive:true});
+    gate.addEventListener('touchend',function(e){if(!trk)return;trk=false;var dy=e.changedTouches[0].clientY-y0,dt=Date.now()-t0;gate.style.transition='';if(dy<-70||(dy<-34&&dt<320)){enter();}else{gate.style.transform='';}},{passive:true});
+    var h=gate.querySelector('.hint');if(h)h.addEventListener('click',enter);
+  })();
   document.querySelectorAll("#metricSeg button").forEach(b=>{b.onclick=()=>{metric=b.dataset.m;document.querySelectorAll("#metricSeg button").forEach(x=>x.classList.toggle("on",x===b));renderTrends();};});
+  document.querySelectorAll("#haulSeg button").forEach(b=>{b.onclick=()=>{haulUnit=b.dataset.h;document.querySelectorAll("#haulSeg button").forEach(x=>x.classList.toggle("on",x===b));renderTrends();};});
 
   $("#completeBtn").onclick=completeToday;
   $("#deviateBtn").onclick=()=>editDay(todayISO());
@@ -1054,9 +1492,11 @@
   if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(function(){});}
   var returning=!!state;
   try{if(!state){state=seed();save();render();openSetup(true);}else{render();}}catch(e){}
-  setTimeout(function(){document.body.classList.remove('boot');},120);
-  if(returning)setTimeout(maybeDailyGreeting,760);
-  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')maybeDailyGreeting();});
+  if(state&&!state.seenAwards){try{state.seenAwards=earnedAwardKeys();save();}catch(e){}}
+  if(state){let _mig=false;if(!state.startAt){state.startAt=parseISO(state.startISO).getTime();_mig=true;}if(!state.weatherAt){state.weatherAt={};_mig=true;}if(_mig)save();}
+  startClocks();
+  if(returning)setTimeout(maybeDailyGreeting,1300);
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){maybeDailyGreeting();startClocks();}else{stopClocks();}});
   window.addEventListener('focus',maybeDailyGreeting);
 })();
 </script>
