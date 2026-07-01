@@ -127,6 +127,7 @@
   .tag{font-size:11px;padding:4px 9px;border-radius:999px;border:1px solid var(--line);color:var(--faint);white-space:nowrap;}
   .tag.clear{color:var(--beacon);border-color:#2b5650;}
   .tag.dev{color:var(--amber);border-color:#574420;}
+  .tag.log{color:var(--beacon);border-color:#2b5650;background:rgba(95,208,197,.08);cursor:pointer;}
   .hz{display:flex;align-items:center;gap:12px;padding:13px 2px;border-bottom:1px solid var(--line);cursor:pointer;}
   .hz:last-of-type{border-bottom:0;}
   .hz .meta{flex:1;}.hz .meta b{font-size:15px;}.hz .meta small{display:block;color:var(--faint);font-size:11px;margin-top:2px;font-style:italic;}
@@ -213,6 +214,16 @@
   .gcrumb{font-size:11.5px;margin-top:14px;line-height:1.4;color:var(--faint);}
   .gcrumb .tgt{color:var(--amber);}
   .gcrumb .nx,.gcrumb .ar{color:#4a5d78;}
+  .diary{margin-top:16px;text-align:left}
+  .dlab{font-size:11px;color:var(--faint);margin-bottom:9px}
+  .baroRow{display:flex;justify-content:space-between;gap:2px}
+  .baro{flex:1;background:none;border:0;padding:4px 0 0;display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--faint);font:inherit;cursor:pointer}
+  .baro .bdot{width:9px;height:9px;border-radius:50%;background:var(--line);transition:background .15s,box-shadow .15s}
+  .baro .blab{font-size:8px;letter-spacing:.02em;text-align:center;line-height:1.1}
+  .baro.on{color:var(--beacon)}
+  .baro.on .bdot{background:var(--beacon);box-shadow:0 0 0 4px rgba(95,208,197,.16)}
+  .dnote{width:100%;box-sizing:border-box;background:#0e1b2e;border:1px solid var(--line);border-radius:10px;color:var(--mist);padding:10px;font:inherit;font-size:16px;resize:none;margin-top:2px}
+  .dsnip{color:var(--beacon);font-style:italic;opacity:.85}
   .liblink{font-size:11.5px;color:var(--beacon);margin-top:13px;padding-top:12px;border-top:1px solid #21364f;cursor:pointer;letter-spacing:.02em;}
   .statusline{font-size:13.5px;line-height:1.5;margin:2px 2px 12px;color:var(--mist);}
   .statusline .lead{color:var(--beacon);font-weight:600;}
@@ -264,33 +275,31 @@
     <div class="eyebrow">Onward</div>
     <h1>Charts</h1>
     <div class="seg" id="metricSeg">
-      <button data-m="trim" class="on">Trim</button>
-      <button data-m="haul">Haul</button>
+      <button data-m="trends" class="on">Trends</button>
+      <button data-m="ledger">Ledger</button>
       <button data-m="honours">Honours</button>
     </div>
-    <div class="card" id="cumCard">
-      <h2 id="cumTitle">Trim by leg</h2>
-      <div class="seg subseg" id="haulSeg" style="display:none">
-        <button data-h="money" class="on">Salvage £</button>
-        <button data-h="units">Drift</button>
+    <div id="trendsView">
+      <div class="card">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <h2 style="margin:0">Salvage made good</h2>
+          <div class="seg subseg" id="haulSeg"><button data-h="money" class="on">Salvage &pound;</button><button data-h="units">Drift</button></div>
+        </div>
+        <div class="chartwrap"><div id="salvChart"></div></div>
+        <p class="note" style="margin:10px 0 0">A clean day adds the most &middot; a weather day far less &middot; landfalls marked where reached.</p>
       </div>
-      <div class="chartwrap"><div id="cumChart"></div></div>
-      <p class="note" id="cumNote" style="margin:12px 0 0">How clean you sailed each leg. A fresh leg starts at 100% — a weather day pulls that leg down, then the next leg starts clean again.</p>
+      <div class="card">
+        <h2>Your run</h2>
+        <div id="runRibbon"></div>
+        <p class="note" style="margin:12px 0 0">Each square a day &middot; teal made good &middot; amber weathered &middot; a ring marks a landfall.</p>
+      </div>
+      <div class="card" id="byVoyageCard">
+        <h2>By voyage</h2>
+        <div id="byVoyage"></div>
+      </div>
     </div>
-    <div class="card" id="byVoyageCard">
-      <h2>By voyage</h2>
-      <div id="byVoyage"></div>
-    </div>
-    <div class="card" id="ledgerCard">
-      <h2>The ledger</h2>
-      <div class="stat-row"><span class="lbl">Career trim · all voyages</span><span class="mono" id="vTrim">—</span></div>
-      <div class="stat-row"><span class="lbl">Drift held off</span><span class="mono" id="vDrift">—</span></div>
-      <div class="stat-row"><span class="lbl">Salvage banked</span><span class="mono" id="vSalv">—</span></div>
-      <div class="stat-row"><span class="lbl">Ballast shed</span><span class="mono" id="vBallast">—</span></div>
-      <div class="stat-row"><span class="lbl">Longest clear run</span><span class="mono" id="vBest">—</span></div>
-      <p class="note" id="ledgerNote" style="margin:10px 0 0">—</p>
-    </div>
-    <div class="card" id="honoursCard">
+    <div id="ledgerView" style="display:none"><div id="ledgerBody"></div></div>
+    <div class="card" id="honoursCard" style="display:none">
       <h2>Honours</h2>
       <div id="awards"></div>
     </div>
@@ -325,7 +334,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">build 30a</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">build 30e</span></p>
   </section>
 
   <nav class="tabs">
@@ -588,7 +597,7 @@
   function fmtDate(iso){return parseISO(iso).toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short'});}
 
   let state=load();
-  let metric="trim";
+  let metric="trends";
   let haulUnit="money";
 
   function seed(){
@@ -598,7 +607,7 @@
         {id:"d2",alias:"Dropping Anchor",note:"Small — and suddenly you’re not moving.",ml:250,abv:5,kcal:120,cost:2.40},
         {id:"d3",alias:"Red Sky",note:"Fair to look at; a warning all the same.",ml:250,abv:13,kcal:210,cost:4.00}
       ],
-      baselineWeek:{},deviations:{},completed:[],startAt:Date.now(),weatherAt:{}};
+      baselineWeek:{},deviations:{},completed:[],startAt:Date.now(),weatherAt:{},diary:{}};
   }
   function load(){try{const r=JSON.parse(localStorage.getItem("onward.v3"));if(r&&r.v===3)return r;}catch(e){}return null;}
   function save(){try{localStorage.setItem("onward.v3",JSON.stringify(state));}catch(e){toast("Couldn’t save — storage blocked");}}
@@ -845,24 +854,6 @@
       +'<text x="'+left+'" y="'+(H-6)+'" fill="#7E92AB" font-size="9">'+fmtDate(pts[0].label)+'</text>'
       +'<text x="'+right+'" y="'+(H-6)+'" fill="#7E92AB" font-size="9" text-anchor="end">'+fmtDate(pts[pts.length-1].label)+'</text></svg>';
   }
-  function chartBars(s,metric){
-    if(s.length<1)return '<div class="muted" style="text-align:center;padding:34px 0">No days yet.</div>';
-    const W=320,H=170,top=14,bottom=H-24,left=10,right=W-10;
-    const r=rates(),baseL=r[metric]||1;
-    let maxY=baseL*1.15;
-    const n=s.length,gap=n>40?0.5:2,bw=Math.max(1,Math.min(28,(right-left)/n-gap));
-    const ny=y=>bottom-(bottom-top)*(y/maxY);
-    let bars='';
-    s.forEach((d,i)=>{const x=left+(right-left)*(i/n),v=d.avoided[metric],y=ny(v),h=bottom-y;const col=d.status==='deviation'?'#E8B65A':'#4FB3A6';if(v>0)bars+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(0,h).toFixed(1)+'" rx="1" fill="'+col+'"/>';});
-    const by=ny(baseL);
-    return '<svg viewBox="0 0 '+W+' '+H+'">'
-      +'<line x1="'+left+'" y1="'+bottom+'" x2="'+right+'" y2="'+bottom+'" stroke="#26405C"/>'+bars
-      +'<line x1="'+left+'" y1="'+by.toFixed(1)+'" x2="'+right+'" y2="'+by.toFixed(1)+'" stroke="#C9D6E5" stroke-width="1.2" stroke-dasharray="4 4"/>'
-      +'<text x="'+right+'" y="'+(by-4).toFixed(1)+'" fill="#C9D6E5" font-size="9" text-anchor="end">a full clear day</text>'
-      +'<text x="'+left+'" y="'+(H-6)+'" fill="#7E92AB" font-size="9">'+fmtDate(s[0].iso)+'</text>'
-      +'<text x="'+right+'" y="'+(H-6)+'" fill="#7E92AB" font-size="9" text-anchor="end">'+fmtDate(s[s.length-1].iso)+'</text></svg>';
-  }
-
   function basketLabel(b){const m=drinkMap();return Object.keys(b||{}).filter(id=>b[id]>0).map(id=>b[id]+'×'+(m[id]?m[id].alias:'?')).join(' · ');}
 
   function conditions(A,todayInfo){
@@ -961,12 +952,15 @@
     const recent=A.series.slice().reverse().slice(0,60);
     $("#dayList").innerHTML=recent.length?recent.map(d=>{
       let tag,cls,sub="";
-      if(d.status==='clear'){tag="Clear";cls="clear";}
-      else if(d.status==='deviation'){tag="Weather";cls="dev";sub=basketLabel(d.dev)+" · salvaged "+fmtMoney(d.avoided.money);}
+      if(d.status==='clear'){tag="Made good";cls="clear";}
+      else if(d.status==='deviation'){tag="Weather";cls="dev";const bl=basketLabel(d.dev),parts=bl?bl.split(' \u00b7 '):[];const cap=parts.length>2?parts[0]+' \u00b7 +'+(parts.length-1)+' more':bl;sub=cap+" \u00b7 salvaged "+fmtMoney(d.avoided.money);}
       else{tag="Today";cls="";sub="under way";}
-      return '<div class="day" data-iso="'+d.iso+'"><div class="date">'+fmtDate(d.iso)+(sub?'<small>'+sub+'</small>':'')+'</div><span class="tag '+cls+'">'+tag+'</span></div>';
+      const de=(state.diary&&state.diary[d.iso]);
+      const logpill=de?'<span class="tag log logtag" data-iso="'+d.iso+'">Log \u203a</span>':'';
+      return '<div class="day" data-iso="'+d.iso+'"><div class="date">'+fmtDate(d.iso)+(sub?'<small>'+sub+'</small>':'')+'</div>'+logpill+'<span class="tag '+cls+'">'+tag+'</span></div>';
     }).join(""):'<div class="muted" style="padding:10px 0">No days yet.</div>';
     document.querySelectorAll('.day').forEach(el=>el.onclick=()=>editDay(el.dataset.iso));
+    document.querySelectorAll('.logtag').forEach(el=>el.onclick=(e)=>{e.stopPropagation();openDiary(el.dataset.iso);});
     renderTrends();
   }
   function voyageBreakdown(){
@@ -1044,62 +1038,6 @@
     $("#mLog").onclick=()=>voyageSheet(rung,false);
     $("#mClose").onclick=closeModal;
   }
-  function chartTrack(SD){
-    const ports=PORTS,N=ports.length;
-    if(!N)return '<div class="muted" style="text-align:center;padding:34px 0">Sail a leg and your stage scores appear here.</div>';
-    const trimByIdx={};SD.stages.forEach(s=>{trimByIdx[s.destIdx]=s.trim;});
-    const curIdx=SD.curIdx;
-    const W=320,H=190,top=34,bottom=H-26,left=16,right=W-10;
-    const slotW=(right-left)/N,bw=Math.min(26,slotW*0.6);
-    const ny=v=>bottom-(bottom-top)*Math.max(0,Math.min(1,v));
-    const by=ny(1),cur=ports[curIdx]||ports[N-1];
-    let s='<svg viewBox="0 0 '+W+' '+H+'">';
-    s+='<text x="'+left+'" y="14" fill="#5FD0C5" font-size="10">Leg '+(curIdx+1)+' of '+N+' \u00b7 '+cur.name+'</text>';
-    s+='<line x1="'+left+'" y1="'+by.toFixed(1)+'" x2="'+right+'" y2="'+by.toFixed(1)+'" stroke="#C9D6E5" stroke-dasharray="3 4" opacity=".4"/>';
-    s+='<text x="'+right+'" y="'+(by-3).toFixed(1)+'" fill="#7E92AB" font-size="8" text-anchor="end">100%</text>';
-    s+='<line x1="'+left+'" y1="'+bottom+'" x2="'+right+'" y2="'+bottom+'" stroke="#26405C"/>';
-    for(let i=0;i<N;i++){
-      const cx=left+slotW*i+slotW/2,x=cx-bw/2;
-      if(i<curIdx){const t=trimByIdx[i]!=null?trimByIdx[i]:1,y=ny(t);
-        s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-y).toFixed(1)+'" rx="2" fill="#5FD0C5"/>';
-        s+='<text x="'+cx.toFixed(1)+'" y="'+(y-3).toFixed(1)+'" fill="#9fb3c8" font-size="7.5" text-anchor="middle">'+Math.round(t*100)+'</text>';}
-      else if(i===curIdx){const has=SD.current.days>0,t=has?SD.current.trim:1,y=ny(t);
-        if(has){s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-y).toFixed(1)+'" rx="2" fill="#E8B65A"/>';
-          s+='<text x="'+cx.toFixed(1)+'" y="'+(y-3).toFixed(1)+'" fill="#E8B65A" font-size="7.5" text-anchor="middle">'+Math.round(t*100)+'</text>';}
-        else{const gy=ny(1);s+='<rect x="'+x.toFixed(1)+'" y="'+gy.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-gy).toFixed(1)+'" rx="2" fill="none" stroke="#E8B65A" stroke-opacity=".55" stroke-dasharray="2 3"/>';}}
-      else {const y=ny(1);s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-y).toFixed(1)+'" rx="2" fill="none" stroke="#26405C" stroke-dasharray="2 3"/>';}
-      s+='<text x="'+cx.toFixed(1)+'" y="'+(H-8)+'" fill="#7E92AB" font-size="8" text-anchor="middle">'+(i+1)+'</text>';
-    }
-    return s+'</svg>';
-  }
-  function chartVoyages(metric){
-    const r=rates(),b=ladderBounds(),A=aggregate(),bd=voyageBreakdown(),byRung={};bd.forEach(v=>byRung[v.rung]=v);
-    const base=metric==='money'?r.money:r.units,key=metric;
-    const slots=LADDER.map((L,rg)=>({name:passageById(L.id).title,potential:L.len*base,actual:byRung[rg]?byRung[rg][key]:0,reached:A.made>=b.ends[rg],current:A.made>=b.starts[rg]&&A.made<b.ends[rg]}));
-    if(A.made>=b.total&&byRung[99])slots.push({name:'Open',potential:byRung[99][key],actual:byRung[99][key],reached:false,current:true});
-    const W=320,H=190,top=24,bottom=H-26,left=16,right=W-10,N=slots.length;
-    let maxP=1;slots.forEach(s=>{maxP=Math.max(maxP,s.potential,s.actual);});
-    const ny=v=>bottom-(bottom-top)*Math.min(1,v/maxP);
-    const slotW=(right-left)/N,bw=Math.min(30,slotW*0.6);
-    const fmt=metric==='money'?(v=>fmtMoney(v)):(v=>fmtU(v)+' drift');
-    let s='<svg viewBox="0 0 '+W+' '+H+'">';
-    s+='<text x="'+left+'" y="13" fill="#7E92AB" font-size="9">'+fmt(A.banked[key])+' banked all told</text>';
-    s+='<line x1="'+left+'" y1="'+bottom+'" x2="'+right+'" y2="'+bottom+'" stroke="#26405C"/>';
-    slots.forEach((sl,i)=>{
-      const cx=left+slotW*i+slotW/2,x=cx-bw/2,potY=ny(sl.potential),actY=ny(sl.actual);
-      if(sl.current){
-        if(sl.potential>0)s+='<rect x="'+x.toFixed(1)+'" y="'+potY.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-potY).toFixed(1)+'" rx="2" fill="#E8B65A" opacity="0.10"/><rect x="'+x.toFixed(1)+'" y="'+potY.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-potY).toFixed(1)+'" rx="2" fill="none" stroke="#E8B65A" stroke-opacity="0.55" stroke-dasharray="2 3"/>';
-        if(sl.actual>0)s+='<rect x="'+x.toFixed(1)+'" y="'+actY.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-actY).toFixed(1)+'" rx="2" fill="#E8B65A"/>';
-      } else if(sl.reached){
-        if(sl.potential>0)s+='<rect x="'+x.toFixed(1)+'" y="'+potY.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-potY).toFixed(1)+'" rx="2" fill="#5FD0C5" opacity="0.13"/>';
-        if(sl.actual>0)s+='<rect x="'+x.toFixed(1)+'" y="'+actY.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-actY).toFixed(1)+'" rx="2" fill="#5FD0C5"/>';
-      } else if(sl.potential>0){
-        s+='<rect x="'+x.toFixed(1)+'" y="'+potY.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-potY).toFixed(1)+'" rx="2" fill="none" stroke="#26405C" stroke-dasharray="2 3"/>';
-      }
-      s+='<text x="'+cx.toFixed(1)+'" y="'+(H-8)+'" fill="#7E92AB" font-size="8" text-anchor="middle">'+(i+1)+'</text>';
-    });
-    return s+'</svg>';
-  }
   const AW_DAYS=[[1,'Under Way'],[3,'Finding Your Feet'],[7,'First Week'],[14,'A Fortnight On'],[30,'Able Seaman'],[60,'Seasoned Hand'],[100,'The Hundred'],[150,'Old Salt'],[200,'Far From Shore'],[300,'Master Mariner'],[365,'A Year and a Day'],[500,'Deep Water'],[672,'Round the World'],[1000,'The Thousand']];
   const AW_SALV=[[25,'First Salvage'],[100,'A Full Chest'],[250,'Quartermaster'],[500,'Treasure Hold'],[1000,'King\u2019s Ransom']];
   const AW_DRIFT=[[25,'Steady Hand'],[100,'True Course'],[250,'Weathered Sailor'],[500,'Iron Helm'],[1000,'Unshakeable']];
@@ -1147,35 +1085,127 @@
     let h='<div class="eyebrow">'+(one?'A new honour':'New honours')+'</div>';
     if(one){h+='<h2>'+items[0].label+'</h2><p>'+awardFlavour(items[0])+'</p>';}
     else{h+='<h2>Well earned</h2><p>You\u2019ve come into '+items.length+' new honours:</p><div class="awwrap" style="margin:10px 0">'+items.map(i=>'<span class="award on"><b>'+i.label+'</b><small>'+i.cat+'</small></span>').join('')+'</div>';}
-    h+='<button class="btn primary" id="mClose">Log it with pride</button>';
-    modal(h);$("#mClose").onclick=closeModal;
+    h+='<button class="btn primary" id="mClose">Log it with pride</button><button class="btn quiet" id="mLog">Add a line to the log</button>';
+    modal(h);$("#mClose").onclick=closeModal;$("#mLog").onclick=()=>openDiary(todayISO());
+  }
+  function journeyDays(){
+    const sr=series();
+    if(!sr.length)return [];
+    const pm=portMarks(),portByDay={};pm.forEach(m=>{if(m.reached&&portByDay[m.day]==null)portByDay[m.day]=m.name;});
+    const out=[];let made=0;
+    sr.forEach(d=>{
+      const clean=d.status==='clear',weather=d.status==='deviation',pending=d.status==='pending';
+      const rung=voyageContext(made).rung;
+      let port=null;
+      if(clean){made++;if(portByDay[made])port=portByDay[made];}
+      out.push({iso:d.iso,clean:clean,weather:weather,pending:pending,rung:rung,made:made,port:port,counted:!!d.counted,av:d.avoided||{units:0,money:0,kcal:0}});
+    });
+    return out;
+  }
+  function chartSalvage(unit){
+    const jd=journeyDays();
+    if(!jd.length)return '<div class="muted" style="text-align:center;padding:30px 0">Cast off, and your salvage line begins here.</div>';
+    const key=(unit==='money')?'money':'units';
+    const r=rates(),rate=r[key];
+    const N=jd.length;let cum=[],c=0;jd.forEach(d=>{if(d.counted)c+=(d.av[key]||0);cum.push(c);});
+    const total=c,maxv=Math.max(1,N*rate,total);
+    const fmt=unit==='money'?fmtMoney:(v=>fmtU(v)+' drift');
+    const W=320,H=200,left=16,right=308,top=54,bottom=172;
+    const X=i=>N<=1?left:left+(right-left)*(i/(N-1));
+    const Y=v=>bottom-(bottom-top)*Math.max(0,Math.min(1,v/maxv));
+    let s='<svg viewBox="0 0 '+W+' '+H+'">';
+    s+='<text x="'+left+'" y="26" fill="#E8B65A" font-size="20" font-weight="600">'+fmt(total)+'</text>';
+    s+='<text x="'+left+'" y="42" fill="#7E92AB" font-size="9">salvage made good \u00b7 '+N+' day'+(N===1?'':'s')+' at sea</text>';
+    s+='<line x1="'+X(0).toFixed(1)+'" y1="'+Y(rate).toFixed(1)+'" x2="'+X(N-1).toFixed(1)+'" y2="'+Y(N*rate).toFixed(1)+'" stroke="#7E92AB" stroke-width="1" stroke-dasharray="2 3" opacity="0.5"/>';
+    s+='<text x="'+X(N-1).toFixed(1)+'" y="'+(Y(N*rate)-3).toFixed(1)+'" fill="#7E92AB" font-size="7" text-anchor="end">fair winds</text>';
+    let pts=[];for(let i=0;i<N;i++)pts.push([X(i),Y(cum[i])]);
+    let area='M'+X(0).toFixed(1)+','+bottom+' ';pts.forEach(p=>area+='L'+p[0].toFixed(1)+','+p[1].toFixed(1)+' ');area+='L'+X(N-1).toFixed(1)+','+bottom+' Z';
+    s+='<path d="'+area+'" fill="#5FD0C5" opacity="0.16"/>';
+    s+='<polyline points="'+pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')+'" fill="none" stroke="#5FD0C5" stroke-width="2"/>';
+    for(let i=0;i<N;i++){if(jd[i].weather)s+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(cum[i]).toFixed(1)+'" r="2" fill="#E8B65A"/>';}
+    for(let i=0;i<N;i++){if(jd[i].port)s+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(cum[i]).toFixed(1)+'" r="3.2" fill="#16263B" stroke="#E8B65A" stroke-width="1.5"/>';}
+    s+='<line x1="'+left+'" y1="'+bottom+'" x2="'+right+'" y2="'+bottom+'" stroke="#26405C"/>';
+    return s+'</svg>';
+  }
+  function chartRibbon(){
+    const jd=journeyDays();
+    if(!jd.length)return '<div class="muted" style="text-align:center;padding:24px 0">Your run appears here once you are under way.</div>';
+    const bands=[];jd.forEach(d=>{const last=bands[bands.length-1];if(last&&last.rung===d.rung)last.days.push(d);else bands.push({rung:d.rung,days:[d]});});
+    const cs=15,gap=4;let html='';
+    bands.forEach(band=>{
+      const L=LADDER[band.rung],title=L?passageById(L.id).title:'Open water';
+      const cleanCt=band.days.filter(d=>d.clean).length;
+      html+='<div style="font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:#5FD0C5;margin:12px 0 6px">'+title+' \u00b7 '+cleanCt+'</div>';
+      html+='<div style="display:flex;flex-wrap:wrap;gap:'+gap+'px">';
+      band.days.forEach(d=>{
+        if(d.pending)html+='<div style="width:'+cs+'px;height:'+cs+'px;border-radius:4px;border:1.4px dashed #7E92AB;box-sizing:border-box"></div>';
+        else if(d.weather)html+='<div style="width:'+cs+'px;height:'+cs+'px;border-radius:4px;border:1.4px solid #E8B65A;opacity:.85;box-sizing:border-box"></div>';
+        else{const dot=d.port?'<div style="position:absolute;top:-2px;right:-2px;width:6px;height:6px;border-radius:50%;background:#16263B;border:1.4px solid #E8B65A;box-sizing:border-box"></div>':'';html+='<div style="position:relative;width:'+cs+'px;height:'+cs+'px;border-radius:4px;background:#5FD0C5;opacity:.9">'+dot+'</div>';}
+      });
+      html+='</div>';
+    });
+    return html;
+  }
+  function salvPun(m){
+    if(m<25)return 'the first coins clink in the chest';
+    if(m<100)return 'a haul worth its salt';
+    if(m<250)return 'a whale of a haul';
+    if(m<500)return 'Neptune himself is taking notice';
+    if(m<1000)return 'the envy of every smuggler afloat';
+    return 'a king\u2019s ransom battened down in the hold';
+  }
+  function renderLedger(){
+    const SD=stageData(),A=SD.A;
+    if(!SD.hasBase)return '<div class="card"><div class="muted" style="text-align:center;padding:30px 14px;line-height:1.5">Set <b>Your usual week</b> in the Locker \u2014 then your hold fills here.</div></div>';
+    const slip=localISO(new Date(state.startAt||parseISO(state.startISO).getTime()));
+    const atSea=Math.max(0,daysBetween(slip,todayISO()));
+    const money=A.banked.money,units=A.banked.units,kg=A.banked.kcal/7700;
+    const all=allAwards();
+    const landfalls=all.filter(a=>a.cat==='Landfalls'&&a.earned).length;
+    const honours=all.filter(a=>a.cat!=='Landfalls'&&a.earned).length;
+    let nextS=null;for(const t of AW_SALV){if(money<t[0]){nextS={amt:t[0],name:t[1]};break;}}
+    const chestSVG='<svg viewBox="0 0 60 56" width="52" height="48"><path d="M6,28 Q6,12 30,12 Q54,12 54,28 Z" fill="none" stroke="#E8B65A" stroke-width="1.6"/><rect x="6" y="28" width="48" height="22" rx="3" fill="none" stroke="#E8B65A" stroke-width="1.6"/><line x1="6" y1="36" x2="54" y2="36" stroke="#E8B65A" stroke-width="1.4"/><rect x="26" y="32" width="8" height="9" rx="1.5" fill="#E8B65A"/></svg>';
+    let progressHTML;
+    if(nextS){const frac=Math.max(0,Math.min(1,money/nextS.amt));
+      progressHTML='<div style="display:flex;justify-content:space-between;font-size:9px;color:#7E92AB;margin:0 0 5px"><span>'+fmtMoney(nextS.amt-money)+' to <span style="color:#E8B65A">'+nextS.name+'</span></span><span>'+fmtMoney(nextS.amt)+'</span></div><div style="height:7px;border-radius:3.5px;background:#20344d;overflow:hidden"><div style="height:100%;width:'+(frac*100).toFixed(1)+'%;background:#E8B65A;border-radius:3.5px"></div></div>';
+    } else {progressHTML='<div style="font-size:9px;color:#E8B65A">King\u2019s Ransom banked \u2014 the chest overflows.</div>';}
+    let flags='';for(let i=0;i<landfalls;i++)flags+='<span style="color:#E8B65A;font-size:15px;line-height:1">\u2691</span>';
+    if(!landfalls)flags='<span style="color:#7E92AB;font-size:10px">no landfalls yet \u2014 your first is near</span>';
+    let dots='';const dn=Math.min(honours,14);for(let i=0;i<dn;i++)dots+='<span style="display:inline-block;width:14px;height:14px;border-radius:50%;border:1.4px solid #5FD0C5;position:relative;box-sizing:border-box"><span style="position:absolute;left:4px;top:4px;width:4px;height:4px;border-radius:50%;background:#5FD0C5"></span></span>';
+    if(honours>14)dots+='<span style="color:#7E92AB;font-size:10px;align-self:center">+'+(honours-14)+'</span>';
+    if(!honours)dots='<span style="color:#7E92AB;font-size:10px">none earned yet</span>';
+    return ''
+      +'<div class="card"><div style="font-size:9px;letter-spacing:.16em;color:#7E92AB">SINCE '+fmtDate(slip).toUpperCase()+' \u00b7 SLIPPED THE LINES</div>'
+      +'<div style="font-size:32px;font-weight:300;color:#C9D6E5;margin-top:6px">'+atSea+' <span style="font-size:13px;color:#7E92AB;font-weight:400">day'+(atSea===1?'':'s')+' at sea</span></div></div>'
+      +'<div class="card"><div style="font-size:9px;letter-spacing:.16em;color:#7E92AB">THE CHEST</div>'
+      +'<div style="display:flex;align-items:center;gap:14px;margin:10px 0 14px">'+chestSVG
+      +'<div><div style="font-size:24px;color:#E8B65A;font-weight:600">'+fmtMoney(money)+'</div><div style="font-size:10px;color:#7E92AB;margin-top:2px">salvage banked \u00b7 safe in the hold</div><div style="font-size:11px;color:#C9D6E5;margin-top:3px">'+salvPun(money)+'</div></div></div>'
+      +progressHTML+'</div>'
+      +'<div style="display:flex;gap:14px">'
+      +'<div class="card" style="flex:1;margin-top:0"><div style="font-size:9px;letter-spacing:.14em;color:#7E92AB">BALLAST SHED</div><div style="font-size:22px;color:#C9D6E5;margin-top:8px">'+kg.toFixed(1)+' <span style="font-size:12px;color:#7E92AB">kg</span></div><div style="font-size:9.5px;color:#7E92AB;margin-top:4px">cast overboard \u00b7 lighter</div></div>'
+      +'<div class="card" style="flex:1;margin-top:0"><div style="font-size:9px;letter-spacing:.14em;color:#7E92AB">DRIFT HELD OFF</div><div style="font-size:22px;color:#C9D6E5;margin-top:8px">'+fmtU(units)+' <span style="font-size:12px;color:#7E92AB">units</span></div><div style="font-size:9.5px;color:#7E92AB;margin-top:4px">never crossed the bow</div></div>'
+      +'</div>'
+      +'<div class="card"><div style="font-size:9px;letter-spacing:.16em;color:#7E92AB">THE MANIFEST</div>'
+      +'<div style="font-size:14px;color:#C9D6E5;margin:12px 0 6px">'+landfalls+' <span style="font-size:11px;color:#7E92AB">landfall'+(landfalls===1?'':'s')+' made</span></div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:6px">'+flags+'</div>'
+      +'<div style="font-size:14px;color:#C9D6E5;margin:16px 0 6px">'+honours+' <span style="font-size:11px;color:#7E92AB">honour'+(honours===1?'':'s')+' earned</span></div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:8px">'+dots+'</div>'
+      +'<div style="display:flex;justify-content:space-between;border-top:1px solid #26405C;margin-top:14px;padding-top:12px"><span style="font-size:11.5px;color:#7E92AB">Longest clear run</span><span style="font-size:11.5px;color:#5FD0C5">'+A.best+(A.best===1?' day':' days')+'</span></div></div>';
   }
   function renderTrends(){
     if(!state)return;
     PORTS=currentPorts(aggregate().made);
-    const honours=(metric==='honours');
-    $("#cumCard").style.display=honours?'none':'';
-    $("#byVoyageCard").style.display=honours?'none':'';
-    $("#ledgerCard").style.display=honours?'none':'';
-    $("#honoursCard").style.display=honours?'':'none';
-    if(honours){renderAwards();return;}
-    const SD=stageData(),A=SD.A,r=SD.r;
-    const haul=(metric==='haul');
-    $("#haulSeg").style.display=haul?'':'none';
-    $("#cumTitle").textContent=haul?'Haul by voyage':'Trim by leg';
-    $("#cumNote").style.display=haul?'none':'block';
-    if(SD.hasBase){
-      $("#vTrim").textContent=Math.round(SD.voyage*100)+"%";
-      $("#vDrift").textContent=fmtU(A.banked.units)+" units";
-      $("#vSalv").textContent=fmtMoney(A.banked.money);
-      $("#vBallast").textContent=(A.banked.kcal/7700).toFixed(1)+" kg ("+fmtK(A.banked.kcal)+" kcal)";
-    } else {["vTrim","vDrift","vSalv","vBallast"].forEach(id=>$("#"+id).textContent="—");}
-    $("#vBest").textContent=A.best+(A.best===1?" day":" days");
-    {const _slip=localISO(new Date(state.startAt||parseISO(state.startISO).getTime()));$("#ledgerNote").textContent="Slipped the lines "+fmtDate(_slip)+" · "+Math.max(0,daysBetween(_slip,todayISO()))+" days at sea.";}
+    const view=metric;
+    $("#trendsView").style.display=view==='trends'?'':'none';
+    $("#ledgerView").style.display=view==='ledger'?'':'none';
+    $("#honoursCard").style.display=view==='honours'?'':'none';
+    if(view==='honours'){renderAwards();return;}
+    if(view==='ledger'){$("#ledgerBody").innerHTML=renderLedger();return;}
+    const SD=stageData();
     renderByVoyage();
-    if(!SD.hasBase){$("#cumChart").innerHTML='<div class="muted" style="text-align:center;padding:30px 14px;line-height:1.5">Set <b>Your usual week</b> in the Locker — then your charts appear here.</div>';return;}
-    if(haul){$("#cumChart").innerHTML=chartVoyages(haulUnit);return;}
-    $("#cumChart").innerHTML=chartTrack(SD);
+    if(!SD.hasBase){$("#salvChart").innerHTML='<div class="muted" style="text-align:center;padding:30px 14px;line-height:1.5">Set <b>Your usual week</b> in the Locker — then your charts appear here.</div>';$("#runRibbon").innerHTML='';return;}
+    $("#salvChart").innerHTML=chartSalvage(haulUnit);
+    $("#runRibbon").innerHTML=chartRibbon();
   }
 
   /* ---- actions ---- */
@@ -1262,12 +1292,13 @@
       '<div class="field"><label>When the weather set in (optional)</label><input id="e_time" type="time" value="'+_wtime+'"></div>'+
       '<div id="e_rows">'+stepperRows(values)+'</div>'+
       '<div class="summary" id="e_calc"></div>'+
+      diaryFieldsHTML(iso,existing)+
       '<button class="btn primary" id="e_save">Save</button>'+
       (existing?'<button class="btn quiet" id="e_clear">Set as a clear day</button>':'')
     );
     function calc(){const c=basketTotals(values),r=rates();const total=Object.keys(values).reduce((a,k)=>a+(values[k]||0),0);if(total===0){$("#e_calc").innerHTML="A <b>clear day</b> — fair sailing.";}else{$("#e_calc").innerHTML="This day <b>"+fmtU(c.units)+" drift</b> · "+fmtMoney(c.money)+" · "+Math.round(c.kcal)+" ballast<br><span style='color:var(--faint)'>still salvaged "+fmtMoney(Math.max(0,r.money-c.money))+" against your usual</span>";}}
-    bindSteppers(values,calc);calc();
-    $("#e_save").onclick=()=>{const d=$("#e_date").value||iso;if(d!==iso){delete state.deviations[iso];const ci=state.completed.indexOf(iso);if(ci>=0)state.completed.splice(ci,1);}const basket={};let total=0;Object.keys(values).forEach(k=>{if(values[k]>0){basket[k]=values[k];total+=values[k];}});if(!state.weatherAt)state.weatherAt={};if(d!==iso)delete state.weatherAt[iso];if(total>0){state.deviations[d]=basket;const ci=state.completed.indexOf(d);if(ci>=0)state.completed.splice(ci,1);const _et=($("#e_time")&&$("#e_time").value)||"20:00";state.weatherAt[d]=new Date(d+"T"+_et).getTime();}else{delete state.deviations[d];delete state.weatherAt[d];if(d===todayISO()&&state.completed.indexOf(d)<0)state.completed.push(d);}const newWeatherToday=(d===todayISO()&&total>0&&!existing);save();closeSheet();render();if(newWeatherToday){weatherReassurance();}else{toast("Logged");}};
+    bindSteppers(values,calc);calc();wireBaro();
+    $("#e_save").onclick=()=>{const d=$("#e_date").value||iso;if(d!==iso){delete state.deviations[iso];const ci=state.completed.indexOf(iso);if(ci>=0)state.completed.splice(ci,1);}const basket={};let total=0;Object.keys(values).forEach(k=>{if(values[k]>0){basket[k]=values[k];total+=values[k];}});if(!state.weatherAt)state.weatherAt={};if(d!==iso)delete state.weatherAt[iso];if(total>0){state.deviations[d]=basket;const ci=state.completed.indexOf(d);if(ci>=0)state.completed.splice(ci,1);const _et=($("#e_time")&&$("#e_time").value)||"20:00";state.weatherAt[d]=new Date(d+"T"+_et).getTime();}else{delete state.deviations[d];delete state.weatherAt[d];if(d===todayISO()&&state.completed.indexOf(d)<0)state.completed.push(d);}const newWeatherToday=(d===todayISO()&&total>0&&!existing);if(d!==iso&&state.diary)delete state.diary[iso];collectDiary(d);save();closeSheet();render();if(newWeatherToday){weatherReassurance();}else{toast("Logged");}};
     const ec=$("#e_clear");if(ec)ec.onclick=()=>{delete state.deviations[iso];if(state.weatherAt)delete state.weatherAt[iso];save();closeSheet();render();toast("Set clear");};
   }
 
@@ -1351,25 +1382,47 @@
     else if(slot==='w')watchGreeting();
     else duskGreeting();
   }
+  const BARO=["Stormy","Rain","Change","Fair","Set Fair"];
+  function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function diaryFieldsHTML(iso,weather){
+    const e=(state.diary&&state.diary[iso])||{},sel=e.baro||0;
+    let dots='';for(let i=1;i<=5;i++){dots+='<button type="button" class="baro'+(sel===i?' on':'')+'" data-b="'+i+'"><span class="bdot"></span><span class="blab">'+BARO[i-1]+'</span></button>';}
+    return '<div class="diary"><div class="dlab">How\u2019s the barometer?</div><div class="baroRow">'+dots+'</div>'
+      +'<div class="dlab" style="margin-top:14px">'+(weather?'What blew in \u2014 and what\u2019s the plan?':'A line for the log')+'</div>'
+      +'<textarea id="d_note" class="dnote" rows="3" placeholder="'+(weather?'A line for next time\u2026':'What tested you? What held? Anything worth remembering\u2026')+'">'+(e.note?esc(e.note):'')+'</textarea></div>';
+  }
+  function wireBaro(){document.querySelectorAll('.baroRow .baro').forEach(b=>{b.onclick=()=>{const on=b.classList.contains('on');document.querySelectorAll('.baroRow .baro').forEach(x=>x.classList.remove('on'));if(!on)b.classList.add('on');};});}
+  function collectDiary(iso){const selEl=document.querySelector('.baroRow .baro.on'),baro=selEl?+selEl.dataset.b:0,nEl=$("#d_note"),note=nEl?nEl.value.trim():'';if(!baro&&!note){if(state.diary)delete state.diary[iso];}else{if(!state.diary)state.diary={};state.diary[iso]={baro:baro,note:note,at:Date.now()};}}
+  function cleanCongrats(A){const o=['Another day made good.','Well sailed.','A clean day in the book.'];if(A.leg>=2)o.push('That\u2019s '+A.leg+' days on the trot.');if(A.leg>=7)o.push(A.leg+' clean days running \u2014 real momentum now.');if(A.banked&&A.banked.money>0)o.push('The chest is a little heavier tonight.');if(A.best>1&&A.leg>=A.best)o.push('Your longest clear run yet \u2014 '+A.leg+' days.');return o[Math.floor(Math.random()*o.length)];}
+  function openDiary(iso){
+    const weather=!!(state.deviations&&state.deviations[iso]);
+    modal('<div class="eyebrow">The day\u2019s log</div><h2>'+fmtDate(iso)+'</h2>'+diaryFieldsHTML(iso,weather)+'<button class="btn primary" id="dSave">Save to the log</button><button class="btn quiet" id="dCancel">Close</button>');
+    wireBaro();
+    $("#dSave").onclick=()=>{collectDiary(iso);save();closeModal();render();};
+    $("#dCancel").onclick=closeModal;
+  }
   function dayClosedSummary(){
     const A=aggregate();PORTS=currentPorts(A.made);const V=voyageContext(A.made),r=rates();
-    let h='<div class="eyebrow">Day\u2019s run closed</div><h2>Well sailed.</h2>';
+    const iso=todayISO();
+    let h='<div class="eyebrow">Day\u2019s run closed</div><h2>'+cleanCongrats(A)+'</h2>';
     h+='<p>'+progressLine(A,V)+'</p>';
     const bits=[];if(r.money>0)bits.push('+'+fmtMoney(r.money)+' salvage');if(r.units>0)bits.push('+'+fmtU(r.units)+' drift held off');
     if(bits.length)h+='<p class="muted">Today\u2019s gain: '+bits.join(' \u00b7 ')+' \u2014 '+fmtMoney(A.banked.money)+' banked all told.</p>';
     const reached=PORTS.find(p=>p.d===A.made);
     if(reached)h+='<p><b>Landfall at '+reached.name+'.</b> A fresh chapter\u2019s open in the log \u2014 tap the chart to read it.</p>';
     else h+='<p>'+nextStepLine(A,V)+'</p>';
+    h+=diaryFieldsHTML(iso,false);
     h+='<button class="btn primary" id="mClose">Sail on</button>';
-    modal(h);$("#mClose").onclick=closeModal;
+    modal(h);wireBaro();$("#mClose").onclick=()=>{collectDiary(iso);save();closeModal();render();};
   }
   function weatherReassurance(){
     const A=aggregate();PORTS=currentPorts(A.made);const V=voyageContext(A.made);
     let h='<div class="eyebrow">Weather logged</div><h2>It happens to every sailor.</h2>';
     h+='<p>A weather day is part of the passage, not a failure of it. What you\u2019ve banked stays banked \u2014 '+progressLine(A,V)+'</p>';
     h+='<p>This leg resets, and your next clean day starts a fresh one. No ground lost on the voyage; just weather astern. Fair winds will come again.</p>';
+    const iso=todayISO();h+=diaryFieldsHTML(iso,true);
     h+='<button class="btn primary" id="mClose">Sail on</button>';
-    modal(h);$("#mClose").onclick=closeModal;
+    modal(h);wireBaro();$("#mClose").onclick=()=>{collectDiary(iso);save();closeModal();render();};
   }
 
   function loreOf(P){return {brief:(P.brief&&P.brief.length)?P.brief:["This passage follows "+P.title+" — "+P.era+". The full story is still being written."],ship:P.ship||"",crew:P.crew||"",sources:P.sources||""};}
@@ -1419,8 +1472,8 @@
     let h='<div class="eyebrow">Landfall</div><h2>'+P.title+' \u2014 complete</h2>';
     h+=last?'<p>You have closed the full circuit \u2014 every voyage on the chart, '+b.total+' clear days, the whole world sailed. From here the sea is open and endless, and entirely yours.</p>':'<p>You have made landfall. '+P.title+' is done, and a new voyage opens ahead \u2014 <b>'+A.made+'</b> clear days made good so far.</p>';
     if(!last){const n=rung+1;h+='<p class="muted">Next: '+passageById(LADDER[n].id).title+' \u2014 a '+LADDER[n].len+'-day passage. Trim resets to a fresh 100%; everything you have banked stays banked.</p>';}
-    h+='<button class="btn primary" id="mClose">Sail on</button>';
-    modal(h);$("#mClose").onclick=closeModal;
+    h+='<button class="btn primary" id="mClose">Sail on</button><button class="btn quiet" id="mLog">Add a line to the log</button>';
+    modal(h);$("#mClose").onclick=closeModal;$("#mLog").onclick=()=>openDiary(todayISO());
   }
     let toastT;function toast(m){const el=$("#toast");el.textContent=m;el.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("on"),1600);}
 
