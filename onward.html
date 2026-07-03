@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0E1A2B">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,8 +15,8 @@
 <style>
   :root{--ink:#0E1A2B;--slate:#16263B;--horizon:#1E3A52;--line:#26405C;--mist:#C9D6E5;--faint:#7E92AB;--beacon:#5FD0C5;--amber:#E8B65A;--danger:#E0746A;--pad:env(safe-area-inset-bottom,0px);}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
-  html,body{margin:0;height:100%;background:#000;}
-  body{background:radial-gradient(120% 60% at 50% -10%,#1A3047 0%,var(--ink) 55%) fixed;color:var(--mist);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior:none;}
+  html,body{margin:0;height:100%;background:var(--ink);}
+  body{background:radial-gradient(120% 60% at 50% -10%,#1A3047 0%,var(--ink) 55%);background-color:var(--ink);color:var(--mist);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior:none;}
   .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;}
   .app{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;overflow-x:clip;}
   .screen{flex:1;padding:calc(22px + env(safe-area-inset-top,0px)) 20px 104px;display:none;animation:fade .35s ease;}
@@ -27,6 +27,11 @@
   .screen.from-l{animation:slideInL .38s cubic-bezier(.22,.61,.36,1);}
   @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
   @media (prefers-reduced-motion:reduce){.screen{animation:none}}
+  #rotate{display:none;}
+  @media (orientation:landscape) and (max-height:520px){
+    .app,#gate{display:none !important;}
+    #rotate{display:flex;position:fixed;inset:0;z-index:500;background:var(--ink);color:var(--faint);align-items:center;justify-content:center;text-align:center;padding:40px;font-size:15px;line-height:1.55;}
+  }
   .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--faint);}
   h1{font-size:20px;font-weight:600;margin:2px 0 18px;}
   .muted{color:var(--faint);}
@@ -128,6 +133,13 @@
   .tag.clear{color:var(--beacon);border-color:#2b5650;}
   .tag.dev{color:var(--amber);border-color:#574420;}
   .tag.log{color:var(--beacon);border-color:#2b5650;background:rgba(95,208,197,.08);cursor:pointer;}
+  .dmark{flex:none;width:16px;display:flex;justify-content:center;align-items:center;}
+  .dmark .dot{width:11px;height:11px;border-radius:50%;}
+  .dmark.made .dot{background:var(--beacon);}
+  .dmark.dev .dot{background:transparent;border:1.6px solid var(--amber);box-sizing:border-box;}
+  .dmark.today .dot{background:transparent;border:1.6px solid var(--beacon);box-sizing:border-box;}
+  .barochip{flex:none;min-width:58px;text-align:center;background:var(--ink);border:1px solid var(--line);border-radius:11px;padding:4px 8px;font-size:10px;color:var(--mist);white-space:nowrap;}
+  .dicon{flex:none;display:flex;align-items:center;justify-content:center;padding:5px;cursor:pointer;margin:-2px -2px -2px 0;}
   .hz{display:flex;align-items:center;gap:12px;padding:13px 2px;border-bottom:1px solid var(--line);cursor:pointer;}
   .hz:last-of-type{border-bottom:0;}
   .hz .meta{flex:1;}.hz .meta b{font-size:15px;}.hz .meta small{display:block;color:var(--faint);font-size:11px;margin-top:2px;font-style:italic;}
@@ -214,17 +226,23 @@
   .gcrumb{font-size:11.5px;margin-top:14px;line-height:1.4;color:var(--faint);}
   .gcrumb .tgt{color:var(--amber);}
   .gcrumb .nx,.gcrumb .ar{color:#4a5d78;}
-  .diary{margin-top:16px;text-align:left}
+  .diary{margin-top:16px;margin-bottom:20px;text-align:left}
   .dlab{font-size:11px;color:var(--faint);margin-bottom:9px}
-  .baroRow{display:flex;justify-content:space-between;gap:2px}
-  .baro{flex:1;background:none;border:0;padding:4px 0 0;display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--faint);font:inherit;cursor:pointer}
-  .baro .bdot{width:9px;height:9px;border-radius:50%;background:var(--line);transition:background .15s,box-shadow .15s}
-  .baro .blab{font-size:8px;letter-spacing:.02em;text-align:center;line-height:1.1}
-  .baro.on{color:var(--beacon)}
-  .baro.on .bdot{background:var(--beacon);box-shadow:0 0 0 4px rgba(95,208,197,.16)}
+  .baroWrap{margin:6px 0 4px}
+  .baroReading{text-align:center;color:var(--beacon);font-weight:600;font-size:15px;margin-bottom:16px}
+  .baroSlide{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:linear-gradient(90deg,#6b7a91,var(--beacon));outline:none;margin:0;padding:0}
+  .baroSlide::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--slate);border:2px solid var(--beacon);cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.45)}
+  .baroSlide::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--slate);border:2px solid var(--beacon);cursor:pointer}
+  .baroScale{display:flex;justify-content:space-between;margin-top:16px}
+  .baroScale span{font-size:8px;color:var(--faint);flex:1;text-align:center}
+  .baroScale span:first-child{text-align:left}.baroScale span:last-child{text-align:right}
+  .dreason{font-size:12.5px;color:var(--mist);margin:22px 0 10px;line-height:1.45}
+  .diary + .btn{margin-top:4px}
   .dnote{width:100%;box-sizing:border-box;background:#0e1b2e;border:1px solid var(--line);border-radius:10px;color:var(--mist);padding:10px;font:inherit;font-size:16px;resize:none;margin-top:2px}
   .dsnip{color:var(--beacon);font-style:italic;opacity:.85}
+  .catchlist{max-height:46vh;overflow:auto;-webkit-overflow-scrolling:touch;margin:4px 0 14px}
   .liblink{font-size:11.5px;color:var(--beacon);margin-top:13px;padding-top:12px;border-top:1px solid #21364f;cursor:pointer;letter-spacing:.02em;}
+  .portslink{font-size:12px;color:var(--beacon);margin-top:14px;padding-top:13px;border-top:1px solid #21364f;cursor:pointer;letter-spacing:.02em;text-align:center;}
   .statusline{font-size:13.5px;line-height:1.5;margin:2px 2px 12px;color:var(--mist);}
   .statusline .lead{color:var(--beacon);font-weight:600;}
   .statusline.weather .lead{color:var(--amber);}
@@ -238,6 +256,7 @@
 </style>
 </head>
 <body>
+<div id="rotate">Turn your ship upright — Onward sails in portrait.</div>
 <div class="app">
 
   <section id="s-deck" class="screen on">
@@ -257,6 +276,7 @@
       <div class="vstrip"><div class="vslab" id="goalVoyLab"></div><div id="goalVoyStrip"></div></div>
       <div class="legwrap"><div class="leglab"><span class="l" id="goalLegLab"></span><span class="r" id="goalLegUnit"></span></div><div id="goalLegBar"></div></div>
       <div class="gcrumb" id="goalCrumb"></div>
+      <div class="portslink" id="portsLink">Ports of call &rsaquo;</div>
     </div>
     <div class="statusline" id="conditions">&mdash;</div>
     <div class="note" id="legTrim" style="margin:0 2px 6px"></div>
@@ -268,7 +288,7 @@
       <button class="btn primary" id="completeBtn"><span>Close the day&rsquo;s run</span></button>
       <div class="weatherlink" id="deviateBtn">Log today as weather</div>
     </div>
-    <div class="card portscard" style="margin-top:18px"><div class="portshead" id="portsHead">Ports of call</div><div id="wpList"></div><div id="afterLandfall"></div><div class="liblink" id="libHint">Tap for the ship&rsquo;s library &rsaquo;</div></div>
+    <div class="card" style="margin-top:18px"><div id="baroCard"></div></div>
   </section>
 
   <section id="s-trends" class="screen">
@@ -334,7 +354,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">build 30e</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">build 30l</span></p>
   </section>
 
   <nav class="tabs">
@@ -347,6 +367,7 @@
 
 <div class="scrim" id="scrim" data-r="0"><div class="sheet" id="sheet"></div></div>
 <div class="scrim" id="scrim2" style="z-index:70"><div class="sheet" id="sheet2"></div></div>
+<div class="scrim" id="portsScrim" style="z-index:60"><div class="sheet" id="portsSheet"><div class="portshead" id="portsHead">Ports of call</div><div id="wpList"></div><div id="afterLandfall"></div><div class="liblink" id="libHint">Tap for the ship&rsquo;s library &rsaquo;</div><button class="btn quiet" id="portsClose" style="margin-top:10px">Close</button></div></div>
 <div id="gate"><div class="hint"><svg class="chev" viewBox="0 0 24 24"><path d="M7 14l5-5 5 5"/></svg><span>Swipe up to set sail</span></div></div>
 <div class="toast" id="toast"></div>
 
@@ -607,7 +628,7 @@
         {id:"d2",alias:"Dropping Anchor",note:"Small — and suddenly you’re not moving.",ml:250,abv:5,kcal:120,cost:2.40},
         {id:"d3",alias:"Red Sky",note:"Fair to look at; a warning all the same.",ml:250,abv:13,kcal:210,cost:4.00}
       ],
-      baselineWeek:{},deviations:{},completed:[],startAt:Date.now(),weatherAt:{},diary:{}};
+      baselineWeek:{},deviations:{},completed:[],startAt:Date.now(),weatherAt:{},diary:{},lastActive:todayISO()};
   }
   function load(){try{const r=JSON.parse(localStorage.getItem("onward.v3"));if(r&&r.v===3)return r;}catch(e){}return null;}
   function save(){try{localStorage.setItem("onward.v3",JSON.stringify(state));}catch(e){toast("Couldn’t save — storage blocked");}}
@@ -874,6 +895,45 @@
   function startClocks(){if(clockTimer)return;tickClocks();clockTimer=setInterval(tickClocks,1000);}
   function stopClocks(){if(clockTimer){clearInterval(clockTimer);clockTimer=null;}}
   function updateSalvFill(){const sf=$("#salvFill");if(!sf)return;if(salvToday>0){const n=new Date(),mid=new Date(n.getFullYear(),n.getMonth(),n.getDate()).getTime();const frac=Math.max(0,Math.min(1,(Date.now()-mid)/86400000));sf.textContent="+"+((state&&state.currency)||"£")+(salvToday*frac).toFixed(2)+" today · filling";sf.style.display="";}else{sf.style.display="none";}}
+  function baroSeries(){const jd=journeyDays(),out=[];jd.forEach(function(d){const e=state.diary&&state.diary[d.iso];if(e&&e.baro>=1)out.push({iso:d.iso,baro:e.baro,weather:d.weather,port:!!d.port});});return out;}
+  function renderBaro(){
+    const el=$("#baroCard");if(!el)return;
+    let ser=baroSeries();if(ser.length>14)ser=ser.slice(ser.length-14);
+    if(ser.length<7){el.innerHTML='<div class="portshead">The barometer</div><div class="muted" style="padding:16px 2px 4px;font-size:12.5px;line-height:1.5">Your barometer trend fills in as the days pass \u2014 about a week of daily readings and it appears here.</div>';return;}
+    const vals=ser.map(function(x){return x.baro;}),N=vals.length;
+    const sm=vals.map(function(v,i){let lo=Math.max(0,i-2),a=0,c=0;for(let k=lo;k<=i;k++){a+=vals[k];c++;}return a/c;});
+    const avg=vals.reduce(function(a,b){return a+b;},0)/N;
+    const curLab=BARO[Math.max(0,Math.min(4,Math.round(vals[N-1])-1))];
+    const back=sm[Math.max(0,N-4)],diff=sm[N-1]-back;
+    const trend=diff>0.25?'rising \u2197':(diff<-0.25?'falling \u2198':'steady');
+    const W=320,H=232,L=64,Rr=W-14,T=16,B=H-30;
+    const X=function(i){return N<=1?L:L+(Rr-L)*i/(N-1);};
+    const Y=function(v){return B-(B-T)*(v-1)/4;};
+    let g='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;margin-top:6px">';
+    g+='<defs><linearGradient id="bvg" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#6b7a91"/><stop offset="0.55" stop-color="#7fb8c9"/><stop offset="1" stop-color="#5FD0C5"/></linearGradient>';
+    g+='<linearGradient id="bzone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5FD0C5" stop-opacity="0.09"/><stop offset="0.5" stop-color="#5FD0C5" stop-opacity="0.012"/><stop offset="1" stop-color="#6b7a91" stop-opacity="0.09"/></linearGradient>';
+    g+='<linearGradient id="bfill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5FD0C5" stop-opacity="0.16"/><stop offset="1" stop-color="#5FD0C5" stop-opacity="0"/></linearGradient></defs>';
+    g+='<rect x="'+L+'" y="'+T+'" width="'+(Rr-L)+'" height="'+(B-T)+'" fill="url(#bzone)"/>';
+    for(let i=0;i<5;i++){const ly=B-(B-T)*i/4;g+='<line x1="'+L+'" y1="'+ly.toFixed(0)+'" x2="'+Rr+'" y2="'+ly.toFixed(0)+'" stroke="#26405C" stroke-width="1" opacity="0.4"/><text x="'+(L-8)+'" y="'+(ly+3).toFixed(0)+'" font-size="7.5" fill="#3a5170" text-anchor="end">'+BARO[i]+'</text>';}
+    g+='<line x1="'+L+'" y1="'+Y(avg).toFixed(0)+'" x2="'+Rr+'" y2="'+Y(avg).toFixed(0)+'" stroke="#7E92AB" stroke-width="1" stroke-dasharray="2 4" opacity="0.5"/><text x="'+(Rr-2)+'" y="'+(Y(avg)-4).toFixed(0)+'" font-size="7" fill="#7E92AB" text-anchor="end">avg</text>';
+    const pts=sm.map(function(v,i){return [X(i),Y(v)];});
+    let area='M'+X(0).toFixed(0)+','+B+' '+pts.map(function(p){return 'L'+p[0].toFixed(0)+','+p[1].toFixed(0);}).join(' ')+' L'+X(N-1).toFixed(0)+','+B+' Z';
+    g+='<path d="'+area+'" fill="url(#bfill)"/>';
+    g+='<polyline points="'+pts.map(function(p){return p[0].toFixed(0)+','+p[1].toFixed(0);}).join(' ')+'" fill="none" stroke="url(#bvg)" stroke-width="2.5"/>';
+    ser.forEach(function(x,i){if(x.weather)return;g+='<circle cx="'+X(i).toFixed(0)+'" cy="'+Y(vals[i]).toFixed(0)+'" r="1.8" fill="#C9D6E5" opacity="0.4"/>';});
+    ser.forEach(function(x,i){if(x.weather)g+='<circle cx="'+X(i).toFixed(0)+'" cy="'+Y(vals[i]).toFixed(0)+'" r="4.3" fill="#16263B" stroke="#E8B65A" stroke-width="1.6"/>';});
+    const lx=X(N-1),ly=Y(sm[N-1]);
+    g+='<circle cx="'+lx.toFixed(0)+'" cy="'+ly.toFixed(0)+'" r="7" fill="#5FD0C5" opacity="0.22"/><circle cx="'+lx.toFixed(0)+'" cy="'+ly.toFixed(0)+'" r="3.4" fill="#5FD0C5"/></svg>';
+    const leg='<div style="display:flex;justify-content:center;gap:13px;margin-top:8px;flex-wrap:wrap">'
+      +'<span style="font-size:8.5px;color:var(--faint)"><span style="display:inline-block;width:14px;height:2px;background:#5FD0C5;vertical-align:middle;margin-right:4px"></span>3-day trend</span>'
+      +'<span style="font-size:8.5px;color:var(--faint)"><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#C9D6E5;opacity:.5;vertical-align:middle;margin-right:4px"></span>Daily</span>'
+      +'<span style="font-size:8.5px;color:var(--faint)"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;border:1.4px solid #E8B65A;box-sizing:border-box;vertical-align:middle;margin-right:4px"></span>Weather</span>'
+      +'</div>';
+    el.innerHTML='<div class="portshead">The barometer <span style="float:right;font-size:9px;letter-spacing:1px;color:#3a5170">LAST '+N+' DAYS</span></div>'
+      +'<div style="font-size:20px;color:var(--beacon);font-weight:600;margin:3px 0 2px">'+curLab+' <span style="font-size:11px;color:var(--faint);font-weight:400">\u00b7 '+trend+'</span></div>'+g+leg;
+  }
+  function openPorts(){$("#portsScrim").classList.add("on");const ps=$("#portsSheet");if(ps)ps.scrollTop=0;}
+  function closePorts(){$("#portsScrim").classList.remove("on");}
   function render(){
     if(!state){openSetup(true);return;}
     const A=aggregate(),r=rates(),t=todayISO();
@@ -947,20 +1007,26 @@
     const alf=$("#afterLandfall");
     if(!V.openSea&&V.rung<LADDER.length-1){const nv=passageById(LADDER[V.rung+1].id).title,thisT=passageById(V.id).title;alf.innerHTML='<div class="afterlf"><div class="alk">After landfall</div><div class="alv">Voyage '+(V.rung+2)+' \u2014 '+nv+'</div><div class="als">a new voyage to embark when '+thisT+' is done</div></div>';}
     else{alf.innerHTML='';}
+    renderBaro();
 
     $("#lCur").textContent=A.leg;$("#lBest").textContent=A.best;$("#lClear").textContent=A.made;
     const recent=A.series.slice().reverse().slice(0,60);
+    const _lf=landfallISOs();
+    const FLAG='<svg viewBox="0 0 16 20" width="13" height="16"><path d="M3 1 L3 19 M3 1 L13 4 L3 8 Z" fill="#E8B65A" stroke="#E8B65A" stroke-width="1.2" stroke-linejoin="round"/></svg>';
+    const BOOK='<svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="#5FD0C5" stroke-width="1.4"><path d="M2 3 L2 16 L9 18 L9 4 Z"/><path d="M9 4 L16 2 L16 15 L9 18"/><line x1="9" y1="4" x2="9" y2="18"/></svg>';
     $("#dayList").innerHTML=recent.length?recent.map(d=>{
-      let tag,cls,sub="";
-      if(d.status==='clear'){tag="Made good";cls="clear";}
-      else if(d.status==='deviation'){tag="Weather";cls="dev";const bl=basketLabel(d.dev),parts=bl?bl.split(' \u00b7 '):[];const cap=parts.length>2?parts[0]+' \u00b7 +'+(parts.length-1)+' more':bl;sub=cap+" \u00b7 salvaged "+fmtMoney(d.avoided.money);}
-      else{tag="Today";cls="";sub="under way";}
+      const land=_lf[d.iso];let mark,sub="";
+      if(d.status==='deviation'){mark='<span class="dmark dev"><span class="dot"></span></span>';const bl=basketLabel(d.dev),parts=bl?bl.split(' \u00b7 '):[];const cap=parts.length>2?parts[0]+' \u00b7 +'+(parts.length-1)+' more':bl;sub=cap+" \u00b7 salvaged "+fmtMoney(d.avoided.money);}
+      else if(d.status==='pending'||d.status==='future'){mark='<span class="dmark today"><span class="dot"></span></span>';sub="under way";}
+      else if(land){mark='<span class="dmark">'+FLAG+'</span>';sub="\u2691 Reached "+esc(land);}
+      else{mark='<span class="dmark made"><span class="dot"></span></span>';}
       const de=(state.diary&&state.diary[d.iso]);
-      const logpill=de?'<span class="tag log logtag" data-iso="'+d.iso+'">Log \u203a</span>':'';
-      return '<div class="day" data-iso="'+d.iso+'"><div class="date">'+fmtDate(d.iso)+(sub?'<small>'+sub+'</small>':'')+'</div>'+logpill+'<span class="tag '+cls+'">'+tag+'</span></div>';
+      let chip='';if(de&&de.baro){const lab=BARO[Math.max(0,Math.min(4,Math.round(de.baro)-1))];chip='<span class="barochip">'+lab+'</span>';}
+      const icon=(de&&de.note)?'<span class="dicon" data-iso="'+d.iso+'">'+BOOK+'</span>':'';
+      return '<div class="day" data-iso="'+d.iso+'">'+mark+'<div class="date">'+fmtDate(d.iso)+(sub?'<small>'+sub+'</small>':'')+'</div>'+icon+chip+'</div>';
     }).join(""):'<div class="muted" style="padding:10px 0">No days yet.</div>';
     document.querySelectorAll('.day').forEach(el=>el.onclick=()=>editDay(el.dataset.iso));
-    document.querySelectorAll('.logtag').forEach(el=>el.onclick=(e)=>{e.stopPropagation();openDiary(el.dataset.iso);});
+    document.querySelectorAll('.dicon').forEach(el=>el.onclick=(e)=>{e.stopPropagation();openDiary(el.dataset.iso);});
     renderTrends();
   }
   function voyageBreakdown(){
@@ -1085,7 +1151,7 @@
     let h='<div class="eyebrow">'+(one?'A new honour':'New honours')+'</div>';
     if(one){h+='<h2>'+items[0].label+'</h2><p>'+awardFlavour(items[0])+'</p>';}
     else{h+='<h2>Well earned</h2><p>You\u2019ve come into '+items.length+' new honours:</p><div class="awwrap" style="margin:10px 0">'+items.map(i=>'<span class="award on"><b>'+i.label+'</b><small>'+i.cat+'</small></span>').join('')+'</div>';}
-    h+='<button class="btn primary" id="mClose">Log it with pride</button><button class="btn quiet" id="mLog">Add a line to the log</button>';
+    h+='<button class="btn primary" id="mClose">Log it with pride</button><button class="btn quiet" id="mLog">Add a line to the diary</button>';
     modal(h);$("#mClose").onclick=closeModal;$("#mLog").onclick=()=>openDiary(todayISO());
   }
   function journeyDays(){
@@ -1281,7 +1347,7 @@
     const del=$("#dr_del");if(del)del.onclick=()=>{state.drinks=state.drinks.filter(d=>d.id!==id);save();drinksList(back);};
   }
 
-  function editDay(iso){
+  function editDay(iso,opts){opts=opts||{};
     const values=Object.assign({},state.deviations[iso]||{});
     const existing=!!state.deviations[iso];
     const _wt=(state.weatherAt&&state.weatherAt[iso])?new Date(state.weatherAt[iso]):(iso===todayISO()?new Date():new Date(parseISO(iso).getTime()+20*3600000));
@@ -1292,18 +1358,65 @@
       '<div class="field"><label>When the weather set in (optional)</label><input id="e_time" type="time" value="'+_wtime+'"></div>'+
       '<div id="e_rows">'+stepperRows(values)+'</div>'+
       '<div class="summary" id="e_calc"></div>'+
-      diaryFieldsHTML(iso,existing)+
+      diaryFieldsHTML(iso,isNoteDay(iso),existing)+
       '<button class="btn primary" id="e_save">Save</button>'+
       (existing?'<button class="btn quiet" id="e_clear">Set as a clear day</button>':'')
     );
     function calc(){const c=basketTotals(values),r=rates();const total=Object.keys(values).reduce((a,k)=>a+(values[k]||0),0);if(total===0){$("#e_calc").innerHTML="A <b>clear day</b> — fair sailing.";}else{$("#e_calc").innerHTML="This day <b>"+fmtU(c.units)+" drift</b> · "+fmtMoney(c.money)+" · "+Math.round(c.kcal)+" ballast<br><span style='color:var(--faint)'>still salvaged "+fmtMoney(Math.max(0,r.money-c.money))+" against your usual</span>";}}
     bindSteppers(values,calc);calc();wireBaro();
-    $("#e_save").onclick=()=>{const d=$("#e_date").value||iso;if(d!==iso){delete state.deviations[iso];const ci=state.completed.indexOf(iso);if(ci>=0)state.completed.splice(ci,1);}const basket={};let total=0;Object.keys(values).forEach(k=>{if(values[k]>0){basket[k]=values[k];total+=values[k];}});if(!state.weatherAt)state.weatherAt={};if(d!==iso)delete state.weatherAt[iso];if(total>0){state.deviations[d]=basket;const ci=state.completed.indexOf(d);if(ci>=0)state.completed.splice(ci,1);const _et=($("#e_time")&&$("#e_time").value)||"20:00";state.weatherAt[d]=new Date(d+"T"+_et).getTime();}else{delete state.deviations[d];delete state.weatherAt[d];if(d===todayISO()&&state.completed.indexOf(d)<0)state.completed.push(d);}const newWeatherToday=(d===todayISO()&&total>0&&!existing);if(d!==iso&&state.diary)delete state.diary[iso];collectDiary(d);save();closeSheet();render();if(newWeatherToday){weatherReassurance();}else{toast("Logged");}};
-    const ec=$("#e_clear");if(ec)ec.onclick=()=>{delete state.deviations[iso];if(state.weatherAt)delete state.weatherAt[iso];save();closeSheet();render();toast("Set clear");};
+    $("#e_save").onclick=()=>{const d=$("#e_date").value||iso;if(d!==iso){delete state.deviations[iso];const ci=state.completed.indexOf(iso);if(ci>=0)state.completed.splice(ci,1);}const basket={};let total=0;Object.keys(values).forEach(k=>{if(values[k]>0){basket[k]=values[k];total+=values[k];}});if(!state.weatherAt)state.weatherAt={};if(d!==iso)delete state.weatherAt[iso];if(total>0){state.deviations[d]=basket;const ci=state.completed.indexOf(d);if(ci>=0)state.completed.splice(ci,1);const _et=($("#e_time")&&$("#e_time").value)||"20:00";state.weatherAt[d]=new Date(d+"T"+_et).getTime();}else{delete state.deviations[d];delete state.weatherAt[d];if(d===todayISO()&&state.completed.indexOf(d)<0)state.completed.push(d);}const newWeatherToday=(d===todayISO()&&total>0&&!existing);if(d!==iso&&state.diary)delete state.diary[iso];collectDiary(d);save();closeSheet();render();if(opts.onDone){opts.onDone();}else if(newWeatherToday){weatherReassurance();}else{toast("Logged");}};
+    const ec=$("#e_clear");if(ec)ec.onclick=()=>{delete state.deviations[iso];if(state.weatherAt)delete state.weatherAt[iso];save();closeSheet();render();if(opts.onDone){opts.onDone();}else{toast("Set clear");}};
   }
 
-  function backup(){const data=JSON.stringify(state);sheet("<h2>The papers</h2><p>Copy this somewhere safe. Paste into Restore on any device to bring the whole passage back.</p>"+'<div class="field"><textarea id="bk" rows="5" readonly>'+data+'</textarea></div>'+'<button class="btn primary" id="copyBk">Copy to clipboard</button><button class="btn quiet" id="closeBk">Done</button>');$("#copyBk").onclick=()=>{state.lastBackupISO=todayISO();save();const ta=$("#bk");ta.select();(navigator.clipboard?navigator.clipboard.writeText(ta.value):Promise.reject()).then(()=>toast("Copied")).catch(()=>{document.execCommand("copy");toast("Copied");});};$("#closeBk").onclick=closeSheet;}
-  function restore(){sheet("<h2>Restore</h2><p>Paste the papers below. This replaces what’s aboard now.</p>"+'<div class="field"><textarea id="rs" rows="5" placeholder="Paste papers…"></textarea></div>'+'<button class="btn primary" id="doRs">Restore</button><button class="btn quiet" id="closeRs">Cancel</button>');$("#doRs").onclick=()=>{try{const r=JSON.parse($("#rs").value.trim());if(r&&r.v===3){state=r;save();closeSheet();render();toast("Restored");}else toast("Not valid papers");}catch(e){toast("Couldn’t read that");}};$("#closeRs").onclick=closeSheet;}
+  function coerceState(r){
+    if(!r||typeof r!=='object'||!Array.isArray(r.drinks))return null;
+    r.v=3;
+    r.baselineWeek=r.baselineWeek||{};
+    r.deviations=r.deviations||{};
+    r.completed=Array.isArray(r.completed)?r.completed:[];
+    r.weatherAt=r.weatherAt||{};
+    r.diary=r.diary||{};
+    r.currency=r.currency||"\u00a3";
+    if(!r.startISO)r.startISO=todayISO();
+    if(!r.startAt)r.startAt=parseISO(r.startISO).getTime();
+    if(!r.lastActive)r.lastActive=todayISO();
+    return r;
+  }
+  function importPapers(text){try{const r=coerceState(JSON.parse(String(text).trim()));if(!r)return false;state=r;save();return true;}catch(e){return false;}}
+  function downloadPapers(){
+    var name="onward-papers-"+todayISO()+".json";
+    var text=JSON.stringify(state,null,2);
+    function markSaved(){state.lastBackupISO=todayISO();save();}
+    function dl(){try{var blob=new Blob([text],{type:"application/json"});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);markSaved();toast("Saved to your Downloads");}catch(e){toast("Couldn\u2019t save the file");}}
+    try{
+      var file=new File([text],name,{type:"application/json"});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){
+        navigator.share({files:[file],title:"Onward papers"}).then(markSaved).catch(function(err){if(err&&err.name==="AbortError")return;dl();});
+        return;
+      }
+    }catch(e){}
+    dl();
+  }
+  function importFromFile(cb){const inp=document.createElement("input");inp.type="file";inp.accept=".json,application/json,text/plain";inp.onchange=function(e){const fl=e.target.files&&e.target.files[0];if(!fl)return;const rd=new FileReader();rd.onload=function(){cb(importPapers(rd.result));};rd.readAsText(fl);};inp.click();}
+  function showRecovery(err){
+    var raw="";try{raw=localStorage.getItem("onward.v3")||"";}catch(e){}
+    var d=document.createElement("div");
+    d.setAttribute("style","position:fixed;inset:0;z-index:9999;background:#0A1525;color:#C9D6E5;font:16px -apple-system,Helvetica,Arial,sans-serif;padding:34px 22px;overflow:auto;-webkit-overflow-scrolling:touch");
+    d.innerHTML='<div style="max-width:520px;margin:0 auto">'
+      +'<div style="font-size:11px;letter-spacing:.18em;color:#5FD0C5">SOMETHING FOULED THE RIGGING</div>'
+      +'<h2 style="font-weight:600;margin:10px 0 6px">Your passage is still aboard.</h2>'
+      +'<p style="color:#7E92AB;line-height:1.5">The app hit a snag while setting sail \u2014 but your saved data has not been touched. Copy it somewhere safe, restore from a file, or start over.</p>'
+      +'<button id="rcCopy" style="width:100%;padding:13px;margin:8px 0;border:0;border-radius:12px;background:#5FD0C5;color:#0c1a2a;font-weight:600;font-size:15px">Copy current papers</button>'
+      +'<button id="rcRestore" style="width:100%;padding:13px;margin:8px 0;border:1px solid #26405C;border-radius:12px;background:none;color:#C9D6E5;font-size:15px">Restore from a file</button>'
+      +'<button id="rcScuttle" style="width:100%;padding:13px;margin:8px 0;border:1px solid #574420;border-radius:12px;background:none;color:#E8B65A;font-size:15px">Scuttle and start over</button>'
+      +'<details style="margin-top:16px"><summary style="color:#7E92AB;font-size:12px">Technical detail</summary><pre style="white-space:pre-wrap;color:#4a5d78;font-size:11px;margin-top:8px">'+String((err&&err.stack)||err||"").replace(/</g,"&lt;")+'</pre></details></div>';
+    document.body.appendChild(d);
+    d.querySelector("#rcCopy").onclick=function(){var ok=false;try{if(navigator.clipboard){navigator.clipboard.writeText(raw);ok=true;}}catch(e){}alert(ok?"Papers copied. Paste them somewhere safe.":raw);};
+    d.querySelector("#rcRestore").onclick=function(){var inp=document.createElement("input");inp.type="file";inp.accept=".json,application/json,text/plain";inp.onchange=function(e){var fl=e.target.files&&e.target.files[0];if(!fl)return;var rd=new FileReader();rd.onload=function(){try{var r=coerceState(JSON.parse(String(rd.result).trim()));if(r){localStorage.setItem("onward.v3",JSON.stringify(r));location.reload();}else alert("Couldn\u2019t read that file.");}catch(x){alert("Couldn\u2019t read that file.");}};rd.readAsText(fl);};inp.click();};
+    d.querySelector("#rcScuttle").onclick=function(){if(confirm("Scuttle the ship? This erases everything aboard and cannot be undone.")){try{localStorage.removeItem("onward.v3");}catch(e){}location.reload();}};
+  }
+  function backup(){const data=JSON.stringify(state);sheet("<h2>The papers</h2><p>Copy this somewhere safe. Paste into Restore on any device to bring the whole passage back.</p>"+'<div class="field"><textarea id="bk" rows="5" readonly>'+data+'</textarea></div>'+'<button class="btn primary" id="copyBk">Copy to clipboard</button><button class="btn ghost" id="fileBk">Save or share the papers</button><button class="btn quiet" id="closeBk">Done</button>');$("#copyBk").onclick=()=>{state.lastBackupISO=todayISO();save();const ta=$("#bk");ta.select();(navigator.clipboard?navigator.clipboard.writeText(ta.value):Promise.reject()).then(()=>toast("Copied")).catch(()=>{document.execCommand("copy");toast("Copied");});};$("#fileBk").onclick=downloadPapers;$("#closeBk").onclick=closeSheet;}
+  function restore(){sheet("<h2>Restore</h2><p>Load the papers from a file, or paste them below. This replaces what’s aboard now.</p>"+'<button class="btn primary" id="fileRs">Load from a file</button>'+'<div class="field"><textarea id="rs" rows="4" placeholder="…or paste papers here"></textarea></div>'+'<button class="btn ghost" id="doRs">Restore from pasted text</button><button class="btn quiet" id="closeRs">Cancel</button>');$("#fileRs").onclick=()=>importFromFile(function(ok){if(ok){closeSheet();render();toast("Restored");}else toast("Couldn’t read that file");});$("#doRs").onclick=()=>{if(importPapers($("#rs").value)){closeSheet();render();toast("Restored");}else toast("Not valid papers");};$("#closeRs").onclick=closeSheet;}
   function wipe(){sheet("<h2>Scuttle and start over?</h2><p>This sends the whole passage to the bottom, for good. Copy the papers first if there’s any doubt.</p>"+'<button class="btn danger" id="doWipe">Scuttle it</button><button class="btn quiet" id="closeWipe">Belay that</button>');$("#doWipe").onclick=()=>{localStorage.removeItem("onward.v3");state=seed();save();closeSheet();render();openSetup(true);toast("A clean slate");};$("#closeWipe").onclick=closeSheet;}
 
   function sheet(html){$("#sheet").innerHTML=html;$("#scrim").classList.add("on");$("#sheet").scrollTop=0;}
@@ -1312,6 +1425,8 @@
   function modal(html){$("#sheet2").innerHTML=html;$("#scrim2").classList.add("on");$("#sheet2").scrollTop=0;}
   function closeModal(){$("#scrim2").classList.remove("on");}
   $("#scrim2").addEventListener("click",e=>{if(e.target===$("#scrim2"))closeModal();});
+  $("#portsLink").onclick=openPorts;$("#portsClose").onclick=closePorts;
+  $("#portsScrim").addEventListener("click",e=>{if(e.target===$("#portsScrim"))closePorts();});
   // ---- daily greeting / close-of-day summary / weather reassurance ----
   function greetingTitle(made){const t=["Morning watch","A new day\u2019s sailing","Back at the helm","The day ahead","Dawn on the water","A fresh horizon"];return t[made%t.length];}
   function backupOverdue(){if(!state||aggregate().made<7)return false;const lb=state.lastBackupISO;if(!lb)return true;return daysBetween(lb,todayISO())>=14;}
@@ -1368,6 +1483,39 @@
     }
   }
   function currentSlot(){const h=new Date().getHours();return h<12?'d':(h<21?'w':'u');}
+  function maybeCatchUp(){
+    if(!state||!state.startISO)return false;
+    const today=todayISO(),la=state.lastActive||today;
+    if(parseISO(state.startISO).getTime()>parseISO(today).getTime()){state.lastActive=today;save();return false;}
+    const gap=daysBetween(la,today);
+    if(gap<=1){state.lastActive=today;save();return false;}
+    const days=[];for(let i=1;i<gap;i++){const iso=localISO(new Date(parseISO(la).getTime()+i*DAY));if(iso>=state.startISO&&iso<today)days.push(iso);}
+    if(!days.length){state.lastActive=today;save();return false;}
+    showCatchUp(days);return true;
+  }
+  function showCatchUp(days){
+    let h='<div class="eyebrow">Welcome back aboard</div><h2>'+days.length+' day'+(days.length===1?'':'s')+' passed while you were away.</h2>';
+    h+='<p class="muted">Each counts as clear sailing unless you say otherwise. Tap any day the weather blew in.</p><div class="catchlist">';
+    days.forEach(function(iso){
+      const dev=state.deviations[iso];let tag,sub='';
+      if(dev){tag='<span class="tag dev">Weather</span>';const info=dayInfo(iso);sub='<small>'+basketLabel(dev)+' \u00b7 salvaged '+fmtMoney(info.avoided.money)+'</small>';}
+      else{tag='<span class="tag clear">Clear</span>';}
+      h+='<div class="day cu" data-iso="'+iso+'"><div class="date">'+fmtDate(iso)+sub+'</div>'+tag+'</div>';
+    });
+    h+='</div><button class="btn primary" id="cuDone">Confirmed \u2014 sail on</button>';
+    modal(h);
+    document.querySelectorAll('.catchlist .cu').forEach(function(el){el.onclick=function(){closeModal();editDay(el.dataset.iso,{onDone:function(){showCatchUp(days);}});};});
+    $("#cuDone").onclick=function(){state.lastActive=todayISO();save();closeModal();render();};
+  }
+  function updateNudge(worker){
+    if(document.getElementById('upNudge'))return;
+    var b=document.createElement('div');b.id='upNudge';
+    b.setAttribute('style','position:fixed;left:12px;right:12px;bottom:calc(86px + var(--pad,0px));z-index:80;background:#06231f;border:1px solid #5FD0C5;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;font:14px -apple-system,Helvetica,Arial,sans-serif;color:#C9D6E5;box-shadow:0 6px 24px rgba(0,0,0,.4)');
+    b.innerHTML='<span style="flex:1">A fresh chart\u2019s aboard.</span><button id="upGo" style="border:0;border-radius:9px;background:#5FD0C5;color:#0c1a2a;font-weight:600;padding:8px 14px;font-size:13px">Update</button><button id="upX" style="border:0;background:none;color:#7E92AB;font-size:18px;padding:4px 6px;line-height:1">\u00d7</button>';
+    document.body.appendChild(b);
+    document.getElementById('upGo').onclick=function(){try{worker.postMessage('skipWaiting');}catch(e){}b.remove();};
+    document.getElementById('upX').onclick=function(){b.remove();};
+  }
   function maybeDailyGreeting(){
     if(!state)return;
     if($("#scrim").classList.contains("on")||$("#scrim2").classList.contains("on"))return;
@@ -1382,21 +1530,29 @@
     else if(slot==='w')watchGreeting();
     else duskGreeting();
   }
-  const BARO=["Stormy","Rain","Change","Fair","Set Fair"];
+  const BARO=["Stormy","Rain","Neutral","Fair","Set Fair"];
   function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-  function diaryFieldsHTML(iso,weather){
-    const e=(state.diary&&state.diary[iso])||{},sel=e.baro||0;
-    let dots='';for(let i=1;i<=5;i++){dots+='<button type="button" class="baro'+(sel===i?' on':'')+'" data-b="'+i+'"><span class="bdot"></span><span class="blab">'+BARO[i-1]+'</span></button>';}
-    return '<div class="diary"><div class="dlab">How\u2019s the barometer?</div><div class="baroRow">'+dots+'</div>'
-      +'<div class="dlab" style="margin-top:14px">'+(weather?'What blew in \u2014 and what\u2019s the plan?':'A line for the log')+'</div>'
-      +'<textarea id="d_note" class="dnote" rows="3" placeholder="'+(weather?'A line for next time\u2026':'What tested you? What held? Anything worth remembering\u2026')+'">'+(e.note?esc(e.note):'')+'</textarea></div>';
+  function landfallISOs(){const set={};journeyDays().forEach(function(d){if(d.port)set[d.iso]=d.port;});return set;}
+  function isNoteDay(iso){if(state.deviations&&state.deviations[iso])return true;return !!landfallISOs()[iso];}
+  function diaryFieldsHTML(iso,showNote,weather){
+    const e=(state.diary&&state.diary[iso])||{};
+    const val=(e.baro&&e.baro>=1)?e.baro:3;
+    const read=BARO[Math.max(0,Math.min(4,Math.round(val)-1))];
+    let h='<div class="diary"><div class="dlab">How\u2019s the barometer?</div>'
+      +'<div class="baroWrap"><div class="baroReading" id="baroRead">'+read+'</div>'
+      +'<input type="range" id="baroSlide" class="baroSlide" min="1" max="5" step="0.1" value="'+val+'">'
+      +'<div class="baroScale"><span>Stormy</span><span>Rain</span><span>Neutral</span><span>Fair</span><span>Set&nbsp;Fair</span></div></div>';
+    if(showNote){const _port=landfallISOs()[iso];const reason=weather?'Weather blew in today \u2014 worth a line on what happened, and the plan.':(_port?('You reached '+esc(_port)+' \u2014 a landfall worth marking.'):'A line for the Captain\u2019s Diary.');
+      h+='<div class="dreason">'+reason+'</div>'
+        +'<textarea id="d_note" class="dnote" rows="3" placeholder="'+(weather?'A line for next time\u2026':'Anything worth remembering\u2026')+'">'+(e.note?esc(e.note):'')+'</textarea>';}
+    return h+'</div>';
   }
-  function wireBaro(){document.querySelectorAll('.baroRow .baro').forEach(b=>{b.onclick=()=>{const on=b.classList.contains('on');document.querySelectorAll('.baroRow .baro').forEach(x=>x.classList.remove('on'));if(!on)b.classList.add('on');};});}
-  function collectDiary(iso){const selEl=document.querySelector('.baroRow .baro.on'),baro=selEl?+selEl.dataset.b:0,nEl=$("#d_note"),note=nEl?nEl.value.trim():'';if(!baro&&!note){if(state.diary)delete state.diary[iso];}else{if(!state.diary)state.diary={};state.diary[iso]={baro:baro,note:note,at:Date.now()};}}
+  function wireBaro(){const sl=$("#baroSlide"),rd=$("#baroRead");if(!sl||!rd)return;const upd=function(){const v=parseFloat(sl.value);rd.textContent=BARO[Math.max(0,Math.min(4,Math.round(v)-1))];};sl.oninput=upd;upd();}
+  function collectDiary(iso){const cur=(state.diary&&state.diary[iso])||{};const sl=$("#baroSlide"),baro=sl?Math.round(parseFloat(sl.value)*10)/10:(cur.baro||0);const nEl=$("#d_note"),note=nEl?nEl.value.trim():(cur.note||'');if(!baro&&!note){if(state.diary)delete state.diary[iso];return;}if(!state.diary)state.diary={};state.diary[iso]={baro:baro,note:note,at:Date.now()};}
   function cleanCongrats(A){const o=['Another day made good.','Well sailed.','A clean day in the book.'];if(A.leg>=2)o.push('That\u2019s '+A.leg+' days on the trot.');if(A.leg>=7)o.push(A.leg+' clean days running \u2014 real momentum now.');if(A.banked&&A.banked.money>0)o.push('The chest is a little heavier tonight.');if(A.best>1&&A.leg>=A.best)o.push('Your longest clear run yet \u2014 '+A.leg+' days.');return o[Math.floor(Math.random()*o.length)];}
   function openDiary(iso){
     const weather=!!(state.deviations&&state.deviations[iso]);
-    modal('<div class="eyebrow">The day\u2019s log</div><h2>'+fmtDate(iso)+'</h2>'+diaryFieldsHTML(iso,weather)+'<button class="btn primary" id="dSave">Save to the log</button><button class="btn quiet" id="dCancel">Close</button>');
+    modal('<div class="eyebrow">Captain\u2019s Diary</div><h2>'+fmtDate(iso)+'</h2>'+diaryFieldsHTML(iso,isNoteDay(iso),weather)+'<button class="btn primary" id="dSave">Save the entry</button><button class="btn quiet" id="dCancel">Close</button>');
     wireBaro();
     $("#dSave").onclick=()=>{collectDiary(iso);save();closeModal();render();};
     $("#dCancel").onclick=closeModal;
@@ -1411,7 +1567,7 @@
     const reached=PORTS.find(p=>p.d===A.made);
     if(reached)h+='<p><b>Landfall at '+reached.name+'.</b> A fresh chapter\u2019s open in the log \u2014 tap the chart to read it.</p>';
     else h+='<p>'+nextStepLine(A,V)+'</p>';
-    h+=diaryFieldsHTML(iso,false);
+    h+=diaryFieldsHTML(iso,false,false);
     h+='<button class="btn primary" id="mClose">Sail on</button>';
     modal(h);wireBaro();$("#mClose").onclick=()=>{collectDiary(iso);save();closeModal();render();};
   }
@@ -1420,7 +1576,7 @@
     let h='<div class="eyebrow">Weather logged</div><h2>It happens to every sailor.</h2>';
     h+='<p>A weather day is part of the passage, not a failure of it. What you\u2019ve banked stays banked \u2014 '+progressLine(A,V)+'</p>';
     h+='<p>This leg resets, and your next clean day starts a fresh one. No ground lost on the voyage; just weather astern. Fair winds will come again.</p>';
-    const iso=todayISO();h+=diaryFieldsHTML(iso,true);
+    const iso=todayISO();h+=diaryFieldsHTML(iso,true,true);
     h+='<button class="btn primary" id="mClose">Sail on</button>';
     modal(h);wireBaro();$("#mClose").onclick=()=>{collectDiary(iso);save();closeModal();render();};
   }
@@ -1472,7 +1628,7 @@
     let h='<div class="eyebrow">Landfall</div><h2>'+P.title+' \u2014 complete</h2>';
     h+=last?'<p>You have closed the full circuit \u2014 every voyage on the chart, '+b.total+' clear days, the whole world sailed. From here the sea is open and endless, and entirely yours.</p>':'<p>You have made landfall. '+P.title+' is done, and a new voyage opens ahead \u2014 <b>'+A.made+'</b> clear days made good so far.</p>';
     if(!last){const n=rung+1;h+='<p class="muted">Next: '+passageById(LADDER[n].id).title+' \u2014 a '+LADDER[n].len+'-day passage. Trim resets to a fresh 100%; everything you have banked stays banked.</p>';}
-    h+='<button class="btn primary" id="mClose">Sail on</button><button class="btn quiet" id="mLog">Add a line to the log</button>';
+    h+='<button class="btn primary" id="mClose">Sail on</button><button class="btn quiet" id="mLog">Add a line to the diary</button>';
     modal(h);$("#mClose").onclick=closeModal;$("#mLog").onclick=()=>openDiary(todayISO());
   }
     let toastT;function toast(m){const el=$("#toast");el.textContent=m;el.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("on"),1600);}
@@ -1541,14 +1697,14 @@
   $("#restoreBtn").onclick=restore;
   $("#wipeBtn").onclick=wipe;
 
-  if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}
+  if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').then(function(reg){function offer(w){if(w)updateNudge(w);}if(reg.waiting&&navigator.serviceWorker.controller)offer(reg.waiting);reg.addEventListener('updatefound',function(){var nw=reg.installing;if(nw)nw.addEventListener('statechange',function(){if(nw.state==='installed'&&navigator.serviceWorker.controller)offer(nw);});});}).catch(function(){});var _reloaded=false;navigator.serviceWorker.addEventListener('controllerchange',function(){if(_reloaded)return;_reloaded=true;location.reload();});});}
   if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(function(){});}
   var returning=!!state;
-  try{if(!state){state=seed();save();render();openSetup(true);}else{render();}}catch(e){}
+  try{if(!state){state=seed();save();render();openSetup(true);}else{render();}}catch(e){showRecovery(e);}
   if(state&&!state.seenAwards){try{state.seenAwards=earnedAwardKeys();save();}catch(e){}}
-  if(state){let _mig=false;if(!state.startAt){state.startAt=parseISO(state.startISO).getTime();_mig=true;}if(!state.weatherAt){state.weatherAt={};_mig=true;}if(_mig)save();}
+  if(state){let _mig=false;if(!state.startAt){state.startAt=parseISO(state.startISO).getTime();_mig=true;}if(!state.weatherAt){state.weatherAt={};_mig=true;}if(!state.diary){state.diary={};_mig=true;}if(!state.lastActive){state.lastActive=todayISO();_mig=true;}if(_mig)save();}
   startClocks();
-  if(returning)setTimeout(maybeDailyGreeting,1300);
+  if(returning)setTimeout(function(){if(!maybeCatchUp())maybeDailyGreeting();},1300);
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){maybeDailyGreeting();startClocks();}else{stopClocks();}});
   window.addEventListener('focus',maybeDailyGreeting);
 })();
