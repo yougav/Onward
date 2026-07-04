@@ -362,7 +362,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.1.0</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.2.0</span></p>
   </section>
 
   <nav class="tabs">
@@ -1402,16 +1402,7 @@
   function downloadPapers(){
     var name="onward-papers-"+todayISO()+".json";
     var text=JSON.stringify(state,null,2);
-    function markSaved(){state.lastBackupISO=todayISO();save();}
-    function dl(){try{var blob=new Blob([text],{type:"application/json"});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);markSaved();toast("Saved to your Downloads");}catch(e){toast("Couldn\u2019t save the file");}}
-    try{
-      var file=new File([text],name,{type:"application/json"});
-      if(navigator.canShare&&navigator.canShare({files:[file]})){
-        navigator.share({files:[file],title:"Onward papers"}).then(markSaved).catch(function(err){if(err&&err.name==="AbortError")return;dl();});
-        return;
-      }
-    }catch(e){}
-    dl();
+    try{var blob=new Blob([text],{type:"application/json"});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);state.lastBackupISO=todayISO();save();toast("Saved to Files \u2192 Downloads");}catch(e){toast("Couldn\u2019t save the file");}
   }
   function importFromFile(cb){const inp=document.createElement("input");inp.type="file";inp.accept=".json,application/json,text/plain";inp.onchange=function(e){const fl=e.target.files&&e.target.files[0];if(!fl)return;const rd=new FileReader();rd.onload=function(){cb(importPapers(rd.result));};rd.readAsText(fl);};inp.click();}
   function showRecovery(err){
@@ -1431,8 +1422,17 @@
     d.querySelector("#rcRestore").onclick=function(){var inp=document.createElement("input");inp.type="file";inp.accept=".json,application/json,text/plain";inp.onchange=function(e){var fl=e.target.files&&e.target.files[0];if(!fl)return;var rd=new FileReader();rd.onload=function(){try{var r=coerceState(JSON.parse(String(rd.result).trim()));if(r){localStorage.setItem("onward.v3",JSON.stringify(r));location.reload();}else alert("Couldn\u2019t read that file.");}catch(x){alert("Couldn\u2019t read that file.");}};rd.readAsText(fl);};inp.click();};
     d.querySelector("#rcScuttle").onclick=function(){if(confirm("Scuttle the ship? This erases everything aboard and cannot be undone.")){try{localStorage.removeItem("onward.v3");}catch(e){}location.reload();}};
   }
-  function backup(){const data=JSON.stringify(state);sheet("<h2>The papers</h2><p>Copy this somewhere safe. Paste into Restore on any device to bring the whole passage back.</p>"+'<div class="field"><textarea id="bk" rows="5" readonly>'+data+'</textarea></div>'+'<button class="btn primary" id="copyBk">Copy to clipboard</button><button class="btn ghost" id="fileBk">Save or share the papers</button><button class="btn quiet" id="closeBk">Done</button>');$("#copyBk").onclick=()=>{state.lastBackupISO=todayISO();save();const ta=$("#bk");ta.select();(navigator.clipboard?navigator.clipboard.writeText(ta.value):Promise.reject()).then(()=>toast("Copied")).catch(()=>{document.execCommand("copy");toast("Copied");});};$("#fileBk").onclick=downloadPapers;$("#closeBk").onclick=closeSheet;}
-  function restore(){sheet("<h2>Restore</h2><p>Load the papers from a file, or paste them below. This replaces what’s aboard now.</p>"+'<button class="btn primary" id="fileRs">Load from a file</button>'+'<div class="field"><textarea id="rs" rows="4" placeholder="…or paste papers here"></textarea></div>'+'<button class="btn ghost" id="doRs">Restore from pasted text</button><button class="btn quiet" id="closeRs">Cancel</button>');$("#fileRs").onclick=()=>importFromFile(function(ok){if(ok){closeSheet();render();toast("Restored");}else toast("Couldn’t read that file");});$("#doRs").onclick=()=>{if(importPapers($("#rs").value)){closeSheet();render();toast("Restored");}else toast("Not valid papers");};$("#closeRs").onclick=closeSheet;}
+  function autoSnapshot(){try{var raw=localStorage.getItem("onward.v3.auto");var prev=raw?JSON.parse(raw):null;var now=Date.now();if(prev&&prev.at&&(now-prev.at)<20*3600000)return;localStorage.setItem("onward.v3.auto",JSON.stringify({at:now,state:state}));}catch(e){}}
+  function restoreAuto(){try{var raw=localStorage.getItem("onward.v3.auto");if(!raw)return false;var snap=JSON.parse(raw);var r=coerceState(snap.state);if(!r)return false;state=r;save();return true;}catch(e){return false;}}
+  function backup(){const data=JSON.stringify(state);sheet("<h2>The papers</h2><p>Save a copy somewhere safe \u2014 the Files app, or better, an iCloud Drive folder so it backs up everywhere. Restore from it on any device.</p>"+'<button class="btn primary" id="fileBk">Save the papers</button>'+'<button class="btn ghost" id="copyBk">Copy to clipboard instead</button>'+'<div class="field" style="margin-top:12px"><textarea id="bk" rows="4" readonly>'+data+'</textarea></div>'+'<button class="btn quiet" id="closeBk">Done</button>');$("#fileBk").onclick=downloadPapers;$("#copyBk").onclick=()=>{state.lastBackupISO=todayISO();save();const ta=$("#bk");ta.select();(navigator.clipboard?navigator.clipboard.writeText(ta.value):Promise.reject()).then(()=>toast("Copied")).catch(()=>{document.execCommand("copy");toast("Copied");});};$("#closeBk").onclick=closeSheet;}
+  function restore(){
+    var autoLine='';try{var raw=localStorage.getItem("onward.v3.auto");if(raw){var snap=JSON.parse(raw);var ageH=Math.max(0,Math.round((Date.now()-(snap.at||0))/3600000));var ageStr=ageH<24?(ageH+'h ago'):(Math.round(ageH/24)+'d ago');autoLine='<button class="btn ghost" id="autoRs">Restore from auto-backup ('+ageStr+')</button>';}}catch(e){}
+    sheet("<h2>Restore</h2><p>Load the papers from a file, or paste them below. This replaces what\u2019s aboard now.</p>"+'<button class="btn primary" id="fileRs">Load from a file</button>'+autoLine+'<div class="field"><textarea id="rs" rows="4" placeholder="\u2026or paste papers here"></textarea></div>'+'<button class="btn ghost" id="doRs">Restore from pasted text</button><button class="btn quiet" id="closeRs">Cancel</button>');
+    $("#fileRs").onclick=()=>importFromFile(function(ok){if(ok){closeSheet();render();toast("Restored");}else toast("Couldn\u2019t read that file");});
+    var _ar=$("#autoRs");if(_ar)_ar.onclick=()=>{if(restoreAuto()){closeSheet();render();toast("Restored from auto-backup");}else toast("Couldn\u2019t read the auto-backup");};
+    $("#doRs").onclick=()=>{if(importPapers($("#rs").value)){closeSheet();render();toast("Restored");}else toast("Not valid papers");};
+    $("#closeRs").onclick=closeSheet;
+  }
   function wipe(){sheet("<h2>Scuttle and start over?</h2><p>This sends the whole passage to the bottom, for good. Copy the papers first if there’s any doubt.</p>"+'<button class="btn danger" id="doWipe">Scuttle it</button><button class="btn quiet" id="closeWipe">Belay that</button>');$("#doWipe").onclick=()=>{localStorage.removeItem("onward.v3");state=seed();save();closeSheet();render();openSetup(true);toast("A clean slate");};$("#closeWipe").onclick=closeSheet;}
 
   function sheet(html){$("#sheet").innerHTML=html;$("#scrim").classList.add("on");$("#sheet").scrollTop=0;}
@@ -1445,7 +1445,8 @@
   $("#portsScrim").addEventListener("click",e=>{if(e.target===$("#portsScrim"))closePorts();});
   // ---- daily greeting / close-of-day summary / weather reassurance ----
   function greetingTitle(made){const t=["Morning watch","A new day\u2019s sailing","Back at the helm","The day ahead","Dawn on the water","A fresh horizon"];return t[made%t.length];}
-  function backupOverdue(){if(!state||aggregate().made<7)return false;const lb=state.lastBackupISO;if(!lb)return true;return daysBetween(lb,todayISO())>=14;}
+  function daysSinceBackup(){if(!state)return 0;const lb=state.lastBackupISO;if(!lb)return 9999;return daysBetween(lb,todayISO());}
+  function backupOverdue(){if(!state||aggregate().made<7)return false;return daysSinceBackup()>=10;}
   function progressLine(A,V){if(V.openSea)return "<b>"+A.made+"</b> clear days made good \u2014 out beyond the full circuit now, in open water.";const vt=passageById(V.id).title;return "<b>"+A.made+"</b> clear day"+(A.made===1?"":"s")+" made good \u2014 "+vt+", day "+V.madeIn+" of "+V.length+".";}
   function nextStepLine(A,V){const nIdx=nextPortIdx(A.made);if(V.openSea)return nIdx>=0?("Open water ahead \u2014 the next marker lies "+(PORTS[nIdx].d-A.made)+" days on."):"Open water ahead, and the next day, and the next.";if(nIdx<0)return "You\u2019re within sight of landfall \u2014 one more clean run brings it home.";const p=PORTS[nIdx],to=p.d-A.made;return "Next port, <b>"+p.name+"</b>, lies "+to+" day"+(to===1?"":"s")+" ahead.";}
   function dailyGreeting(){
@@ -1461,7 +1462,7 @@
       h+='<p>'+progressLine(A,V)+(A.banked.money>0?' '+fmtMoney(A.banked.money)+' in salvage banked along the way.':'')+'</p>';
       h+='<p>'+nextStepLine(A,V)+(ti.status==='pending'?' Close today\u2019s run to gain on it.':(ti.status==='clear'?' Today\u2019s run is already logged \u2014 well sailed.':''))+'</p>';
     }
-    if(backupOverdue())h+='<p class="muted">It\u2019s been a while since you copied your papers. A quick backup in the Locker keeps your whole passage safe.</p>';
+    if(backupOverdue()){const _d=daysSinceBackup(),_strong=(_d>=21);h+='<p class="'+(_strong?'':'muted')+'"'+(_strong?' style="color:var(--amber)"':'')+'>'+(_d>=9999?'You haven\u2019t saved your papers yet \u2014 one tap in the Locker keeps your whole passage safe if anything happens to this device.':(_strong?'It\u2019s been over three weeks since you saved your papers \u2014 please save a copy in the Locker. It\u2019s the only thing that protects your passage.':'It\u2019s been a while since you saved your papers. A quick save in the Locker keeps your whole passage safe.'))+'</p>';}
     h+='<button class="btn primary" id="mClose">Take the helm</button>';
     modal(h);$("#mClose").onclick=closeModal;
   }
@@ -1759,6 +1760,7 @@
   try{if(!state){state=seed();save();render();openSetup(true);}else{render();}}catch(e){showRecovery(e);}
   if(state&&!state.seenAwards){try{state.seenAwards=earnedAwardKeys();save();}catch(e){}}
   if(state){let _mig=false;if(!state.startAt){state.startAt=parseISO(state.startISO).getTime();_mig=true;}if(!state.weatherAt){state.weatherAt={};_mig=true;}if(!state.diary){state.diary={};_mig=true;}if(!state.lastActive){state.lastActive=todayISO();_mig=true;}if(_mig)save();}
+  if(state)autoSnapshot();
   startClocks();
   if(returning)setTimeout(function(){if(!maybeCatchUp())maybeDailyGreeting();},1300);
   document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){maybeDailyGreeting();startClocks();}else{stopClocks();}});
