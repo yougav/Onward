@@ -362,7 +362,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.2.0</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.2.1</span></p>
   </section>
 
   <nav class="tabs">
@@ -1399,10 +1399,21 @@
     return r;
   }
   function importPapers(text){try{const r=coerceState(JSON.parse(String(text).trim()));if(!r)return false;state=r;save();return true;}catch(e){return false;}}
+  function markSaved(){state.lastBackupISO=todayISO();save();toast("Saved");}
+  function downloadFallback(text,name){try{var blob=new Blob([text],{type:"application/json"});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);markSaved();}catch(e){toast("Couldn\u2019t save the file");}}
   function downloadPapers(){
     var name="onward-papers-"+todayISO()+".json";
     var text=JSON.stringify(state,null,2);
-    try{var blob=new Blob([text],{type:"application/json"});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);state.lastBackupISO=todayISO();save();toast("Saved to Files \u2192 Downloads");}catch(e){toast("Couldn\u2019t save the file");}
+    try{
+      var file=new File([text],name,{type:"application/json"});
+      if(navigator.canShare&&navigator.canShare({files:[file]})){
+        navigator.share({files:[file],title:"Onward papers"})
+          .then(function(){markSaved();})                                   // completed -> honest "Saved"
+          .catch(function(err){if(err&&err.name==="AbortError")return;downloadFallback(text,name);}); // cancelled -> say nothing; other error -> fall back
+        return;
+      }
+    }catch(e){}
+    downloadFallback(text,name);   // no share support (e.g. desktop) -> plain download
   }
   function importFromFile(cb){const inp=document.createElement("input");inp.type="file";inp.accept=".json,application/json,text/plain";inp.onchange=function(e){const fl=e.target.files&&e.target.files[0];if(!fl)return;const rd=new FileReader();rd.onload=function(){cb(importPapers(rd.result));};rd.readAsText(fl);};inp.click();}
   function showRecovery(err){
@@ -1424,13 +1435,12 @@
   }
   function autoSnapshot(){try{var raw=localStorage.getItem("onward.v3.auto");var prev=raw?JSON.parse(raw):null;var now=Date.now();if(prev&&prev.at&&(now-prev.at)<20*3600000)return;localStorage.setItem("onward.v3.auto",JSON.stringify({at:now,state:state}));}catch(e){}}
   function restoreAuto(){try{var raw=localStorage.getItem("onward.v3.auto");if(!raw)return false;var snap=JSON.parse(raw);var r=coerceState(snap.state);if(!r)return false;state=r;save();return true;}catch(e){return false;}}
-  function backup(){const data=JSON.stringify(state);sheet("<h2>The papers</h2><p>Save a copy somewhere safe \u2014 the Files app, or better, an iCloud Drive folder so it backs up everywhere. Restore from it on any device.</p>"+'<button class="btn primary" id="fileBk">Save the papers</button>'+'<button class="btn ghost" id="copyBk">Copy to clipboard instead</button>'+'<div class="field" style="margin-top:12px"><textarea id="bk" rows="4" readonly>'+data+'</textarea></div>'+'<button class="btn quiet" id="closeBk">Done</button>');$("#fileBk").onclick=downloadPapers;$("#copyBk").onclick=()=>{state.lastBackupISO=todayISO();save();const ta=$("#bk");ta.select();(navigator.clipboard?navigator.clipboard.writeText(ta.value):Promise.reject()).then(()=>toast("Copied")).catch(()=>{document.execCommand("copy");toast("Copied");});};$("#closeBk").onclick=closeSheet;}
+  function backup(){sheet("<h2>The papers</h2><p>Save a copy somewhere safe. When the share sheet opens, choose <b>Save to Files</b> \u2014 an iCloud Drive folder is best, so it backs up everywhere and you can restore on any device.</p>"+'<button class="btn primary" id="fileBk">Save the papers</button>'+'<button class="btn quiet" id="closeBk">Done</button>');$("#fileBk").onclick=downloadPapers;$("#closeBk").onclick=closeSheet;}
   function restore(){
     var autoLine='';try{var raw=localStorage.getItem("onward.v3.auto");if(raw){var snap=JSON.parse(raw);var ageH=Math.max(0,Math.round((Date.now()-(snap.at||0))/3600000));var ageStr=ageH<24?(ageH+'h ago'):(Math.round(ageH/24)+'d ago');autoLine='<button class="btn ghost" id="autoRs">Restore from auto-backup ('+ageStr+')</button>';}}catch(e){}
-    sheet("<h2>Restore</h2><p>Load the papers from a file, or paste them below. This replaces what\u2019s aboard now.</p>"+'<button class="btn primary" id="fileRs">Load from a file</button>'+autoLine+'<div class="field"><textarea id="rs" rows="4" placeholder="\u2026or paste papers here"></textarea></div>'+'<button class="btn ghost" id="doRs">Restore from pasted text</button><button class="btn quiet" id="closeRs">Cancel</button>');
+    sheet("<h2>Restore</h2><p>Load your saved papers from a file. This replaces what\u2019s aboard now.</p>"+'<button class="btn primary" id="fileRs">Load from a file</button>'+autoLine+'<button class="btn quiet" id="closeRs">Cancel</button>');
     $("#fileRs").onclick=()=>importFromFile(function(ok){if(ok){closeSheet();render();toast("Restored");}else toast("Couldn\u2019t read that file");});
     var _ar=$("#autoRs");if(_ar)_ar.onclick=()=>{if(restoreAuto()){closeSheet();render();toast("Restored from auto-backup");}else toast("Couldn\u2019t read the auto-backup");};
-    $("#doRs").onclick=()=>{if(importPapers($("#rs").value)){closeSheet();render();toast("Restored");}else toast("Not valid papers");};
     $("#closeRs").onclick=closeSheet;
   }
   function wipe(){sheet("<h2>Scuttle and start over?</h2><p>This sends the whole passage to the bottom, for good. Copy the papers first if there’s any doubt.</p>"+'<button class="btn danger" id="doWipe">Scuttle it</button><button class="btn quiet" id="closeWipe">Belay that</button>');$("#doWipe").onclick=()=>{localStorage.removeItem("onward.v3");state=seed();save();closeSheet();render();openSetup(true);toast("A clean slate");};$("#closeWipe").onclick=closeSheet;}
