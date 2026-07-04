@@ -239,6 +239,14 @@
   .dreason{font-size:12.5px;color:var(--mist);margin:22px 0 10px;line-height:1.45}
   .diary + .btn{margin-top:4px}
   .dnote{width:100%;box-sizing:border-box;background:#0e1b2e;border:1px solid var(--line);border-radius:10px;color:var(--mist);padding:10px;font:inherit;font-size:16px;resize:none;margin-top:2px}
+  .dnote-lg{min-height:150px;padding:14px;line-height:1.6;margin-top:4px}
+  .baroSlide.notset{background:#20344d;opacity:.75}
+  .baroSlide.notset::-webkit-slider-thumb{opacity:0}
+  .baroSlide.notset::-moz-range-thumb{opacity:0}
+  .baroReading.unset{color:#3a5170;font-weight:400}
+  .barohint{text-align:center;font-size:9px;color:#3a5170;margin-top:9px}
+  .daytoggle button.on[data-m="clear"]{background:var(--beacon);color:#0c1a2a}
+  .daytoggle button.on[data-m="weather"]{background:var(--amber);color:#0c1a2a}
   .dsnip{color:var(--beacon);font-style:italic;opacity:.85}
   .catchlist{max-height:46vh;overflow:auto;-webkit-overflow-scrolling:touch;margin:4px 0 14px}
   .liblink{font-size:11.5px;color:var(--beacon);margin-top:13px;padding-top:12px;border-top:1px solid #21364f;cursor:pointer;letter-spacing:.02em;}
@@ -354,7 +362,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">build 30l</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">build 30r</span></p>
   </section>
 
   <nav class="tabs">
@@ -367,7 +375,7 @@
 
 <div class="scrim" id="scrim" data-r="0"><div class="sheet" id="sheet"></div></div>
 <div class="scrim" id="scrim2" style="z-index:70"><div class="sheet" id="sheet2"></div></div>
-<div class="scrim" id="portsScrim" style="z-index:60"><div class="sheet" id="portsSheet"><div class="portshead" id="portsHead">Ports of call</div><div id="wpList"></div><div id="afterLandfall"></div><div class="liblink" id="libHint">Tap for the ship&rsquo;s library &rsaquo;</div><button class="btn quiet" id="portsClose" style="margin-top:10px">Close</button></div></div>
+<div class="scrim" id="portsScrim" style="z-index:60"><div class="sheet" id="portsSheet"><div class="portshead" id="portsHead">Ports of call</div><div id="wpList"></div><div id="afterLandfall"></div><div class="liblink" id="libHint">The ship&rsquo;s library &mdash; all voyages &rsaquo;</div><button class="btn quiet" id="portsClose" style="margin-top:10px">Close</button></div></div>
 <div id="gate"><div class="hint"><svg class="chev" viewBox="0 0 24 24"><path d="M7 14l5-5 5 5"/></svg><span>Swipe up to set sail</span></div></div>
 <div class="toast" id="toast"></div>
 
@@ -950,7 +958,7 @@
     const nIdx=nextPortIdx(A.made);
     const gV=$("#goalVoyage"),gK=$("#goalKick"),gTo=$("#goalToRun"),gP=$("#goalPort"),gCr=$("#goalCrumb"),gVS=$("#goalVoyStrip"),gVL=$("#goalVoyLab"),gLB=$("#goalLegBar"),gLL=$("#goalLegLab"),gLU=$("#goalLegUnit");
     const vt=V.openSea?"Open water":passageById(V.id).title;
-    gV.textContent=vt;
+    gV.textContent=vt;var _pl=$("#portsLink");if(_pl)_pl.innerHTML=vt+" &rsaquo;";
     // day-in-progress: while today is live and not yet a banked clean day, show the day you're on (banked + 1). Anchored to banked days, so a skipped/weather day never inflates it.
     const bump=(todayInfo&&todayInfo.status!=='clear')?1:0;
     // port counter = ports actually reached (matches the teal dots on the strip)
@@ -1151,8 +1159,11 @@
     let h='<div class="eyebrow">'+(one?'A new honour':'New honours')+'</div>';
     if(one){h+='<h2>'+items[0].label+'</h2><p>'+awardFlavour(items[0])+'</p>';}
     else{h+='<h2>Well earned</h2><p>You\u2019ve come into '+items.length+' new honours:</p><div class="awwrap" style="margin:10px 0">'+items.map(i=>'<span class="award on"><b>'+i.label+'</b><small>'+i.cat+'</small></span>').join('')+'</div>';}
-    h+='<button class="btn primary" id="mClose">Log it with pride</button><button class="btn quiet" id="mLog">Add a line to the diary</button>';
-    modal(h);$("#mClose").onclick=closeModal;$("#mLog").onclick=()=>openDiary(todayISO());
+    const iso=todayISO();h+=diaryFieldsHTML(iso);const _note=isNoteDay(iso);if(_note)h+=notePromptHTML(iso);
+    h+='<button class="btn primary" id="mClose">Log it with pride</button>'+(_note?'<button class="btn quiet" id="mLog">Add a line to the diary</button>':'');
+    modal(h);wireBaro();
+    $("#mClose").onclick=()=>{collectDiary(iso);save();closeModal();render();};
+    const _ml=$("#mLog");if(_ml)_ml.onclick=()=>{collectDiary(iso);save();closeModal();openDiary(iso,true);};
   }
   function journeyDays(){
     const sr=series();
@@ -1349,23 +1360,28 @@
 
   function editDay(iso,opts){opts=opts||{};
     const values=Object.assign({},state.deviations[iso]||{});
-    const existing=!!state.deviations[iso];
+    const startWeather=!!state.deviations[iso];
+    const isLand=!!landfallISOs()[iso];
     const _wt=(state.weatherAt&&state.weatherAt[iso])?new Date(state.weatherAt[iso]):(iso===todayISO()?new Date():new Date(parseISO(iso).getTime()+20*3600000));
     const _wtime=String(_wt.getHours()).padStart(2,'0')+':'+String(_wt.getMinutes()).padStart(2,'0');
-    sheet(
-      "<h2>"+fmtDate(iso)+"</h2><p>What weather did this day bring? Leave all at zero for a clear day.</p>"+
-      '<div class="field"><label>Date</label><input id="e_date" type="date" value="'+iso+'" max="'+todayISO()+'"></div>'+
-      '<div class="field"><label>When the weather set in (optional)</label><input id="e_time" type="time" value="'+_wtime+'"></div>'+
-      '<div id="e_rows">'+stepperRows(values)+'</div>'+
-      '<div class="summary" id="e_calc"></div>'+
-      diaryFieldsHTML(iso,isNoteDay(iso),existing)+
-      '<button class="btn primary" id="e_save">Save</button>'+
-      (existing?'<button class="btn quiet" id="e_clear">Set as a clear day</button>':'')
-    );
-    function calc(){const c=basketTotals(values),r=rates();const total=Object.keys(values).reduce((a,k)=>a+(values[k]||0),0);if(total===0){$("#e_calc").innerHTML="A <b>clear day</b> — fair sailing.";}else{$("#e_calc").innerHTML="This day <b>"+fmtU(c.units)+" drift</b> · "+fmtMoney(c.money)+" · "+Math.round(c.kcal)+" ballast<br><span style='color:var(--faint)'>still salvaged "+fmtMoney(Math.max(0,r.money-c.money))+" against your usual</span>";}}
-    bindSteppers(values,calc);calc();wireBaro();
-    $("#e_save").onclick=()=>{const d=$("#e_date").value||iso;if(d!==iso){delete state.deviations[iso];const ci=state.completed.indexOf(iso);if(ci>=0)state.completed.splice(ci,1);}const basket={};let total=0;Object.keys(values).forEach(k=>{if(values[k]>0){basket[k]=values[k];total+=values[k];}});if(!state.weatherAt)state.weatherAt={};if(d!==iso)delete state.weatherAt[iso];if(total>0){state.deviations[d]=basket;const ci=state.completed.indexOf(d);if(ci>=0)state.completed.splice(ci,1);const _et=($("#e_time")&&$("#e_time").value)||"20:00";state.weatherAt[d]=new Date(d+"T"+_et).getTime();}else{delete state.deviations[d];delete state.weatherAt[d];if(d===todayISO()&&state.completed.indexOf(d)<0)state.completed.push(d);}const newWeatherToday=(d===todayISO()&&total>0&&!existing);if(d!==iso&&state.diary)delete state.diary[iso];collectDiary(d);save();closeSheet();render();if(opts.onDone){opts.onDone();}else if(newWeatherToday){weatherReassurance();}else{toast("Logged");}};
-    const ec=$("#e_clear");if(ec)ec.onclick=()=>{delete state.deviations[iso];if(state.weatherAt)delete state.weatherAt[iso];save();closeSheet();render();if(opts.onDone){opts.onDone();}else{toast("Set clear");}};
+    let mode=startWeather?'weather':'clear';
+    const wReason='Weather blew in \u2014 worth a line on what happened, and the plan.';
+    const lReason=isLand?('You reached '+esc(landfallISOs()[iso])+' \u2014 a landfall worth marking.'):'';
+    sheet('<h2>'+fmtDate(iso)+'</h2><p>How did this day go?</p>'
+      +'<div class="seg daytoggle" id="dayToggle"><button data-m="clear"'+(mode==='clear'?' class="on"':'')+'>Clear day</button><button data-m="weather"'+(mode==='weather'?' class="on"':'')+'>Weather</button></div>'
+      +'<div id="wxBlock"'+(mode==='clear'?' style="display:none"':'')+'>'
+      +'<div class="field"><label>When the weather set in (optional)</label><input id="e_time" type="time" value="'+_wtime+'"></div>'
+      +'<div id="e_rows">'+stepperRows(values)+'</div><div class="summary" id="e_calc"></div></div>'
+      +diaryFieldsHTML(iso)
+      +'<div id="noteBlock" style="margin-top:8px'+((mode==='weather'||isLand)?'':';display:none')+'"><div class="dreason" id="noteReason" style="margin-top:4px"></div><button class="btn ghost" id="e_diary">Add a line to the diary</button></div>'
+      +'<button class="btn primary" id="e_save" style="margin-top:16px">Save</button>');
+    function calc(){const c=basketTotals(values),r=rates();const total=Object.keys(values).reduce((a,k)=>a+(values[k]||0),0);if(total===0){$("#e_calc").innerHTML="No hazards yet \u2014 leave it and it\u2019s a clear day.";}else{$("#e_calc").innerHTML="This day <b>"+fmtU(c.units)+" drift</b> \u00b7 "+fmtMoney(c.money)+" \u00b7 "+Math.round(c.kcal)+" ballast<br><span style='color:var(--faint)'>still salvaged "+fmtMoney(Math.max(0,r.money-c.money))+" against your usual</span>";}}
+    function setMode(m){mode=m;document.querySelectorAll('#dayToggle button').forEach(function(b){b.classList.toggle('on',b.dataset.m===m);});$("#wxBlock").style.display=(m==='weather')?'':'none';const sn=(m==='weather'||isLand);$("#noteBlock").style.display=sn?'':'none';$("#noteReason").textContent=(m==='weather')?wReason:(isLand?lReason:'');}
+    document.querySelectorAll('#dayToggle button').forEach(function(b){b.onclick=function(){setMode(b.dataset.m);};});
+    bindSteppers(values,calc);calc();wireBaro();setMode(mode);
+    function commit(){collectDiary(iso);if(mode==='weather'){const basket={};let total=0;Object.keys(values).forEach(function(k){if(values[k]>0){basket[k]=values[k];total+=values[k];}});if(total>0){state.deviations[iso]=basket;const ci=state.completed.indexOf(iso);if(ci>=0)state.completed.splice(ci,1);if(!state.weatherAt)state.weatherAt={};const _et=($("#e_time")&&$("#e_time").value)||"20:00";state.weatherAt[iso]=new Date(iso+"T"+_et).getTime();}else{delete state.deviations[iso];if(state.weatherAt)delete state.weatherAt[iso];if(iso===todayISO()&&state.completed.indexOf(iso)<0)state.completed.push(iso);}}else{delete state.deviations[iso];if(state.weatherAt)delete state.weatherAt[iso];if(iso===todayISO()&&state.completed.indexOf(iso)<0)state.completed.push(iso);}save();}
+    const _ed=$("#e_diary");if(_ed)_ed.onclick=function(){commit();closeSheet();render();openDiary(iso,true);};
+    $("#e_save").onclick=function(){const hasWx=(mode==='weather'&&Object.keys(values).some(function(k){return values[k]>0;}));const newWeatherToday=(iso===todayISO()&&hasWx&&!startWeather);commit();closeSheet();render();if(opts.onDone){opts.onDone();}else if(newWeatherToday){weatherReassurance();}else{toast(hasWx?'Logged':'Set clear');}};
   }
 
   function coerceState(r){
@@ -1425,7 +1441,7 @@
   function modal(html){$("#sheet2").innerHTML=html;$("#scrim2").classList.add("on");$("#sheet2").scrollTop=0;}
   function closeModal(){$("#scrim2").classList.remove("on");}
   $("#scrim2").addEventListener("click",e=>{if(e.target===$("#scrim2"))closeModal();});
-  $("#portsLink").onclick=openPorts;$("#portsClose").onclick=closePorts;
+  $("#portsLink").onclick=openLibrary;$("#portsClose").onclick=closePorts;
   $("#portsScrim").addEventListener("click",e=>{if(e.target===$("#portsScrim"))closePorts();});
   // ---- daily greeting / close-of-day summary / weather reassurance ----
   function greetingTitle(made){const t=["Morning watch","A new day\u2019s sailing","Back at the helm","The day ahead","Dawn on the water","A fresh horizon"];return t[made%t.length];}
@@ -1534,26 +1550,35 @@
   function esc(x){return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
   function landfallISOs(){const set={};journeyDays().forEach(function(d){if(d.port)set[d.iso]=d.port;});return set;}
   function isNoteDay(iso){if(state.deviations&&state.deviations[iso])return true;return !!landfallISOs()[iso];}
-  function diaryFieldsHTML(iso,showNote,weather){
+  function diaryFieldsHTML(iso){
     const e=(state.diary&&state.diary[iso])||{};
-    const val=(e.baro&&e.baro>=1)?e.baro:3;
-    const read=BARO[Math.max(0,Math.min(4,Math.round(val)-1))];
-    let h='<div class="diary"><div class="dlab">How\u2019s the barometer?</div>'
-      +'<div class="baroWrap"><div class="baroReading" id="baroRead">'+read+'</div>'
-      +'<input type="range" id="baroSlide" class="baroSlide" min="1" max="5" step="0.1" value="'+val+'">'
-      +'<div class="baroScale"><span>Stormy</span><span>Rain</span><span>Neutral</span><span>Fair</span><span>Set&nbsp;Fair</span></div></div>';
-    if(showNote){const _port=landfallISOs()[iso];const reason=weather?'Weather blew in today \u2014 worth a line on what happened, and the plan.':(_port?('You reached '+esc(_port)+' \u2014 a landfall worth marking.'):'A line for the Captain\u2019s Diary.');
-      h+='<div class="dreason">'+reason+'</div>'
-        +'<textarea id="d_note" class="dnote" rows="3" placeholder="'+(weather?'A line for next time\u2026':'Anything worth remembering\u2026')+'">'+(e.note?esc(e.note):'')+'</textarea>';}
-    return h+'</div>';
+    const has=!!(e.baro&&e.baro>=1);
+    const val=has?e.baro:3;
+    const read=has?BARO[Math.max(0,Math.min(4,Math.round(val)-1))]:'Not logged';
+    return '<div class="diary"><div class="dlab">Barometer</div>'
+      +'<div class="baroWrap"><div class="baroReading'+(has?'':' unset')+'" id="baroRead">'+read+'</div>'
+      +'<input type="range" id="baroSlide" class="baroSlide'+(has?'':' notset')+'" min="1" max="5" step="0.1" value="'+val+'"'+(has?'':' data-unset="1"')+'>'
+      +'<div class="baroScale"><span>Stormy</span><span>Rain</span><span>Neutral</span><span>Fair</span><span>Set&nbsp;Fair</span></div>'
+      +(has?'':'<div class="barohint" id="baroHint">drag to set a reading</div>')+'</div></div>';
   }
-  function wireBaro(){const sl=$("#baroSlide"),rd=$("#baroRead");if(!sl||!rd)return;const upd=function(){const v=parseFloat(sl.value);rd.textContent=BARO[Math.max(0,Math.min(4,Math.round(v)-1))];};sl.oninput=upd;upd();}
-  function collectDiary(iso){const cur=(state.diary&&state.diary[iso])||{};const sl=$("#baroSlide"),baro=sl?Math.round(parseFloat(sl.value)*10)/10:(cur.baro||0);const nEl=$("#d_note"),note=nEl?nEl.value.trim():(cur.note||'');if(!baro&&!note){if(state.diary)delete state.diary[iso];return;}if(!state.diary)state.diary={};state.diary[iso]={baro:baro,note:note,at:Date.now()};}
+  function wireBaro(){const sl=$("#baroSlide"),rd=$("#baroRead");if(!sl||!rd)return;function label(){const v=parseFloat(sl.value);rd.textContent=BARO[Math.max(0,Math.min(4,Math.round(v)-1))];}function engage(){if(sl.dataset.unset==='1'){sl.dataset.unset='';sl.classList.remove('notset');rd.classList.remove('unset');const h=$("#baroHint");if(h)h.style.visibility='hidden';label();}}sl.addEventListener('input',function(){engage();label();});sl.addEventListener('pointerdown',engage);if(sl.dataset.unset!=='1')label();}
+  function collectDiary(iso){const cur=(state.diary&&state.diary[iso])||{};const sl=$("#baroSlide");const baro=sl?(sl.dataset.unset==='1'?0:Math.round(parseFloat(sl.value)*10)/10):(cur.baro||0);const nEl=$("#d_note"),note=nEl?nEl.value.trim():(cur.note||'');if(!baro&&!note){if(state.diary)delete state.diary[iso];return;}if(!state.diary)state.diary={};const entry={at:Date.now()};if(baro)entry.baro=baro;if(note)entry.note=note;state.diary[iso]=entry;}
   function cleanCongrats(A){const o=['Another day made good.','Well sailed.','A clean day in the book.'];if(A.leg>=2)o.push('That\u2019s '+A.leg+' days on the trot.');if(A.leg>=7)o.push(A.leg+' clean days running \u2014 real momentum now.');if(A.banked&&A.banked.money>0)o.push('The chest is a little heavier tonight.');if(A.best>1&&A.leg>=A.best)o.push('Your longest clear run yet \u2014 '+A.leg+' days.');return o[Math.floor(Math.random()*o.length)];}
-  function openDiary(iso){
-    const weather=!!(state.deviations&&state.deviations[iso]);
-    modal('<div class="eyebrow">Captain\u2019s Diary</div><h2>'+fmtDate(iso)+'</h2>'+diaryFieldsHTML(iso,isNoteDay(iso),weather)+'<button class="btn primary" id="dSave">Save the entry</button><button class="btn quiet" id="dCancel">Close</button>');
-    wireBaro();
+  function notePromptHTML(iso){
+    const weather=!!(state.deviations&&state.deviations[iso]),_port=landfallISOs()[iso];
+    const reason=weather?'Weather blew in today \u2014 worth a line on what happened, and the plan.':(_port?('You reached '+esc(_port)+' \u2014 a landfall worth marking.'):'A moment worth marking.');
+    return '<div class="dreason" style="margin-top:18px">'+reason+'</div>';
+  }
+  function openDiary(iso,noteOnly){
+    const weather=!!(state.deviations&&state.deviations[iso]),_port=landfallISOs()[iso];
+    const reason=weather?'Weather blew in today \u2014 worth a line on what happened, and the plan.':(_port?('You reached '+esc(_port)+' \u2014 a landfall worth marking.'):'A line for the Captain\u2019s Diary.');
+    const e=(state.diary&&state.diary[iso])||{};
+    modal('<div class="eyebrow">Captain\u2019s Diary</div><h2>'+fmtDate(iso)+'</h2>'+(noteOnly?'':diaryFieldsHTML(iso))
+      +'<div class="dreason"'+(noteOnly?' style="margin-top:4px"':'')+'>'+reason+'</div>'
+      +'<textarea id="d_note" class="dnote dnote-lg" placeholder="'+(weather?'What happened, and the plan\u2026':'Anything worth remembering\u2026')+'">'+(e.note?esc(e.note):'')+'</textarea>'
+      +'<button class="btn primary" id="dSave">Save the entry</button><button class="btn quiet" id="dCancel">Close</button>');
+    if(!noteOnly)wireBaro();
+    const ta=$("#d_note");if(ta){const grow=function(){ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,340)+'px';};ta.addEventListener('input',grow);grow();ta.addEventListener('focus',function(){setTimeout(function(){try{ta.scrollIntoView({block:'center',behavior:'smooth'});}catch(e){}},300);});}
     $("#dSave").onclick=()=>{collectDiary(iso);save();closeModal();render();};
     $("#dCancel").onclick=closeModal;
   }
@@ -1567,18 +1592,24 @@
     const reached=PORTS.find(p=>p.d===A.made);
     if(reached)h+='<p><b>Landfall at '+reached.name+'.</b> A fresh chapter\u2019s open in the log \u2014 tap the chart to read it.</p>';
     else h+='<p>'+nextStepLine(A,V)+'</p>';
-    h+=diaryFieldsHTML(iso,false,false);
-    h+='<button class="btn primary" id="mClose">Sail on</button>';
-    modal(h);wireBaro();$("#mClose").onclick=()=>{collectDiary(iso);save();closeModal();render();};
+    h+=diaryFieldsHTML(iso);
+    const _note=isNoteDay(iso);if(_note)h+=notePromptHTML(iso);
+    h+='<button class="btn primary" id="mClose">Sail on</button>'+(_note?'<button class="btn ghost" id="mAdd">Add a line to the diary</button>':'');
+    modal(h);wireBaro();
+    $("#mClose").onclick=()=>{collectDiary(iso);save();closeModal();render();};
+    const _ma=$("#mAdd");if(_ma)_ma.onclick=()=>{collectDiary(iso);save();closeModal();openDiary(iso,true);};
   }
   function weatherReassurance(){
     const A=aggregate();PORTS=currentPorts(A.made);const V=voyageContext(A.made);
     let h='<div class="eyebrow">Weather logged</div><h2>It happens to every sailor.</h2>';
     h+='<p>A weather day is part of the passage, not a failure of it. What you\u2019ve banked stays banked \u2014 '+progressLine(A,V)+'</p>';
     h+='<p>This leg resets, and your next clean day starts a fresh one. No ground lost on the voyage; just weather astern. Fair winds will come again.</p>';
-    const iso=todayISO();h+=diaryFieldsHTML(iso,true,true);
-    h+='<button class="btn primary" id="mClose">Sail on</button>';
-    modal(h);wireBaro();$("#mClose").onclick=()=>{collectDiary(iso);save();closeModal();render();};
+    const iso=todayISO();h+=diaryFieldsHTML(iso);
+    h+=notePromptHTML(iso);
+    h+='<button class="btn primary" id="mClose">Sail on</button><button class="btn ghost" id="mAdd">Add a line to the diary</button>';
+    modal(h);wireBaro();
+    $("#mClose").onclick=()=>{collectDiary(iso);save();closeModal();render();};
+    $("#mAdd").onclick=()=>{collectDiary(iso);save();closeModal();openDiary(iso,true);};
   }
 
   function loreOf(P){return {brief:(P.brief&&P.brief.length)?P.brief:["This passage follows "+P.title+" — "+P.era+". The full story is still being written."],ship:P.ship||"",crew:P.crew||"",sources:P.sources||""};}
@@ -1596,23 +1627,37 @@
     $("#mClose").onclick=closeModal;
   }
   function voyageStopsHTML(rung,made){
-    const P=passageById(LADDER[rung].id);
-    return P.ports.map((pt,i)=>{const done=stopReached(rung,i,made);return '<div class="lrow '+(done?'done':'lock')+'" data-r="'+rung+'" data-i="'+i+'"><div class="dot">'+(done?'\u2713':'\u2217')+'</div><div><div class="pname">'+pt.name+'</div><div class="'+(done?'plog':'pwhen')+'">'+(done?'read the chapter \u203a':'reach to unlock')+'</div></div><div class="pchev">\u203a</div></div>';}).join("");
+    const P=passageById(LADDER[rung].id),b=ladderBounds(),ld=localDays(rung);let firstLocked=true;
+    return P.ports.map((pt,i)=>{const done=stopReached(rung,i,made);let sub;if(done){sub='read the chapter \u203a';}else{const to=Math.max(0,(b.starts[rung]+ld[i])-made);if(firstLocked){firstLocked=false;sub=to+' day'+(to===1?'':'s')+' to run';}else{sub='reach to unlock';}}return '<div class="lrow '+(done?'done':'lock')+'" data-r="'+rung+'" data-i="'+i+'"><div class="dot">'+(done?'\u2713':'\u2217')+'</div><div><div class="pname">'+pt.name+'</div><div class="'+(done?'plog':'pwhen')+'">'+sub+'</div></div><div class="pchev">\u203a</div></div>';}).join("");
   }
   function voyagesShelfHTML(made){
     const b=ladderBounds();
     const rows=LADDER.map((r,i)=>{const P=passageById(r.id);const done=made>=b.ends[i];const cur=made>=b.starts[i]&&made<b.ends[i];const cls=done?'done':(cur?'cur':'lock');const status=done?'\u2713 complete':(cur?'under way \u00b7 day '+(made-b.starts[i])+' of '+r.len:'locked \u00b7 '+b.starts[i]+' clean days to reach');return '<div class="vrow '+cls+'" data-r="'+i+'"><div><div class="pname">'+P.title+'</div><div class="vsub">'+r.len+'-day voyage \u00b7 '+status+'</div></div><div class="pchev">'+(done||cur?'\u203a':'\ud83d\udd12')+'</div></div>';}).join("");
     return '<div class="lh">The voyages</div><div class="vshelf">'+rows+'</div>';
   }
+  function openShelf(){
+    const made=aggregate().made,V=voyageContext(made);
+    let h='<div class="eyebrow">The ship\u2019s library</div><h2>All voyages</h2>'+voyagesShelfHTML(made)+'<button class="btn quiet" id="mClose">Close</button>';
+    modal(h);
+    document.querySelectorAll('.vshelf .vrow').forEach(el=>{if(!el.classList.contains('lock'))el.onclick=()=>voyageSheet(+el.dataset.r,(+el.dataset.r)===V.rung);});
+    $("#mClose").onclick=closeModal;
+  }
   function voyageSheet(rung,isHub){
-    const A=aggregate(),made=A.made,P=passageById(LADDER[rung].id),L=loreOf(P);
-    let h='<div class="eyebrow">'+(isHub?'The passage':'Voyage '+(rung+1)+' of '+LADDER.length)+'</div><h2>'+P.title+'</h2><div class="sub2">'+P.era+'</div>'+passageMap(P,-1)+L.brief.map(t=>'<p>'+t+'</p>').join("")+factsHTML(L)+'<div class="lh">The stops</div><div class="lstops">'+voyageStopsHTML(rung,made)+'</div>'+(L.sources?'<div class="srcs">'+L.sources+'</div>':'');
-    if(isHub)h+=voyagesShelfHTML(made);
-    h+=(isHub?'':'<button class="btn ghost" id="mBack">\u2039 The voyages</button>')+'<button class="btn quiet" id="mClose">Close</button>';
+    const A=aggregate(),made=A.made,P=passageById(LADDER[rung].id),L=loreOf(P),b=ladderBounds();
+    const eyebrow=isHub?('Current voyage \u00b7 day '+Math.max(0,made-b.starts[rung])+' of '+LADDER[rung].len):('Voyage '+(rung+1)+' of '+LADDER.length);
+    let h='<div class="eyebrow">'+eyebrow+'</div><h2>'+P.title+'</h2><div class="sub2">'+P.era+'</div>'
+      +passageMap(P,-1)
+      +L.brief.map(t=>'<p>'+t+'</p>').join("")
+      +'<div class="lh">Ports of call</div><div class="lstops">'+voyageStopsHTML(rung,made)+'</div>'
+      +factsHTML(L)
+      +(L.sources?'<div class="srcs">'+L.sources+'</div>':'')
+      +'<div class="liblink" id="allVoyages">All voyages \u203a</div>'
+      +(isHub?'':'<button class="btn ghost" id="mBack">\u2039 All voyages</button>')
+      +'<button class="btn quiet" id="mClose">Close</button>';
     modal(h);
     document.querySelectorAll('.lstops .lrow').forEach(el=>el.onclick=()=>openChapter(+el.dataset.r,+el.dataset.i,true));
-    document.querySelectorAll('.vshelf .vrow').forEach(el=>{if(!el.classList.contains('lock'))el.onclick=()=>voyageSheet(+el.dataset.r,false);});
-    const bk=$("#mBack");if(bk)bk.onclick=openLibrary;
+    $("#allVoyages").onclick=openShelf;
+    const bk=$("#mBack");if(bk)bk.onclick=openShelf;
     $("#mClose").onclick=closeModal;
   }
   function openLibrary(){const V=voyageContext(aggregate().made);if(V.openSea){openOpenSea();return;}voyageSheet(V.rung,true);}
@@ -1628,8 +1673,11 @@
     let h='<div class="eyebrow">Landfall</div><h2>'+P.title+' \u2014 complete</h2>';
     h+=last?'<p>You have closed the full circuit \u2014 every voyage on the chart, '+b.total+' clear days, the whole world sailed. From here the sea is open and endless, and entirely yours.</p>':'<p>You have made landfall. '+P.title+' is done, and a new voyage opens ahead \u2014 <b>'+A.made+'</b> clear days made good so far.</p>';
     if(!last){const n=rung+1;h+='<p class="muted">Next: '+passageById(LADDER[n].id).title+' \u2014 a '+LADDER[n].len+'-day passage. Trim resets to a fresh 100%; everything you have banked stays banked.</p>';}
+    const iso=todayISO();h+=diaryFieldsHTML(iso)+notePromptHTML(iso);
     h+='<button class="btn primary" id="mClose">Sail on</button><button class="btn quiet" id="mLog">Add a line to the diary</button>';
-    modal(h);$("#mClose").onclick=closeModal;$("#mLog").onclick=()=>openDiary(todayISO());
+    modal(h);wireBaro();
+    $("#mClose").onclick=()=>{collectDiary(iso);save();closeModal();render();};
+    $("#mLog").onclick=()=>{collectDiary(iso);save();closeModal();openDiary(iso,true);};
   }
     let toastT;function toast(m){const el=$("#toast");el.textContent=m;el.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("on"),1600);}
 
