@@ -62,12 +62,18 @@
   .port .pgrow{flex:1;min-width:0;}
   .port .pchev{margin-left:auto;align-self:center;color:var(--faint);font-size:13px;flex:none;padding-left:8px;}
   .port.done .pchev{color:var(--beacon);}
+  .sheethead{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .sheethead-title{min-width:0;}
+  .sheethead-title h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .sheethead-lib{flex:none;display:flex;align-items:center;gap:2px;font-size:11.5px;color:var(--beacon);letter-spacing:.02em;cursor:pointer;white-space:nowrap;}
+  .sheethead-chev{font-size:13px;}
   .sub2{font-size:13px;color:var(--faint);margin:2px 0 12px;}
   .facts{background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:14px 0;font-size:13px;line-height:1.5;color:var(--mist);}
   .facts div+div{margin-top:6px;}
   .facts b{color:var(--faint);font-weight:600;margin-right:4px;}
   .lh{font-size:13px;letter-spacing:.04em;color:var(--faint);text-transform:uppercase;margin:18px 0 6px;}
-  .lstops .lrow{display:flex;gap:14px;align-items:center;padding:11px 2px;border-bottom:1px solid var(--line);cursor:pointer;}
+  .lh-stops{margin:22px 0 8px;}
+  .lstops .lrow{display:flex;gap:14px;align-items:center;padding:13px 2px;border-bottom:1px solid var(--line);cursor:pointer;}
   .lstops .lrow:last-child{border-bottom:0;}
   .lrow .dot{width:22px;height:22px;border-radius:50%;flex:none;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--faint);}
   .lrow.done .dot{background:var(--beacon);border-color:var(--beacon);color:var(--ink);}
@@ -83,11 +89,15 @@
   .muted2{font-size:12px;color:var(--faint);margin-top:2px;line-height:1.45;font-style:italic;}
   .detail{background:rgba(95,208,197,.08);border-left:2px solid var(--beacon);border-radius:0 8px 8px 0;padding:10px 12px;margin:16px 0 0;font-size:13px;line-height:1.55;color:var(--mist);}
   .locknote{font-size:13px;color:var(--faint);font-style:italic;margin-top:10px;opacity:.75;}
+  .chapnav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:16px 0 4px;padding-top:12px;border-top:1px solid var(--line);}
+  .chapnav-btn{width:38px;height:38px;flex:none;border-radius:10px;border:1px solid var(--line);background:var(--ink);color:var(--mist);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .chapnav-btn.void{visibility:hidden;}
+  .chapnav-pos{flex:1;min-width:0;text-align:center;font-size:12px;color:var(--faint);letter-spacing:.03em;}
   .readstory{display:inline-block;font-size:12px;color:var(--beacon);margin-top:9px;font-weight:600;}
   .libhint{font-size:11px;color:var(--faint);margin-top:10px;letter-spacing:.02em;cursor:pointer;}
   #sheet2 p{font-size:14px;line-height:1.62;color:var(--mist);margin:11px 0;}
   #sheet2 h2{margin-bottom:2px;}
-  .mapwrap{background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:8px;margin:12px 0 14px;}
+  .mapwrap{background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:8px;margin:14px 0 16px;}
   .mapwrap svg{display:block;border-radius:6px;}
   .mapcap{font-size:11px;color:var(--faint);margin-top:7px;text-align:center;line-height:1.4;}
   .vshelf .vrow{display:flex;gap:12px;align-items:center;padding:11px 2px;border-bottom:1px solid var(--line);}
@@ -362,7 +372,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.2.1</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.3.2</span></p>
   </section>
 
   <nav class="tabs">
@@ -1011,7 +1021,7 @@
       const chev=done?'\u203a':(cls==="future"?'\ud83d\udd12':'\u203a');
       return '<div class="port '+cls+'" data-i="'+i+'"><div class="dot">'+mark+'</div><div class="pgrow"><div class="pname">'+p.name+'</div>'+line+'</div><div class="pchev">'+chev+'</div></div>';
     }).join("");
-    document.querySelectorAll('#wpList .port').forEach(el=>el.onclick=()=>{const i=+el.dataset.i;if(V.openSea){modal('<div class="eyebrow">Open sea</div><h2>'+PORTS[i].name+'</h2><p>'+PORTS[i].log+'</p><button class="btn quiet" id="mClose">Close</button>');$("#mClose").onclick=closeModal;}else openChapter(V.rung,i,false);});
+    document.querySelectorAll('#wpList .port').forEach(el=>el.onclick=()=>{const i=+el.dataset.i;if(V.openSea){modal('<div class="eyebrow">Open sea</div><h2>'+PORTS[i].name+'</h2><p>'+PORTS[i].log+'</p><button class="btn quiet" id="mClose">Close</button>');$("#mClose").onclick=closeModal;}else openChapter(V.rung,i);});
     const alf=$("#afterLandfall");
     if(!V.openSea&&V.rung<LADDER.length-1){const nv=passageById(LADDER[V.rung+1].id).title,thisT=passageById(V.id).title;alf.innerHTML='<div class="afterlf"><div class="alk">After landfall</div><div class="alv">Voyage '+(V.rung+2)+' \u2014 '+nv+'</div><div class="als">a new voyage to embark when '+thisT+' is done</div></div>';}
     else{alf.innerHTML='';}
@@ -1629,13 +1639,17 @@
     if(reached){const paras=(pt.lore&&pt.lore.length?pt.lore:[pt.log]).map(t=>'<p>'+t+'</p>').join("");return paras+(pt.detail?'<div class="detail">'+pt.detail+'</div>':'');}
     return '<p class="muted">Still ahead \u2014 '+to+' day'+(to===1?'':'s')+' to run. Reach this port to read its chapter.</p><div class="locknote">'+pt.log+'</div>';
   }
-  function openChapter(rung,i,fromVoyage){
+  function openChapter(rung,i){
     const A=aggregate(),P=passageById(LADDER[rung].id),pt=P.ports[i],reached=stopReached(rung,i,A.made);
     const b=ladderBounds(),absD=b.starts[rung]+localDays(rung)[i],to=Math.max(0,absD-A.made);
-    let h='<div class="eyebrow">'+P.title+' \u00b7 '+(reached?'Port '+(i+1):'Uncharted')+'</div><h2>'+pt.name+'</h2>'+passageMap(P,i)+chapterBody(P,pt,reached,to)+(fromVoyage?'<button class="btn ghost" id="mBack">\u2039 The passage</button>':'')+'<button class="btn quiet" id="mClose">Close</button>';
+    const hasPrev=i>0,hasNext=i<P.ports.length-1;
+    const nav=(hasPrev||hasNext)?('<div class="chapnav">'+(hasPrev?'<div class="chapnav-btn" id="mPrev">\u2039</div>':'<div class="chapnav-btn void"></div>')+'<div class="chapnav-pos">Port '+(i+1)+' of '+P.ports.length+'</div>'+(hasNext?'<div class="chapnav-btn" id="mNext">\u203a</div>':'<div class="chapnav-btn void"></div>')+'</div>'):'';
+    let h='<div class="eyebrow">'+P.title+' \u00b7 '+(reached?'Port '+(i+1):'Uncharted')+'</div><h2>'+pt.name+'</h2>'+passageMap(P,i)+chapterBody(P,pt,reached,to)+nav+'<button class="btn quiet" id="mBack">\u2039 Back</button>';
     modal(h);
-    if(fromVoyage){const V=voyageContext(A.made);$("#mBack").onclick=()=>voyageSheet(rung,rung===V.rung);}
-    $("#mClose").onclick=closeModal;
+    if(hasPrev)$("#mPrev").onclick=()=>openChapter(rung,i-1);
+    if(hasNext)$("#mNext").onclick=()=>openChapter(rung,i+1);
+    const V=voyageContext(A.made);
+    $("#mBack").onclick=()=>voyageSheet(rung,rung===V.rung);
   }
   function voyageStopsHTML(rung,made){
     const P=passageById(LADDER[rung].id),b=ladderBounds(),ld=localDays(rung);let firstLocked=true;
@@ -1656,19 +1670,16 @@
   function voyageSheet(rung,isHub){
     const A=aggregate(),made=A.made,P=passageById(LADDER[rung].id),L=loreOf(P),b=ladderBounds();
     const eyebrow=isHub?('Current voyage \u00b7 day '+Math.max(0,made-b.starts[rung])+' of '+LADDER[rung].len):('Voyage '+(rung+1)+' of '+LADDER.length);
-    let h='<div class="eyebrow">'+eyebrow+'</div><h2>'+P.title+'</h2><div class="sub2">'+P.era+'</div>'
+    let h='<div class="sheethead"><div class="sheethead-title"><div class="eyebrow">'+eyebrow+'</div><h2>'+P.title+'</h2></div><div class="sheethead-lib" id="allVoyages">All voyages <span class="sheethead-chev">\u203a</span></div></div><div class="sub2">'+P.era+'</div>'
       +passageMap(P,-1)
       +L.brief.map(t=>'<p>'+t+'</p>').join("")
-      +'<div class="lh">Ports of call</div><div class="lstops">'+voyageStopsHTML(rung,made)+'</div>'
+      +'<div class="lh lh-stops">Ports of call</div><div class="lstops">'+voyageStopsHTML(rung,made)+'</div>'
       +factsHTML(L)
       +(L.sources?'<div class="srcs">'+L.sources+'</div>':'')
-      +'<div class="liblink" id="allVoyages">All voyages \u203a</div>'
-      +(isHub?'':'<button class="btn ghost" id="mBack">\u2039 All voyages</button>')
       +'<button class="btn quiet" id="mClose">Close</button>';
     modal(h);
-    document.querySelectorAll('.lstops .lrow').forEach(el=>el.onclick=()=>openChapter(+el.dataset.r,+el.dataset.i,true));
+    document.querySelectorAll('.lstops .lrow').forEach(el=>el.onclick=()=>openChapter(+el.dataset.r,+el.dataset.i));
     $("#allVoyages").onclick=openShelf;
-    const bk=$("#mBack");if(bk)bk.onclick=openShelf;
     $("#mClose").onclick=closeModal;
   }
   function openLibrary(){const V=voyageContext(aggregate().made);if(V.openSea){openOpenSea();return;}voyageSheet(V.rung,true);}
