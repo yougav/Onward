@@ -139,12 +139,16 @@
   .dicon{flex:none;display:flex;align-items:center;justify-content:center;padding:5px;cursor:pointer;margin:-2px -2px -2px 0;}
   /* DEV NOTES — temporary scaffolding, safe to remove */
   .devnotes-headrow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 0 18px;}
-  .devnotes-link{flex:none;display:flex;align-items:center;gap:4px;font-size:12px;color:var(--faint);letter-spacing:.02em;cursor:pointer;white-space:nowrap;}
-  .devnotes-row{display:flex;align-items:flex-start;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line);}
+  .devnotes-link{flex:none;display:flex;align-items:center;justify-content:center;width:44px;height:44px;color:var(--beacon);cursor:pointer;}
+  .devnotes-textarea{min-height:190px;margin-bottom:14px;}
+  .devnotes-viewlink{text-align:center;font-size:12px;color:var(--beacon);letter-spacing:.02em;cursor:pointer;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);}
+  .devnotes-row{display:flex;align-items:flex-start;gap:12px;padding:13px 2px;border-bottom:1px solid var(--line);}
   .devnotes-row:last-child{border-bottom:0;}
-  .devnotes-row .devnotes-text{flex:1;min-width:0;font-size:14px;line-height:1.4;word-break:break-word;}
-  .devnotes-row .devnotes-text small{display:block;color:var(--faint);font-size:11px;margin-top:2px;}
+  .devnotes-row .devnotes-text{flex:1;min-width:0;font-size:14px;line-height:1.5;white-space:pre-wrap;word-break:break-word;}
+  .devnotes-row .devnotes-text small{display:block;color:var(--faint);font-size:11px;margin-top:5px;white-space:normal;}
   .devnotes-del{flex:none;color:var(--faint);font-size:15px;cursor:pointer;padding:2px 4px;}
+  .devnotes-actions{display:flex;gap:10px;border-top:1px solid var(--line);margin-top:2px;padding-top:16px;}
+  .devnotes-actions .btn{width:auto;flex:1;margin-top:0;}
   /* /DEV NOTES */
   .hz{display:flex;align-items:center;gap:12px;padding:13px 2px;border-bottom:1px solid var(--line);cursor:pointer;}
   .hz:last-of-type{border-bottom:0;}
@@ -201,7 +205,7 @@
   .award.next b{color:#E8B65A;}
   .award.next small{color:#caa25e;}
   .subseg{margin:0 0 12px;font-size:12px;}
-  .subseg button{padding:5px 10px;}
+  .subseg button{padding:5px 10px;white-space:nowrap;flex:none;}
   .helmhead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:16px;}
   .helmhead h1{margin:0;}
   .clocks{display:flex;flex-direction:column;align-items:flex-end;gap:4px;padding-bottom:3px;}
@@ -311,7 +315,7 @@
       <div class="card">
         <div style="display:flex;justify-content:space-between;align-items:center">
           <h2 style="margin:0">Salvage made good</h2>
-          <div class="seg subseg" id="haulSeg"><button data-h="money" class="on">Salvage &pound;</button><button data-h="units">Drift</button></div>
+          <div class="seg subseg" id="haulSeg"><button data-h="money" class="on">Salvage</button><button data-h="units">Drift</button></div>
         </div>
         <div class="chartwrap"><div id="salvChart"></div></div>
         <p class="note" style="margin:10px 0 0">A clear day adds the most &middot; a weather day far less &middot; landfalls marked where reached.</p>
@@ -348,7 +352,7 @@
   <section id="s-more" class="screen">
     <div class="eyebrow">Onward</div>
     <!-- DEV NOTES — temporary scaffolding, safe to remove (unwrap <h1>Locker</h1> back to standalone when removing) -->
-    <div class="devnotes-headrow"><h1 style="margin:0">Locker</h1><div class="devnotes-link" id="devNotesBtn">⛵ Dev notes</div></div>
+    <div class="devnotes-headrow"><h1 style="margin:0">Locker</h1><div class="devnotes-link" id="devNotesBtn" aria-label="Dev notes"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 16 L20 16 L17 20 L7 20 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="1.6"/><path d="M12 4 L12 14 L5 14 Z" fill="currentColor"/></svg></div></div>
     <!-- /DEV NOTES -->
     <div class="card">
       <h2>Your hazards &amp; usual week</h2>
@@ -364,7 +368,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.4.1</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.4.3</span></p>
   </section>
 
   <nav class="tabs">
@@ -1338,7 +1342,7 @@
     try{
       var file=new File([text],name,{type:"application/json"});
       if(navigator.canShare&&navigator.canShare({files:[file]})){
-        navigator.share({files:[file],title:"Onward papers"})
+        navigator.share({files:[file]})
           .then(function(){markSaved();})                                   // completed -> honest "Saved"
           .catch(function(err){if(err&&err.name==="AbortError")return;downloadFallback(text,name);}); // cancelled -> say nothing; other error -> fall back
         return;
@@ -1398,6 +1402,25 @@
   function _dnSave(list){try{localStorage.setItem("onward.devnotes",JSON.stringify(list));}catch(e){}}
   function _dnFmt(ms){const d=new Date(ms);const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());}
   function openDevNotes(){
+    sheet(
+      '<h2>Dev notes</h2>'
+      +'<textarea id="dnInput" class="dnote dnote-lg devnotes-textarea" placeholder="Write a note…"></textarea>'
+      +'<button class="btn primary" id="dnAdd">Add</button>'
+      +'<div class="devnotes-viewlink" id="dnViewLink">View notes &rsaquo;</div>'
+      +'<button class="btn quiet" id="dnClose">Close</button>'
+    );
+    const ta=$("#dnInput");
+    const grow=function(){ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,340)+'px';};
+    ta.addEventListener('input',grow);grow();
+    $("#dnAdd").onclick=function(){
+      const v=ta.value.trim();if(!v)return;
+      const notes=_dnLoad();notes.push({at:Date.now(),text:v});_dnSave(notes);
+      ta.value="";grow();ta.focus();
+    };
+    $("#dnViewLink").onclick=openDevNotesLog;
+    $("#dnClose").onclick=closeSheet;
+  }
+  function openDevNotesLog(){
     const notes=_dnLoad();
     function renderList(){
       const rows=notes.slice().reverse().map(n=>'<div class="devnotes-row" data-at="'+n.at+'"><div class="devnotes-text">'+esc(n.text)+'<small>'+_dnFmt(n.at)+'</small></div><div class="devnotes-del" data-at="'+n.at+'">✕</div></div>').join("");
@@ -1407,16 +1430,17 @@
     sheet(
       '<h2>Dev notes</h2>'
       +'<div id="dnList"></div>'
-      +'<div class="field"><label>New note</label><input id="dnInput" type="text" maxlength="500"></div>'
-      +'<button class="btn primary" id="dnAdd">Add</button>'
+      +'<div class="devnotes-actions">'
       +'<button class="btn ghost" id="dnCopy">Copy all</button>'
       +'<button class="btn danger" id="dnClear">Clear all</button>'
+      +'</div>'
+      +'<button class="btn quiet" id="dnBack">‹ Back</button>'
       +'<button class="btn quiet" id="dnClose">Close</button>'
     );
     renderList();
-    $("#dnAdd").onclick=function(){const v=$("#dnInput").value.trim();if(!v)return;notes.push({at:Date.now(),text:v});_dnSave(notes);$("#dnInput").value="";renderList();};
-    $("#dnCopy").onclick=function(){if(!notes.length){toast("Nothing to copy");return;}const txt=notes.map(n=>'['+_dnFmt(n.at)+'] '+n.text).join('\n');try{if(navigator.clipboard){navigator.clipboard.writeText(txt);toast("Copied");}else{toast("Clipboard unavailable");}}catch(e){toast("Couldn’t copy");}};
-    $("#dnClear").onclick=function(){if(!notes.length){toast("Nothing to clear");return;}sheet('<h2>Clear all dev notes?</h2><p class="muted">This deletes every note on this device. Copy them out first if you want to keep them.</p><button class="btn danger" id="dnClearGo">Clear it</button><button class="btn quiet" id="dnClearBack">Cancel</button>');$("#dnClearGo").onclick=function(){notes.length=0;_dnSave(notes);openDevNotes();};$("#dnClearBack").onclick=openDevNotes;};
+    $("#dnCopy").onclick=function(){if(!notes.length){toast("Nothing to copy");return;}const txt=notes.map(n=>'['+_dnFmt(n.at)+']\n'+n.text).join('\n\n');try{if(navigator.clipboard){navigator.clipboard.writeText(txt);toast("Copied");}else{toast("Clipboard unavailable");}}catch(e){toast("Couldn’t copy");}};
+    $("#dnClear").onclick=function(){if(!notes.length){toast("Nothing to clear");return;}sheet('<h2>Clear all dev notes?</h2><p class="muted">This deletes every note on this device. Copy them out first if you want to keep them.</p><button class="btn danger" id="dnClearGo">Clear it</button><button class="btn quiet" id="dnClearBack">Cancel</button>');$("#dnClearGo").onclick=function(){notes.length=0;_dnSave(notes);openDevNotesLog();};$("#dnClearBack").onclick=openDevNotesLog;};
+    $("#dnBack").onclick=openDevNotes;
     $("#dnClose").onclick=closeSheet;
   }
   /* /DEV NOTES */
