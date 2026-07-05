@@ -49,19 +49,6 @@
   .stat-row{display:flex;align-items:baseline;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--line);}
   .stat-row:last-child{border-bottom:0;}
   .stat-row .lbl{font-size:13px;color:var(--faint);}
-  .port{display:flex;align-items:flex-start;gap:14px;padding:13px 2px;border-bottom:1px solid var(--line);}
-  .port:last-child{border-bottom:0;}
-  .port .dot{width:22px;height:22px;border-radius:50%;flex:none;margin-top:1px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--faint);}
-  .port.done .dot{background:var(--beacon);border-color:var(--beacon);color:var(--ink);}
-  .port.next .dot{border-color:var(--amber);color:var(--amber);}
-  .port .pname{font-size:15px;}
-  .port .plog{font-size:12px;color:var(--faint);margin-top:3px;line-height:1.45;font-style:italic;}
-  .port .pwhen{font-size:12px;color:var(--amber);margin-top:3px;}
-  .port.future .pname{color:var(--faint);}
-  .port{cursor:pointer;}
-  .port .pgrow{flex:1;min-width:0;}
-  .port .pchev{margin-left:auto;align-self:center;color:var(--faint);font-size:13px;flex:none;padding-left:8px;}
-  .port.done .pchev{color:var(--beacon);}
   .sheethead{display:flex;align-items:center;justify-content:space-between;gap:12px;}
   .sheethead-title{min-width:0;}
   .sheethead-title h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -150,6 +137,15 @@
   .dmark.today .dot{background:transparent;border:1.6px solid var(--beacon);box-sizing:border-box;}
   .barochip{flex:none;min-width:58px;text-align:center;background:var(--ink);border:1px solid var(--line);border-radius:11px;padding:4px 8px;font-size:10px;color:var(--mist);white-space:nowrap;}
   .dicon{flex:none;display:flex;align-items:center;justify-content:center;padding:5px;cursor:pointer;margin:-2px -2px -2px 0;}
+  /* DEV NOTES — temporary scaffolding, safe to remove */
+  .devnotes-headrow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 0 18px;}
+  .devnotes-link{flex:none;display:flex;align-items:center;gap:4px;font-size:12px;color:var(--faint);letter-spacing:.02em;cursor:pointer;white-space:nowrap;}
+  .devnotes-row{display:flex;align-items:flex-start;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line);}
+  .devnotes-row:last-child{border-bottom:0;}
+  .devnotes-row .devnotes-text{flex:1;min-width:0;font-size:14px;line-height:1.4;word-break:break-word;}
+  .devnotes-row .devnotes-text small{display:block;color:var(--faint);font-size:11px;margin-top:2px;}
+  .devnotes-del{flex:none;color:var(--faint);font-size:15px;cursor:pointer;padding:2px 4px;}
+  /* /DEV NOTES */
   .hz{display:flex;align-items:center;gap:12px;padding:13px 2px;border-bottom:1px solid var(--line);cursor:pointer;}
   .hz:last-of-type{border-bottom:0;}
   .hz .meta{flex:1;}.hz .meta b{font-size:15px;}.hz .meta small{display:block;color:var(--faint);font-size:11px;margin-top:2px;font-style:italic;}
@@ -259,18 +255,12 @@
   .daytoggle button.on[data-m="weather"]{background:var(--amber);color:#0c1a2a}
   .dsnip{color:var(--beacon);font-style:italic;opacity:.85}
   .catchlist{max-height:46vh;overflow:auto;-webkit-overflow-scrolling:touch;margin:4px 0 14px}
-  .liblink{font-size:11.5px;color:var(--beacon);margin-top:13px;padding-top:12px;border-top:1px solid #21364f;cursor:pointer;letter-spacing:.02em;}
   .portslink{font-size:12px;color:var(--beacon);margin-top:14px;padding-top:13px;border-top:1px solid #21364f;cursor:pointer;letter-spacing:.02em;text-align:center;}
   .statusline{font-size:13.5px;line-height:1.5;margin:2px 2px 12px;color:var(--mist);}
   .statusline .lead{color:var(--beacon);font-weight:600;}
   .statusline.weather .lead{color:var(--amber);}
   .weatherlink{text-align:center;font-size:12px;color:var(--faint);margin-top:11px;padding:6px;cursor:pointer;letter-spacing:.02em;}
   .portshead{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:0 0 4px;}
-  .port.landfall .dot{border-color:var(--amber);color:var(--amber);}
-  .afterlf{margin-top:8px;padding-top:14px;border-top:1px dashed var(--line);}
-  .afterlf .alk{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);opacity:.7;}
-  .afterlf .alv{font-size:15px;font-style:italic;color:var(--faint);margin-top:4px;}
-  .afterlf .als{font-size:11px;color:var(--faint);opacity:.7;margin-top:3px;}
 </style>
 </head>
 <body>
@@ -324,7 +314,7 @@
           <div class="seg subseg" id="haulSeg"><button data-h="money" class="on">Salvage &pound;</button><button data-h="units">Drift</button></div>
         </div>
         <div class="chartwrap"><div id="salvChart"></div></div>
-        <p class="note" style="margin:10px 0 0">A clean day adds the most &middot; a weather day far less &middot; landfalls marked where reached.</p>
+        <p class="note" style="margin:10px 0 0">A clear day adds the most &middot; a weather day far less &middot; landfalls marked where reached.</p>
       </div>
       <div class="card">
         <h2>Your run</h2>
@@ -357,7 +347,9 @@
 
   <section id="s-more" class="screen">
     <div class="eyebrow">Onward</div>
-    <h1>Locker</h1>
+    <!-- DEV NOTES — temporary scaffolding, safe to remove (unwrap <h1>Locker</h1> back to standalone when removing) -->
+    <div class="devnotes-headrow"><h1 style="margin:0">Locker</h1><div class="devnotes-link" id="devNotesBtn">⛵ Dev notes</div></div>
+    <!-- /DEV NOTES -->
     <div class="card">
       <h2>Your hazards &amp; usual week</h2>
       <p class="note" style="margin:0 0 12px">The hazards on your chart, and how often they crossed your bow in a usual week. Everything is reckoned from these.</p>
@@ -372,7 +364,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.3.2</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.4.1</span></p>
   </section>
 
   <nav class="tabs">
@@ -385,7 +377,6 @@
 
 <div class="scrim" id="scrim" data-r="0"><div class="sheet" id="sheet"></div></div>
 <div class="scrim" id="scrim2" style="z-index:70"><div class="sheet" id="sheet2"></div></div>
-<div class="scrim" id="portsScrim" style="z-index:60"><div class="sheet" id="portsSheet"><div class="portshead" id="portsHead">Ports of call</div><div id="wpList"></div><div id="afterLandfall"></div><div class="liblink" id="libHint">The ship&rsquo;s library &mdash; all voyages &rsaquo;</div><button class="btn quiet" id="portsClose" style="margin-top:10px">Close</button></div></div>
 <div id="gate"><div class="hint"><svg class="chev" viewBox="0 0 24 24"><path d="M7 14l5-5 5 5"/></svg><span>Swipe up to set sail</span></div></div>
 <div class="toast" id="toast"></div>
 
@@ -634,7 +625,10 @@
   function parseISO(iso){const p=iso.split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
   function daysBetween(a,b){return Math.round((parseISO(b)-parseISO(a))/DAY);}
   function fmtDate(iso){return parseISO(iso).toLocaleDateString(undefined,{weekday:'short',day:'numeric',month:'short'});}
+  function validISO(s){return typeof s==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(s)&&!isNaN(parseISO(s).getTime());}
+  function addDays(iso,n){const d=parseISO(iso);return localISO(new Date(d.getFullYear(),d.getMonth(),d.getDate()+n));}
 
+  let _loadCorrupt=false;
   let state=load();
   let metric="trends";
   let haulUnit="money";
@@ -648,12 +642,12 @@
       ],
       baselineWeek:{},deviations:{},completed:[],startAt:Date.now(),weatherAt:{},diary:{},lastActive:todayISO()};
   }
-  function load(){try{const r=JSON.parse(localStorage.getItem("onward.v3"));if(r&&r.v===3)return r;}catch(e){}return null;}
-  function save(){try{localStorage.setItem("onward.v3",JSON.stringify(state));}catch(e){toast("Couldn’t save — storage blocked");}}
+  function load(){const raw=localStorage.getItem("onward.v3");if(!raw)return null;try{const r=JSON.parse(raw);if(r&&r.v===3&&validISO(r.startISO))return r;}catch(e){}_loadCorrupt=true;return null;}
+  function save(){try{localStorage.setItem("onward.v3",JSON.stringify(state));return true;}catch(e){toast("Couldn’t save — storage blocked");return false;}}
 
   function dUnits(dr){return dr.abv*dr.ml/1000;}
   function drinkMap(){const m={};state.drinks.forEach(d=>m[d.id]=d);return m;}
-  function rates(){let w={units:0,money:0,kcal:0};state.drinks.forEach(dr=>{const q=state.baselineWeek[dr.id]||0;w.units+=q*dUnits(dr);w.money+=q*dr.cost;w.kcal+=q*dr.kcal;});return {units:w.units/7,money:w.money/7,kcal:w.kcal/7};}
+  function rates(){let w={units:0,money:0,kcal:0};state.drinks.filter(d=>!d.archived).forEach(dr=>{const q=state.baselineWeek[dr.id]||0;w.units+=q*dUnits(dr);w.money+=q*dr.cost;w.kcal+=q*dr.kcal;});return {units:w.units/7,money:w.money/7,kcal:w.kcal/7};}
   function basketTotals(b){const m=drinkMap();let c={units:0,money:0,kcal:0};Object.keys(b||{}).forEach(id=>{const dr=m[id],q=b[id]||0;if(dr&&q>0){c.units+=q*dUnits(dr);c.money+=q*dr.cost;c.kcal+=q*dr.kcal;}});return c;}
 
   function dayInfo(iso){
@@ -690,33 +684,12 @@
       }
       if(d.status==='clear')made++;
     });
-    const stages=Object.keys(groups).map(k=>{const g=groups[k],opt=g.days*r.units;return {destIdx:+k,name:PORTS[+k].name,trim:opt>0?g.av/opt:1,days:g.days};}).sort((a,b)=>a.destIdx-b.destIdx);
     let curIdx=PORTS.findIndex(p=>p.d>A.made);if(curIdx<0)curIdx=PORTS.length-1;
     const cg=groups[curIdx];
     const current={destIdx:curIdx,name:PORTS[curIdx].name,days:cg?cg.days:0,trim:(cg&&cg.days*r.units>0)?cg.av/(cg.days*r.units):1};
     const totOpt=A.series.filter(d=>d.counted).length*r.units;
     const voyage=totOpt>0?A.banked.units/totOpt:1;
-    return {stages,current,curIdx,voyage,A,r,hasBase:(r.units+r.money+r.kcal)>0};
-  }
-
-  function chartStages(stages,curIdx){
-    if(!stages.length)return '<div class="muted" style="text-align:center;padding:34px 0">Sail a leg and your stage scores appear here.</div>';
-    const W=320,H=170,top=16,bottom=H-30,left=14,right=W-8,N=stages.length;
-    const gap=N>6?5:8,bw=Math.max(8,(right-left)/N-gap);
-    const ny=v=>bottom-(bottom-top)*Math.max(0,Math.min(1,v));
-    const by=ny(1);
-    let bars='';
-    stages.forEach((s,i)=>{
-      const x=left+(right-left)*(i/N)+gap/2,y=ny(s.trim),h=bottom-y;
-      const col=s.destIdx===curIdx?'#E8B65A':'#5FD0C5';
-      bars+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+Math.max(0,h).toFixed(1)+'" rx="2" fill="'+col+'"/>';
-      bars+='<text x="'+(x+bw/2).toFixed(1)+'" y="'+(y-4).toFixed(1)+'" fill="#C9D6E5" font-size="8" text-anchor="middle">'+Math.round(s.trim*100)+'</text>';
-      bars+='<text x="'+(x+bw/2).toFixed(1)+'" y="'+(H-6)+'" fill="#7E92AB" font-size="7.5" text-anchor="middle">'+s.name.split(' ')[0]+'</text>';
-    });
-    return '<svg viewBox="0 0 '+W+' '+H+'">'
-      +'<line x1="'+left+'" y1="'+by.toFixed(1)+'" x2="'+right+'" y2="'+by.toFixed(1)+'" stroke="#C9D6E5" stroke-width="1" stroke-dasharray="3 4" opacity=".5"/>'
-      +'<text x="'+right+'" y="'+(by-3).toFixed(1)+'" fill="#7E92AB" font-size="8" text-anchor="end">100%</text>'
-      +'<line x1="'+left+'" y1="'+bottom+'" x2="'+right+'" y2="'+bottom+'" stroke="#26405C"/>'+bars+'</svg>';
+    return {current,curIdx,voyage,A,r,hasBase:(r.units+r.money+r.kcal)>0};
   }
 
   function fmtMoney(n){return state.currency+Math.round(n).toLocaleString();}
@@ -850,49 +823,6 @@
     else{svg=regionalSVG(["sg","beset","drift","launch","elephant","jamescaird"][idx]);cap="";}
     return '<div class="mapwrap">'+svg+(cap?'<div class="mapcap">'+cap+'</div>':'')+'</div>';
   }
-  function routeSVG(made){
-    const W=320,H=150,ml=18,mr=18,top=30,bot=H-26,midY=(top+bot)/2,amp=24,N=PORTS.length;
-    const ax=i=>ml+(W-ml-mr)*(i/(N-1)), ay=i=>midY+amp*Math.sin(i*1.05);
-    const anchors=PORTS.map((p,i)=>[ax(i),ay(i)]);
-    let g;
-    if(made<=0)g=0;
-    else if(made>=PORTS[N-1].d)g=1;
-    else{let i=0;for(let k=0;k<N-1;k++){if(made>=PORTS[k].d&&made<PORTS[k+1].d){i=k;break;}}const f=(made-PORTS[i].d)/(PORTS[i+1].d-PORTS[i].d);g=(i+f)/(N-1);}
-    const pos=g*(N-1),pi=Math.floor(pos),pf=pos-pi,ni=Math.min(pi+1,N-1);
-    const vx=anchors[pi][0]+(anchors[ni][0]-anchors[pi][0])*pf, vy=anchors[pi][1]+(anchors[ni][1]-anchors[pi][1])*pf;
-    const full='M'+anchors.map(a=>a[0].toFixed(1)+','+a[1].toFixed(1)).join(' L');
-    const sailedPts=anchors.slice(0,pi+1).concat([[vx,vy]]);
-    const sailed='M'+sailedPts.map(a=>a[0].toFixed(1)+','+a[1].toFixed(1)).join(' L');
-    const nIdx=nextPortIdx(made);
-    let grid='';for(let gx=ml;gx<=W-mr;gx+=44)grid+='<line x1="'+gx+'" y1="'+top+'" x2="'+gx+'" y2="'+bot+'" stroke="#19314a" stroke-width="1"/>';
-    grid+='<line x1="'+ml+'" y1="'+midY+'" x2="'+(W-mr)+'" y2="'+midY+'" stroke="#19314a" stroke-width="1"/>';
-    let dots='';PORTS.forEach((p,i)=>{const reached=made>=p.d,isNext=(i===nIdx);const fill=reached?'#5FD0C5':'#0E1A2B',stroke=reached?'#5FD0C5':(isNext?'#E8B65A':'#34506b');dots+='<circle cx="'+ax(i).toFixed(1)+'" cy="'+ay(i).toFixed(1)+'" r="'+(isNext?4.5:3.5)+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.5"/>';});
-    const boat='<circle cx="'+vx.toFixed(1)+'" cy="'+vy.toFixed(1)+'" r="4.5" fill="#fff"/><circle cx="'+vx.toFixed(1)+'" cy="'+vy.toFixed(1)+'" r="8" fill="none" stroke="#fff" stroke-opacity=".3"/>';
-    return '<svg viewBox="0 0 '+W+' '+H+'">'+grid
-      +'<path d="'+full+'" fill="none" stroke="#34506b" stroke-width="1.5" stroke-dasharray="2 5"/>'
-      +'<path d="'+sailed+'" fill="none" stroke="#5FD0C5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>'
-      +dots+boat
-      +'<text x="'+ml+'" y="'+(top-12)+'" fill="#7E92AB" font-size="9">'+PORTS[0].name+'</text>'
-      +'<text x="'+(W-mr)+'" y="'+(top-12)+'" fill="#7E92AB" font-size="9" text-anchor="end">'+PORTS[N-1].name+'</text></svg>';
-  }
-
-  /* ---- line/bar charts ---- */
-  function chartLine(pts,fmt,unit){
-    if(pts.length<2)return '<div class="muted" style="text-align:center;padding:34px 0">Not enough logged yet — your first closed day plots here.</div>';
-    const W=320,H=170,top=14,bottom=H-24,left=10,right=W-10;
-    let maxY=1;pts.forEach(p=>{if(p.y>maxY)maxY=p.y;});
-    const nx=i=>left+(right-left)*(i/(pts.length-1)),ny=y=>bottom-(bottom-top)*(y/maxY);
-    const co=pts.map((p,i)=>[nx(i),ny(p.y)]);
-    const line=co.map((c,i)=>(i?'L':'M')+c[0].toFixed(1)+','+c[1].toFixed(1)).join(' ');
-    const area='M'+co[0][0].toFixed(1)+','+bottom+' '+co.map(c=>'L'+c[0].toFixed(1)+','+c[1].toFixed(1)).join(' ')+' L'+co[co.length-1][0].toFixed(1)+','+bottom+' Z';
-    return '<svg viewBox="0 0 '+W+' '+H+'"><defs><linearGradient id="g1" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#5FD0C5" stop-opacity=".35"/><stop offset="1" stop-color="#5FD0C5" stop-opacity="0"/></linearGradient></defs>'
-      +'<line x1="'+left+'" y1="'+bottom+'" x2="'+right+'" y2="'+bottom+'" stroke="#26405C"/>'
-      +'<path d="'+area+'" fill="url(#g1)"/><path d="'+line+'" fill="none" stroke="#5FD0C5" stroke-width="2.5" stroke-linejoin="round"/>'
-      +'<circle cx="'+co[co.length-1][0].toFixed(1)+'" cy="'+co[co.length-1][1].toFixed(1)+'" r="3.5" fill="#5FD0C5"/>'
-      +'<text x="'+left+'" y="11" fill="#7E92AB" font-size="9" font-family="ui-monospace,monospace">'+fmt(maxY)+unit+'</text>'
-      +'<text x="'+left+'" y="'+(H-6)+'" fill="#7E92AB" font-size="9">'+fmtDate(pts[0].label)+'</text>'
-      +'<text x="'+right+'" y="'+(H-6)+'" fill="#7E92AB" font-size="9" text-anchor="end">'+fmtDate(pts[pts.length-1].label)+'</text></svg>';
-  }
   function basketLabel(b){const m=drinkMap();return Object.keys(b||{}).filter(id=>b[id]>0).map(id=>b[id]+'×'+(m[id]?m[id].alias:'?')).join(' · ');}
 
   function conditions(A,todayInfo){
@@ -903,7 +833,6 @@
     return {lead:"Trade winds.",rest:"Strong and steady, mile after mile."};
   }
 
-  function clockFmt(ms){ms=Math.max(0,ms);const s=Math.floor(ms/1000);const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),sec=s%60;const p=n=>String(n).padStart(2,'0');return (d>0?d+'d ':'')+p(h)+':'+p(m)+':'+p(sec);}
   function castOffMs(){return (state&&state.startAt)||(state&&state.startISO?parseISO(state.startISO).getTime():Date.now());}
   function lastWeatherMs(){if(!state||!state.deviations)return null;const isos=Object.keys(state.deviations);if(!isos.length)return null;isos.sort();const last=isos[isos.length-1];if(state.weatherAt&&state.weatherAt[last])return state.weatherAt[last];return parseISO(last).getTime()+86400000;}
   function clockParts(ms){ms=Math.max(0,ms);const s=Math.floor(ms/1000);const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),sec=s%60;const p=n=>String(n).padStart(2,'0');return {main:(d>0?d+'d ':'')+p(h)+':'+p(m),sec:':'+p(sec)};}
@@ -950,8 +879,6 @@
     el.innerHTML='<div class="portshead">The barometer <span style="float:right;font-size:9px;letter-spacing:1px;color:#3a5170">LAST '+N+' DAYS</span></div>'
       +'<div style="font-size:20px;color:var(--beacon);font-weight:600;margin:3px 0 2px">'+curLab+' <span style="font-size:11px;color:var(--faint);font-weight:400">\u00b7 '+trend+'</span></div>'+g+leg;
   }
-  function openPorts(){$("#portsScrim").classList.add("on");const ps=$("#portsSheet");if(ps)ps.scrollTop=0;}
-  function closePorts(){$("#portsScrim").classList.remove("on");}
   function render(){
     if(!state){openSetup(true);return;}
     const A=aggregate(),r=rates(),t=todayISO();
@@ -963,7 +890,6 @@
     const preSail=state.startISO>t;const todayIdx=preSail?0:daysBetween(state.startISO,t)+1;
     const todayInfo=state.startISO<=t?dayInfo(t):null;
 
-    $("#libHint").onclick=openLibrary;
     $("#dayNum").textContent=A.made;
     const nIdx=nextPortIdx(A.made);
     const gV=$("#goalVoyage"),gK=$("#goalKick"),gTo=$("#goalToRun"),gP=$("#goalPort"),gCr=$("#goalCrumb"),gVS=$("#goalVoyStrip"),gVL=$("#goalVoyLab"),gLB=$("#goalLegBar"),gLL=$("#goalLegLab"),gLU=$("#goalLegUnit");
@@ -1012,19 +938,6 @@
     else if(todayInfo.status==='clear'){cBtn.disabled=true;cLbl.textContent="Today\u2019s run is logged \u2713";wLink.style.display="none";}
     else if(todayInfo.status==='deviation'){cBtn.disabled=true;cLbl.textContent="Weather logged today";wLink.style.display="none";}
     else{cBtn.disabled=false;cLbl.textContent="Close the day\u2019s run";wLink.style.display="";}
-    $("#portsHead").textContent=V.openSea?"Ports of call \u00b7 Open water":("Ports of call \u00b7 "+passageById(V.id).title);
-    $("#wpList").innerHTML=PORTS.map((p,i)=>{
-      const done=A.made>=p.d,isNext=(i===nIdx),isLast=(i===PORTS.length-1);
-      const cls=done?"done":(isNext?"next":(isLast?"landfall":"future"));
-      const mark=done?"\u2713":(isNext?"\u203a":(isLast?"\u2691":""));
-      const line=done?'<div class="plog">'+p.log+'</div>':(isNext?'<div class="pwhen">'+(p.d-A.made)+' day'+((p.d-A.made)===1?'':'s')+' to run</div>':(isLast?'<div class="pwhen">the voyage\u2019s landfall \u2014 reach day '+p.d+'</div>':''));
-      const chev=done?'\u203a':(cls==="future"?'\ud83d\udd12':'\u203a');
-      return '<div class="port '+cls+'" data-i="'+i+'"><div class="dot">'+mark+'</div><div class="pgrow"><div class="pname">'+p.name+'</div>'+line+'</div><div class="pchev">'+chev+'</div></div>';
-    }).join("");
-    document.querySelectorAll('#wpList .port').forEach(el=>el.onclick=()=>{const i=+el.dataset.i;if(V.openSea){modal('<div class="eyebrow">Open sea</div><h2>'+PORTS[i].name+'</h2><p>'+PORTS[i].log+'</p><button class="btn quiet" id="mClose">Close</button>');$("#mClose").onclick=closeModal;}else openChapter(V.rung,i);});
-    const alf=$("#afterLandfall");
-    if(!V.openSea&&V.rung<LADDER.length-1){const nv=passageById(LADDER[V.rung+1].id).title,thisT=passageById(V.id).title;alf.innerHTML='<div class="afterlf"><div class="alk">After landfall</div><div class="alv">Voyage '+(V.rung+2)+' \u2014 '+nv+'</div><div class="als">a new voyage to embark when '+thisT+' is done</div></div>';}
-    else{alf.innerHTML='';}
     renderBaro();
 
     $("#lCur").textContent=A.leg;$("#lBest").textContent=A.best;$("#lClear").textContent=A.made;
@@ -1160,7 +1073,7 @@
   function awardCelebrationKeys(keys){const items=allAwards().filter(a=>keys.indexOf(a.key)>=0);if(items.length)awardCelebration(items);}
   function awardFlavour(a){
     if(a.cat==='Landfalls')return 'Safe landfall at '+a.label+'. The chart fills in behind you \u2014 find it in your honours.';
-    if(a.cat==='Days made good')return 'Another mark on a long, clean run. Logged to your honours in the Charts.';
+    if(a.cat==='Days made good')return 'Another mark on a long, clear run. Logged to your honours in the Charts.';
     if(a.cat==='Salvage banked')return 'Salvage banked and counted \u2014 it adds up, mile after mile.';
     return 'Drift held off, watch after watch. Steady sailing.';
   }
@@ -1299,7 +1212,7 @@
   function completeToday(){const t=todayISO();if(state.deviations[t]){toast("Today already logged as weather");return;}if(state.completed.indexOf(t)>=0)return;const beforeEarned=earnedAwardKeys(),beforeVoy=voyageContext(aggregate().made).completed;state.completed.push(t);save();const afterEarned=earnedAwardKeys(),afterVoy=voyageContext(aggregate().made).completed;const fresh=afterEarned.filter(k=>beforeEarned.indexOf(k)<0);render();if(afterVoy>beforeVoy){celebrateLanding(afterVoy-1);return;}if(fresh.length){awardCelebrationKeys(fresh);return;}dayClosedSummary();}
 
   function stepperRows(values){
-    return state.drinks.map(dr=>{const q=values[dr.id]||0;
+    return state.drinks.filter(d=>!d.archived).map(dr=>{const q=values[dr.id]||0;
       return '<div class="qrow"><div class="meta"><b>'+dr.alias+'</b><small>'+fmtU2(dUnits(dr))+' drift · '+state.currency+dr.cost+'</small></div><div class="mini"><button data-act="dec" data-id="'+dr.id+'">–</button><div class="val" id="q_'+dr.id+'">'+q+'</div><button data-act="inc" data-id="'+dr.id+'">+</button></div></div>';
     }).join("");
   }
@@ -1307,7 +1220,7 @@
 
   function openSetup(first){
     const values=Object.assign({},state.baselineWeek);
-    const _slipISO=first?todayISO():localISO(new Date(parseISO(state.startISO).getTime()-86400000));
+    const _slipISO=first?todayISO():addDays(state.startISO,-1);
     const _sd=new Date(state.startAt||Date.now());const _stime=String(_sd.getHours()).padStart(2,"0")+":"+String(_sd.getMinutes()).padStart(2,"0");
     const head=first
       ? "<h2>Set your bearings</h2><p>Two things before you cast off, then you're under way. Your journey is a progression \u2014 a 7-day shakedown first, then voyages of rising length. It starts itself; you just sail.</p>"
@@ -1325,14 +1238,14 @@
       +'<button class="btn primary" id="saveSetup">'+(first?"Get under way":"Save")+'</button>'
       +(first?'':'<button class="btn quiet" id="cancelSetup">Cancel</button>')
     );
-    function sum(){let w={units:0,money:0,kcal:0};state.drinks.forEach(dr=>{const q=values[dr.id]||0;w.units+=q*dUnits(dr);w.money+=q*dr.cost;w.kcal+=q*dr.kcal;});$("#wkSum").innerHTML="A usual week \u2248 <b>"+fmtU(w.units)+" drift</b> \u00b7 "+fmtMoney(w.money)+" \u00b7 "+fmtK(w.kcal)+" ballast";}
+    function sum(){let w={units:0,money:0,kcal:0};state.drinks.filter(d=>!d.archived).forEach(dr=>{const q=values[dr.id]||0;w.units+=q*dUnits(dr);w.money+=q*dr.cost;w.kcal+=q*dr.kcal;});$("#wkSum").innerHTML="A usual week \u2248 <b>"+fmtU(w.units)+" drift</b> \u00b7 "+fmtMoney(w.money)+" \u00b7 "+fmtK(w.kcal)+" ballast";}
     bindSteppers(values,sum);sum();
     $("#editDr").onclick=()=>{state.baselineWeek=values;drinksList(()=>openSetup(first));};
     $("#saveSetup").onclick=()=>{
-      const total=state.drinks.reduce((a,dr)=>a+(values[dr.id]||0),0);
+      const total=state.drinks.filter(d=>!d.archived).reduce((a,dr)=>a+(values[dr.id]||0),0);
       if(total===0){toast("Add at least one hazard to your usual week");return;}
-      state.baselineWeek=values;const _slip=$("#f_start").value||todayISO();const _tv=($("#f_starttime")&&$("#f_starttime").value)||"00:00";state.startAt=new Date(_slip+"T"+_tv).getTime();state.startISO=localISO(new Date(parseISO(_slip).getTime()+86400000));
-      save();closeSheet();render();if(first)goTab('deck');toast(first?"Under way":"Bearings set");
+      state.baselineWeek=values;const _slip=$("#f_start").value||todayISO();const _tv=($("#f_starttime")&&$("#f_starttime").value)||"00:00";state.startAt=new Date(_slip+"T"+_tv).getTime();state.startISO=addDays(_slip,1);
+      const _ok=save();closeSheet();render();if(first)goTab('deck');if(_ok)toast(first?"Under way":"Bearings set");
     };
     const c=$("#cancelSetup");if(c)c.onclick=closeSheet;
   }
@@ -1340,7 +1253,7 @@
   function drinksList(back){
     sheet(
       "<h2>The hazards</h2><p>Each one on your chart, and what it costs you to meet it. Tap to edit.</p>"+
-      '<div id="drList">'+state.drinks.map(dr=>'<div class="hz" data-id="'+dr.id+'"><div class="meta"><b>'+dr.alias+'</b><small>'+(dr.note||'')+'</small></div><div class="chev">›</div></div>').join("")+'</div>'+
+      '<div id="drList">'+state.drinks.filter(d=>!d.archived).map(dr=>'<div class="hz" data-id="'+dr.id+'"><div class="meta"><b>'+dr.alias+'</b><small>'+(dr.note||'')+'</small></div><div class="chev">›</div></div>').join("")+'</div>'+
       '<button class="btn ghost" id="addDr">+ Add a hazard</button>'+
       '<button class="btn primary" id="drDone">Done</button>'
     );
@@ -1360,12 +1273,14 @@
       '<div class="field"><label>Ballast (kcal)</label><input id="dr_kcal" type="number" inputmode="numeric" value="'+dr.kcal+'"></div></div>'+
       '<div class="summary" id="dr_u"></div>'+
       '<button class="btn primary" id="dr_save">Save</button>'+
-      (state.drinks.length>1?'<button class="btn danger" id="dr_del">Strike it from the chart</button>':'')
+      (state.drinks.filter(d=>!d.archived).length>1?'<button class="btn danger" id="dr_del">Strike it from the chart</button>':'')+
+      '<button class="btn quiet" id="dr_cancel">Cancel</button>'
     );
     function calc(){const ml=+$("#dr_ml").value||0,abv=+$("#dr_abv").value||0;$("#dr_u").innerHTML="= <b>"+fmtU2(abv*ml/1000)+" drift</b> each time you meet it";}
     ["dr_ml","dr_abv"].forEach(i=>$("#"+i).addEventListener('input',calc));calc();
     $("#dr_save").onclick=()=>{dr.alias=$("#dr_alias").value||dr.alias;dr.note=$("#dr_note").value;dr.ml=Math.max(1,+$("#dr_ml").value||1);dr.abv=Math.max(0,+$("#dr_abv").value||0);dr.cost=Math.max(0,+$("#dr_cost").value||0);dr.kcal=Math.max(0,+$("#dr_kcal").value||0);save();drinksList(back);};
-    const del=$("#dr_del");if(del)del.onclick=()=>{state.drinks=state.drinks.filter(d=>d.id!==id);save();drinksList(back);};
+    const del=$("#dr_del");if(del)del.onclick=()=>{const used=Object.keys(state.deviations||{}).some(k=>state.deviations[k]&&Object.prototype.hasOwnProperty.call(state.deviations[k],id));if(used){dr.archived=true;save();drinksList(back);toast("Struck from the chart — past logs keep their own reckoning");}else{state.drinks=state.drinks.filter(d=>d.id!==id);save();drinksList(back);}};
+    $("#dr_cancel").onclick=()=>drinksList(back);
   }
 
   function editDay(iso,opts){opts=opts||{};
@@ -1374,7 +1289,7 @@
     const isLand=!!landfallISOs()[iso];
     const _wt=(state.weatherAt&&state.weatherAt[iso])?new Date(state.weatherAt[iso]):(iso===todayISO()?new Date():new Date(parseISO(iso).getTime()+20*3600000));
     const _wtime=String(_wt.getHours()).padStart(2,'0')+':'+String(_wt.getMinutes()).padStart(2,'0');
-    let mode=startWeather?'weather':'clear';
+    let mode=opts.mode||(startWeather?'weather':'clear');
     const wReason='Weather blew in \u2014 worth a line on what happened, and the plan.';
     const lReason=isLand?('You reached '+esc(landfallISOs()[iso])+' \u2014 a landfall worth marking.'):'';
     sheet('<h2>'+fmtDate(iso)+'</h2><p>How did this day go?</p>'
@@ -1384,18 +1299,24 @@
       +'<div id="e_rows">'+stepperRows(values)+'</div><div class="summary" id="e_calc"></div></div>'
       +diaryFieldsHTML(iso)
       +'<div id="noteBlock" style="margin-top:8px'+((mode==='weather'||isLand)?'':';display:none')+'"><div class="dreason" id="noteReason" style="margin-top:4px"></div><button class="btn ghost" id="e_diary">Add a line to the diary</button></div>'
-      +'<button class="btn primary" id="e_save" style="margin-top:16px">Save</button>');
+      +'<button class="btn primary" id="e_save" style="margin-top:16px">Save</button>'
+      +'<button class="btn quiet" id="e_cancel">Cancel</button>');
     function calc(){const c=basketTotals(values),r=rates();const total=Object.keys(values).reduce((a,k)=>a+(values[k]||0),0);if(total===0){$("#e_calc").innerHTML="No hazards yet \u2014 leave it and it\u2019s a clear day.";}else{$("#e_calc").innerHTML="This day <b>"+fmtU(c.units)+" drift</b> \u00b7 "+fmtMoney(c.money)+" \u00b7 "+Math.round(c.kcal)+" ballast<br><span style='color:var(--faint)'>still salvaged "+fmtMoney(Math.max(0,r.money-c.money))+" against your usual</span>";}}
     function setMode(m){mode=m;document.querySelectorAll('#dayToggle button').forEach(function(b){b.classList.toggle('on',b.dataset.m===m);});$("#wxBlock").style.display=(m==='weather')?'':'none';const sn=(m==='weather'||isLand);$("#noteBlock").style.display=sn?'':'none';$("#noteReason").textContent=(m==='weather')?wReason:(isLand?lReason:'');}
     document.querySelectorAll('#dayToggle button').forEach(function(b){b.onclick=function(){setMode(b.dataset.m);};});
     bindSteppers(values,calc);calc();wireBaro();setMode(mode);
-    function commit(){collectDiary(iso);if(mode==='weather'){const basket={};let total=0;Object.keys(values).forEach(function(k){if(values[k]>0){basket[k]=values[k];total+=values[k];}});if(total>0){state.deviations[iso]=basket;const ci=state.completed.indexOf(iso);if(ci>=0)state.completed.splice(ci,1);if(!state.weatherAt)state.weatherAt={};const _et=($("#e_time")&&$("#e_time").value)||"20:00";state.weatherAt[iso]=new Date(iso+"T"+_et).getTime();}else{delete state.deviations[iso];if(state.weatherAt)delete state.weatherAt[iso];if(iso===todayISO()&&state.completed.indexOf(iso)<0)state.completed.push(iso);}}else{delete state.deviations[iso];if(state.weatherAt)delete state.weatherAt[iso];if(iso===todayISO()&&state.completed.indexOf(iso)<0)state.completed.push(iso);}save();}
+    function commit(){collectDiary(iso);if(mode==='weather'){const basket={};let total=0;Object.keys(values).forEach(function(k){if(values[k]>0){basket[k]=values[k];total+=values[k];}});if(total>0){state.deviations[iso]=basket;const ci=state.completed.indexOf(iso);if(ci>=0)state.completed.splice(ci,1);if(!state.weatherAt)state.weatherAt={};const _et=($("#e_time")&&$("#e_time").value)||"20:00";state.weatherAt[iso]=new Date(iso+"T"+_et).getTime();}else{delete state.deviations[iso];if(state.weatherAt)delete state.weatherAt[iso];if(iso===todayISO()&&state.completed.indexOf(iso)<0)state.completed.push(iso);}}else{delete state.deviations[iso];if(state.weatherAt)delete state.weatherAt[iso];if(iso===todayISO()&&state.completed.indexOf(iso)<0)state.completed.push(iso);}return save();}
     const _ed=$("#e_diary");if(_ed)_ed.onclick=function(){commit();closeSheet();render();openDiary(iso,true);};
-    $("#e_save").onclick=function(){const hasWx=(mode==='weather'&&Object.keys(values).some(function(k){return values[k]>0;}));const newWeatherToday=(iso===todayISO()&&hasWx&&!startWeather);commit();closeSheet();render();if(opts.onDone){opts.onDone();}else if(newWeatherToday){weatherReassurance();}else{toast(hasWx?'Logged':'Set clear');}};
+    $("#e_save").onclick=function(){const hasWx=(mode==='weather'&&Object.keys(values).some(function(k){return values[k]>0;}));const newWeatherToday=(iso===todayISO()&&hasWx&&!startWeather);const _ok=commit();closeSheet();render();if(opts.onDone){opts.onDone();}else if(newWeatherToday){weatherReassurance();}else if(_ok){toast(hasWx?'Logged':'Set clear');}};
+    $("#e_cancel").onclick=function(){closeSheet();if(opts.onDone)opts.onDone();};
   }
 
   function coerceState(r){
-    if(!r||typeof r!=='object'||!Array.isArray(r.drinks))return null;
+    if(!r||typeof r!=='object')return null;
+    if(!Array.isArray(r.drinks)||r.drinks.some(d=>!d||typeof d!=='object'||typeof d.id!=='string'||!d.id))return null;
+    if(r.v!==undefined&&r.v!==3)return null;
+    if(r.baselineWeek!==undefined&&(typeof r.baselineWeek!=='object'||r.baselineWeek===null||Array.isArray(r.baselineWeek)))return null;
+    if(r.deviations!==undefined&&(typeof r.deviations!=='object'||r.deviations===null||Array.isArray(r.deviations)))return null;
     r.v=3;
     r.baselineWeek=r.baselineWeek||{};
     r.deviations=r.deviations||{};
@@ -1403,13 +1324,13 @@
     r.weatherAt=r.weatherAt||{};
     r.diary=r.diary||{};
     r.currency=r.currency||"\u00a3";
-    if(!r.startISO)r.startISO=todayISO();
+    if(!validISO(r.startISO))r.startISO=todayISO();
     if(!r.startAt)r.startAt=parseISO(r.startISO).getTime();
     if(!r.lastActive)r.lastActive=todayISO();
     return r;
   }
   function importPapers(text){try{const r=coerceState(JSON.parse(String(text).trim()));if(!r)return false;state=r;save();return true;}catch(e){return false;}}
-  function markSaved(){state.lastBackupISO=todayISO();save();toast("Saved");}
+  function markSaved(){state.lastBackupISO=todayISO();if(save())toast("Saved");}
   function downloadFallback(text,name){try{var blob=new Blob([text],{type:"application/json"});var url=URL.createObjectURL(blob);var a=document.createElement("a");a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url);},1000);markSaved();}catch(e){toast("Couldn\u2019t save the file");}}
   function downloadPapers(){
     var name="onward-papers-"+todayISO()+".json";
@@ -1428,20 +1349,37 @@
   function importFromFile(cb){const inp=document.createElement("input");inp.type="file";inp.accept=".json,application/json,text/plain";inp.onchange=function(e){const fl=e.target.files&&e.target.files[0];if(!fl)return;const rd=new FileReader();rd.onload=function(){cb(importPapers(rd.result));};rd.readAsText(fl);};inp.click();}
   function showRecovery(err){
     var raw="";try{raw=localStorage.getItem("onward.v3")||"";}catch(e){}
+    var autoLine='';try{var araw=localStorage.getItem("onward.v3.auto");if(araw){var asnap=JSON.parse(araw);var ageH=Math.max(0,Math.round((Date.now()-(asnap.at||0))/3600000));var ageStr=ageH<24?(ageH+'h ago'):(Math.round(ageH/24)+'d ago');autoLine='<button class="btn ghost" id="rcAuto">Restore from auto-backup ('+ageStr+')</button>';}}catch(e){}
     var d=document.createElement("div");
-    d.setAttribute("style","position:fixed;inset:0;z-index:9999;background:#0A1525;color:#C9D6E5;font:16px -apple-system,Helvetica,Arial,sans-serif;padding:34px 22px;overflow:auto;-webkit-overflow-scrolling:touch");
-    d.innerHTML='<div style="max-width:520px;margin:0 auto">'
-      +'<div style="font-size:11px;letter-spacing:.18em;color:#5FD0C5">SOMETHING FOULED THE RIGGING</div>'
-      +'<h2 style="font-weight:600;margin:10px 0 6px">Your passage is still aboard.</h2>'
-      +'<p style="color:#7E92AB;line-height:1.5">The app hit a snag while setting sail \u2014 but your saved data has not been touched. Copy it somewhere safe, restore from a file, or start over.</p>'
-      +'<button id="rcCopy" style="width:100%;padding:13px;margin:8px 0;border:0;border-radius:12px;background:#5FD0C5;color:#0c1a2a;font-weight:600;font-size:15px">Copy current papers</button>'
-      +'<button id="rcRestore" style="width:100%;padding:13px;margin:8px 0;border:1px solid #26405C;border-radius:12px;background:none;color:#C9D6E5;font-size:15px">Restore from a file</button>'
-      +'<button id="rcScuttle" style="width:100%;padding:13px;margin:8px 0;border:1px solid #574420;border-radius:12px;background:none;color:#E8B65A;font-size:15px">Scuttle and start over</button>'
-      +'<details style="margin-top:16px"><summary style="color:#7E92AB;font-size:12px">Technical detail</summary><pre style="white-space:pre-wrap;color:#4a5d78;font-size:11px;margin-top:8px">'+String((err&&err.stack)||err||"").replace(/</g,"&lt;")+'</pre></details></div>';
+    d.setAttribute("style","position:fixed;inset:0;z-index:9999;background:var(--ink);color:var(--mist);font:16px -apple-system,Helvetica,Arial,sans-serif;padding:34px 22px;overflow:auto;-webkit-overflow-scrolling:touch");
+    function msg(html){var m=d.querySelector("#rcMsg");if(m)m.innerHTML=html;}
+    function main(){
+      d.innerHTML='<div style="max-width:520px;margin:0 auto">'
+        +'<div class="eyebrow" style="color:var(--beacon)">SOMETHING FOULED THE RIGGING</div>'
+        +'<h2 style="font-size:17px;margin:10px 0 6px">Your passage is still aboard.</h2>'
+        +'<p class="muted" style="line-height:1.5;margin:0 0 16px">The app hit a snag while setting sail \u2014 but your saved data has not been touched. Copy it somewhere safe, restore from a file or auto-backup, or start over.</p>'
+        +'<div id="rcMsg"></div>'
+        +'<button class="btn primary" id="rcCopy">Copy current papers</button>'
+        +'<button class="btn ghost" id="rcRestore">Restore from a file</button>'
+        +autoLine
+        +'<button class="btn danger" id="rcScuttle">Scuttle and start over</button>'
+        +'<details style="margin-top:16px"><summary class="muted" style="font-size:12px;cursor:pointer">Technical detail</summary><pre style="white-space:pre-wrap;color:var(--faint);font-size:11px;margin-top:8px;opacity:.75">'+String((err&&err.stack)||err||"").replace(/</g,"&lt;")+'</pre></details></div>';
+      d.querySelector("#rcCopy").onclick=function(){var ok=false;try{if(navigator.clipboard){navigator.clipboard.writeText(raw);ok=true;}}catch(e){}if(ok)msg('<p class="muted" style="margin:0 0 12px">Papers copied \u2014 paste them somewhere safe.</p>');else msg('<p class="muted" style="margin:0 0 8px">Clipboard isn\u2019t available \u2014 copy the text below by hand.</p><pre style="white-space:pre-wrap;word-break:break-all;background:var(--slate);border:1px solid var(--line);border-radius:12px;padding:10px;font-size:11px;color:var(--mist);max-height:160px;overflow:auto;margin:0 0 12px">'+raw.replace(/</g,"&lt;")+'</pre>');};
+      d.querySelector("#rcRestore").onclick=function(){var inp=document.createElement("input");inp.type="file";inp.accept=".json,application/json,text/plain";inp.onchange=function(e){var fl=e.target.files&&e.target.files[0];if(!fl)return;var rd=new FileReader();rd.onload=function(){try{var r=coerceState(JSON.parse(String(rd.result).trim()));if(r){localStorage.setItem("onward.v3",JSON.stringify(r));location.reload();}else msg('<p class="muted" style="margin:0 0 12px">Couldn\u2019t read that file.</p>');}catch(x){msg('<p class="muted" style="margin:0 0 12px">Couldn\u2019t read that file.</p>');}};rd.readAsText(fl);};inp.click();};
+      var _ra=d.querySelector("#rcAuto");if(_ra)_ra.onclick=function(){try{var araw2=localStorage.getItem("onward.v3.auto");var asnap2=araw2?JSON.parse(araw2):null;var r=asnap2?coerceState(asnap2.state):null;if(r){localStorage.setItem("onward.v3",JSON.stringify(r));location.reload();}else msg('<p class="muted" style="margin:0 0 12px">Couldn\u2019t read the auto-backup.</p>');}catch(x){msg('<p class="muted" style="margin:0 0 12px">Couldn\u2019t read the auto-backup.</p>');}};
+      d.querySelector("#rcScuttle").onclick=confirmScuttle;
+    }
+    function confirmScuttle(){
+      d.innerHTML='<div style="max-width:520px;margin:0 auto">'
+        +'<h2 style="font-size:17px;margin:10px 0 6px">Scuttle the ship?</h2>'
+        +'<p class="muted" style="line-height:1.5;margin:0 0 16px">This erases everything aboard and cannot be undone.</p>'
+        +'<button class="btn danger" id="rcScuttleGo">Scuttle it</button>'
+        +'<button class="btn quiet" id="rcScuttleBack">Belay that</button></div>';
+      d.querySelector("#rcScuttleGo").onclick=function(){try{localStorage.removeItem("onward.v3");}catch(e){}location.reload();};
+      d.querySelector("#rcScuttleBack").onclick=main;
+    }
     document.body.appendChild(d);
-    d.querySelector("#rcCopy").onclick=function(){var ok=false;try{if(navigator.clipboard){navigator.clipboard.writeText(raw);ok=true;}}catch(e){}alert(ok?"Papers copied. Paste them somewhere safe.":raw);};
-    d.querySelector("#rcRestore").onclick=function(){var inp=document.createElement("input");inp.type="file";inp.accept=".json,application/json,text/plain";inp.onchange=function(e){var fl=e.target.files&&e.target.files[0];if(!fl)return;var rd=new FileReader();rd.onload=function(){try{var r=coerceState(JSON.parse(String(rd.result).trim()));if(r){localStorage.setItem("onward.v3",JSON.stringify(r));location.reload();}else alert("Couldn\u2019t read that file.");}catch(x){alert("Couldn\u2019t read that file.");}};rd.readAsText(fl);};inp.click();};
-    d.querySelector("#rcScuttle").onclick=function(){if(confirm("Scuttle the ship? This erases everything aboard and cannot be undone.")){try{localStorage.removeItem("onward.v3");}catch(e){}location.reload();}};
+    main();
   }
   function autoSnapshot(){try{var raw=localStorage.getItem("onward.v3.auto");var prev=raw?JSON.parse(raw):null;var now=Date.now();if(prev&&prev.at&&(now-prev.at)<20*3600000)return;localStorage.setItem("onward.v3.auto",JSON.stringify({at:now,state:state}));}catch(e){}}
   function restoreAuto(){try{var raw=localStorage.getItem("onward.v3.auto");if(!raw)return false;var snap=JSON.parse(raw);var r=coerceState(snap.state);if(!r)return false;state=r;save();return true;}catch(e){return false;}}
@@ -1453,7 +1391,35 @@
     var _ar=$("#autoRs");if(_ar)_ar.onclick=()=>{if(restoreAuto()){closeSheet();render();toast("Restored from auto-backup");}else toast("Couldn\u2019t read the auto-backup");};
     $("#closeRs").onclick=closeSheet;
   }
-  function wipe(){sheet("<h2>Scuttle and start over?</h2><p>This sends the whole passage to the bottom, for good. Copy the papers first if there’s any doubt.</p>"+'<button class="btn danger" id="doWipe">Scuttle it</button><button class="btn quiet" id="closeWipe">Belay that</button>');$("#doWipe").onclick=()=>{localStorage.removeItem("onward.v3");state=seed();save();closeSheet();render();openSetup(true);toast("A clean slate");};$("#closeWipe").onclick=closeSheet;}
+  function wipe(){sheet("<h2>Scuttle and start over?</h2><p>This sends the whole passage to the bottom, for good. Copy the papers first if there’s any doubt.</p>"+'<button class="btn danger" id="doWipe">Scuttle it</button><button class="btn quiet" id="closeWipe">Belay that</button>');$("#doWipe").onclick=()=>{localStorage.removeItem("onward.v3");state=seed();const _ok=save();closeSheet();render();openSetup(true);if(_ok)toast("A clean slate");};$("#closeWipe").onclick=closeSheet;}
+
+  /* DEV NOTES — temporary scaffolding, safe to remove */
+  function _dnLoad(){try{const r=JSON.parse(localStorage.getItem("onward.devnotes"));return Array.isArray(r)?r:[];}catch(e){return [];}}
+  function _dnSave(list){try{localStorage.setItem("onward.devnotes",JSON.stringify(list));}catch(e){}}
+  function _dnFmt(ms){const d=new Date(ms);const p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());}
+  function openDevNotes(){
+    const notes=_dnLoad();
+    function renderList(){
+      const rows=notes.slice().reverse().map(n=>'<div class="devnotes-row" data-at="'+n.at+'"><div class="devnotes-text">'+esc(n.text)+'<small>'+_dnFmt(n.at)+'</small></div><div class="devnotes-del" data-at="'+n.at+'">✕</div></div>').join("");
+      $("#dnList").innerHTML=rows||'<div class="muted" style="padding:10px 0">No notes yet.</div>';
+      document.querySelectorAll('.devnotes-del').forEach(el=>el.onclick=()=>{const at=+el.dataset.at;const i=notes.findIndex(n=>n.at===at);if(i>=0){notes.splice(i,1);_dnSave(notes);renderList();}});
+    }
+    sheet(
+      '<h2>Dev notes</h2>'
+      +'<div id="dnList"></div>'
+      +'<div class="field"><label>New note</label><input id="dnInput" type="text" maxlength="500"></div>'
+      +'<button class="btn primary" id="dnAdd">Add</button>'
+      +'<button class="btn ghost" id="dnCopy">Copy all</button>'
+      +'<button class="btn danger" id="dnClear">Clear all</button>'
+      +'<button class="btn quiet" id="dnClose">Close</button>'
+    );
+    renderList();
+    $("#dnAdd").onclick=function(){const v=$("#dnInput").value.trim();if(!v)return;notes.push({at:Date.now(),text:v});_dnSave(notes);$("#dnInput").value="";renderList();};
+    $("#dnCopy").onclick=function(){if(!notes.length){toast("Nothing to copy");return;}const txt=notes.map(n=>'['+_dnFmt(n.at)+'] '+n.text).join('\n');try{if(navigator.clipboard){navigator.clipboard.writeText(txt);toast("Copied");}else{toast("Clipboard unavailable");}}catch(e){toast("Couldn’t copy");}};
+    $("#dnClear").onclick=function(){if(!notes.length){toast("Nothing to clear");return;}sheet('<h2>Clear all dev notes?</h2><p class="muted">This deletes every note on this device. Copy them out first if you want to keep them.</p><button class="btn danger" id="dnClearGo">Clear it</button><button class="btn quiet" id="dnClearBack">Cancel</button>');$("#dnClearGo").onclick=function(){notes.length=0;_dnSave(notes);openDevNotes();};$("#dnClearBack").onclick=openDevNotes;};
+    $("#dnClose").onclick=closeSheet;
+  }
+  /* /DEV NOTES */
 
   function sheet(html){$("#sheet").innerHTML=html;$("#scrim").classList.add("on");$("#sheet").scrollTop=0;}
   function closeSheet(){$("#scrim").classList.remove("on");}
@@ -1461,14 +1427,14 @@
   function modal(html){$("#sheet2").innerHTML=html;$("#scrim2").classList.add("on");$("#sheet2").scrollTop=0;}
   function closeModal(){$("#scrim2").classList.remove("on");}
   $("#scrim2").addEventListener("click",e=>{if(e.target===$("#scrim2"))closeModal();});
-  $("#portsLink").onclick=openLibrary;$("#portsClose").onclick=closePorts;
-  $("#portsScrim").addEventListener("click",e=>{if(e.target===$("#portsScrim"))closePorts();});
+  $("#portsLink").onclick=openLibrary;
   // ---- daily greeting / close-of-day summary / weather reassurance ----
   function greetingTitle(made){const t=["Morning watch","A new day\u2019s sailing","Back at the helm","The day ahead","Dawn on the water","A fresh horizon"];return t[made%t.length];}
   function daysSinceBackup(){if(!state)return 0;const lb=state.lastBackupISO;if(!lb)return 9999;return daysBetween(lb,todayISO());}
   function backupOverdue(){if(!state||aggregate().made<7)return false;return daysSinceBackup()>=10;}
+  function backupOverdueHTML(){if(!backupOverdue())return '';const _d=daysSinceBackup(),_strong=(_d>=21);return '<p class="'+(_strong?'':'muted')+'"'+(_strong?' style="color:var(--amber)"':'')+'>'+(_d>=9999?'You haven’t saved your papers yet — one tap in the Locker keeps your whole passage safe if anything happens to this device.':(_strong?'It’s been over three weeks since you saved your papers — please save a copy in the Locker. It’s the only thing that protects your passage.':'It’s been a while since you saved your papers. A quick save in the Locker keeps your whole passage safe.'))+'</p>';}
   function progressLine(A,V){if(V.openSea)return "<b>"+A.made+"</b> clear days made good \u2014 out beyond the full circuit now, in open water.";const vt=passageById(V.id).title;return "<b>"+A.made+"</b> clear day"+(A.made===1?"":"s")+" made good \u2014 "+vt+", day "+V.madeIn+" of "+V.length+".";}
-  function nextStepLine(A,V){const nIdx=nextPortIdx(A.made);if(V.openSea)return nIdx>=0?("Open water ahead \u2014 the next marker lies "+(PORTS[nIdx].d-A.made)+" days on."):"Open water ahead, and the next day, and the next.";if(nIdx<0)return "You\u2019re within sight of landfall \u2014 one more clean run brings it home.";const p=PORTS[nIdx],to=p.d-A.made;return "Next port, <b>"+p.name+"</b>, lies "+to+" day"+(to===1?"":"s")+" ahead.";}
+  function nextStepLine(A,V){const nIdx=nextPortIdx(A.made);if(V.openSea)return nIdx>=0?("Open water ahead \u2014 the next marker lies "+(PORTS[nIdx].d-A.made)+" days on."):"Open water ahead, and the next day, and the next.";if(nIdx<0)return "You\u2019re within sight of landfall \u2014 one more clear run brings it home.";const p=PORTS[nIdx],to=p.d-A.made;return "Next port, <b>"+p.name+"</b>, lies "+to+" day"+(to===1?"":"s")+" ahead.";}
   function dailyGreeting(){
     const A=aggregate();PORTS=currentPorts(A.made);const V=voyageContext(A.made),ti=dayInfo(todayISO());
     const recentWeather=(A.leg===0&&A.made>0);
@@ -1482,7 +1448,7 @@
       h+='<p>'+progressLine(A,V)+(A.banked.money>0?' '+fmtMoney(A.banked.money)+' in salvage banked along the way.':'')+'</p>';
       h+='<p>'+nextStepLine(A,V)+(ti.status==='pending'?' Close today\u2019s run to gain on it.':(ti.status==='clear'?' Today\u2019s run is already logged \u2014 well sailed.':''))+'</p>';
     }
-    if(backupOverdue()){const _d=daysSinceBackup(),_strong=(_d>=21);h+='<p class="'+(_strong?'':'muted')+'"'+(_strong?' style="color:var(--amber)"':'')+'>'+(_d>=9999?'You haven\u2019t saved your papers yet \u2014 one tap in the Locker keeps your whole passage safe if anything happens to this device.':(_strong?'It\u2019s been over three weeks since you saved your papers \u2014 please save a copy in the Locker. It\u2019s the only thing that protects your passage.':'It\u2019s been a while since you saved your papers. A quick save in the Locker keeps your whole passage safe.'))+'</p>';}
+    h+=backupOverdueHTML();
     h+='<button class="btn primary" id="mClose">Take the helm</button>';
     modal(h);$("#mClose").onclick=closeModal;
   }
@@ -1492,13 +1458,14 @@
     let h='<div class="eyebrow">The evening watch</div>';
     if(recentWeather){
       h+='<h2>Take the helm again</h2>';
-      h+='<p>After weather, it\u2019s the next clean evening that turns the voyage back \u2014 and this is it. '+progressLine(A,V)+'</p>';
+      h+='<p>After weather, it\u2019s the next clear evening that turns the voyage back \u2014 and this is it. '+progressLine(A,V)+'</p>';
       h+='<p>You don\u2019t have to sail the whole passage tonight \u2014 just hold the helm through these few hours. '+nextStepLine(A,V)+'</p>';
     } else {
       h+='<h2>Hold your course</h2>';
       h+='<p>The evening watch is often the hardest stretch \u2014 the wind gets up just as the light goes. But you\u2019ve stood it before: '+progressLine(A,V)+'</p>';
       h+='<p>'+nextStepLine(A,V)+' Hold your course through tonight, and the day is yours to log.</p>';
     }
+    h+=backupOverdueHTML();
     h+='<button class="btn primary" id="mClose">Steady on</button>';
     modal(h);$("#mClose").onclick=closeModal;
   }
@@ -1506,13 +1473,13 @@
     const A=aggregate();PORTS=currentPorts(A.made);const V=voyageContext(A.made),ti=dayInfo(todayISO());
     let h='<div class="eyebrow">Close of day</div>';
     if(ti.status==='clear'){
-      h+='<h2>Rest easy.</h2><p>Today\u2019s run is already logged \u2014 well sailed. '+progressLine(A,V)+'</p><p>Nothing more to do tonight. A fresh horizon comes at dawn.</p><button class="btn primary" id="mClose">Goodnight</button>';
+      h+='<h2>Rest easy.</h2><p>Today\u2019s run is already logged \u2014 well sailed. '+progressLine(A,V)+'</p><p>Nothing more to do tonight. A fresh horizon comes at dawn.</p>'+backupOverdueHTML()+'<button class="btn primary" id="mClose">Goodnight</button>';
       modal(h);$("#mClose").onclick=closeModal;
     } else if(ti.status==='deviation'){
-      h+='<h2>Weather astern.</h2><p>Today was logged as a weather day \u2014 done, and no shame in it. What you\u2019ve banked stands: '+progressLine(A,V)+'</p><p>Rest now; the next clean day starts a fresh leg at dawn.</p><button class="btn primary" id="mClose">Goodnight</button>';
+      h+='<h2>Weather astern.</h2><p>Today was logged as a weather day \u2014 done, and no shame in it. What you\u2019ve banked stands: '+progressLine(A,V)+'</p><p>Rest now; the next clear day starts a fresh leg at dawn.</p>'+backupOverdueHTML()+'<button class="btn primary" id="mClose">Goodnight</button>';
       modal(h);$("#mClose").onclick=closeModal;
     } else {
-      h+='<h2>Close the day\u2019s run</h2><p>'+progressLine(A,V)+' Close today out and make it count.</p><p class="muted">'+nextStepLine(A,V)+'</p>';
+      h+='<h2>Close the day\u2019s run</h2><p>'+progressLine(A,V)+' Close today out and make it count.</p><p class="muted">'+nextStepLine(A,V)+'</p>'+backupOverdueHTML();
       h+='<button class="btn primary" id="mCloseDay">Close the day\u2019s run</button><button class="btn quiet" id="mClose">Not just yet</button>';
       modal(h);
       $("#mCloseDay").onclick=function(){completeToday();};
@@ -1526,7 +1493,7 @@
     if(parseISO(state.startISO).getTime()>parseISO(today).getTime()){state.lastActive=today;save();return false;}
     const gap=daysBetween(la,today);
     if(gap<=1){state.lastActive=today;save();return false;}
-    const days=[];for(let i=1;i<gap;i++){const iso=localISO(new Date(parseISO(la).getTime()+i*DAY));if(iso>=state.startISO&&iso<today)days.push(iso);}
+    const days=[];for(let i=1;i<gap;i++){const iso=addDays(la,i);if(iso>=state.startISO&&iso<today)days.push(iso);}
     if(!days.length){state.lastActive=today;save();return false;}
     showCatchUp(days);return true;
   }
@@ -1584,7 +1551,7 @@
   }
   function wireBaro(){const sl=$("#baroSlide"),rd=$("#baroRead");if(!sl||!rd)return;function label(){const v=parseFloat(sl.value);rd.textContent=BARO[Math.max(0,Math.min(4,Math.round(v)-1))];}function engage(){if(sl.dataset.unset==='1'){sl.dataset.unset='';sl.classList.remove('notset');rd.classList.remove('unset');const h=$("#baroHint");if(h)h.style.visibility='hidden';label();}}sl.addEventListener('input',function(){engage();label();});sl.addEventListener('pointerdown',engage);if(sl.dataset.unset!=='1')label();}
   function collectDiary(iso){const cur=(state.diary&&state.diary[iso])||{};const sl=$("#baroSlide");const baro=sl?(sl.dataset.unset==='1'?0:Math.round(parseFloat(sl.value)*10)/10):(cur.baro||0);const nEl=$("#d_note"),note=nEl?nEl.value.trim():(cur.note||'');if(!baro&&!note){if(state.diary)delete state.diary[iso];return;}if(!state.diary)state.diary={};const entry={at:Date.now()};if(baro)entry.baro=baro;if(note)entry.note=note;state.diary[iso]=entry;}
-  function cleanCongrats(A){const o=['Another day made good.','Well sailed.','A clean day in the book.'];if(A.leg>=2)o.push('That\u2019s '+A.leg+' days on the trot.');if(A.leg>=7)o.push(A.leg+' clean days running \u2014 real momentum now.');if(A.banked&&A.banked.money>0)o.push('The chest is a little heavier tonight.');if(A.best>1&&A.leg>=A.best)o.push('Your longest clear run yet \u2014 '+A.leg+' days.');return o[Math.floor(Math.random()*o.length)];}
+  function cleanCongrats(A){const o=['Another day made good.','Well sailed.','A clear day in the book.'];if(A.leg>=2)o.push('That\u2019s '+A.leg+' days on the trot.');if(A.leg>=7)o.push(A.leg+' clear days running \u2014 real momentum now.');if(A.banked&&A.banked.money>0)o.push('The chest is a little heavier tonight.');if(A.best>1&&A.leg>=A.best)o.push('Your longest clear run yet \u2014 '+A.leg+' days.');return o[Math.floor(Math.random()*o.length)];}
   function notePromptHTML(iso){
     const weather=!!(state.deviations&&state.deviations[iso]),_port=landfallISOs()[iso];
     const reason=weather?'Weather blew in today \u2014 worth a line on what happened, and the plan.':(_port?('You reached '+esc(_port)+' \u2014 a landfall worth marking.'):'A moment worth marking.');
@@ -1615,7 +1582,7 @@
     else h+='<p>'+nextStepLine(A,V)+'</p>';
     h+=diaryFieldsHTML(iso);
     const _note=isNoteDay(iso);if(_note)h+=notePromptHTML(iso);
-    h+='<button class="btn primary" id="mClose">Sail on</button>'+(_note?'<button class="btn ghost" id="mAdd">Add a line to the diary</button>':'');
+    h+='<button class="btn primary" id="mClose">Sail on</button>'+(_note?'<button class="btn quiet" id="mAdd">Add a line to the diary</button>':'');
     modal(h);wireBaro();
     $("#mClose").onclick=()=>{collectDiary(iso);save();closeModal();render();};
     const _ma=$("#mAdd");if(_ma)_ma.onclick=()=>{collectDiary(iso);save();closeModal();openDiary(iso,true);};
@@ -1624,10 +1591,10 @@
     const A=aggregate();PORTS=currentPorts(A.made);const V=voyageContext(A.made);
     let h='<div class="eyebrow">Weather logged</div><h2>It happens to every sailor.</h2>';
     h+='<p>A weather day is part of the passage, not a failure of it. What you\u2019ve banked stays banked \u2014 '+progressLine(A,V)+'</p>';
-    h+='<p>This leg resets, and your next clean day starts a fresh one. No ground lost on the voyage; just weather astern. Fair winds will come again.</p>';
+    h+='<p>This leg resets, and your next clear day starts a fresh one. No ground lost on the voyage; just weather astern. Fair winds will come again.</p>';
     const iso=todayISO();h+=diaryFieldsHTML(iso);
     h+=notePromptHTML(iso);
-    h+='<button class="btn primary" id="mClose">Sail on</button><button class="btn ghost" id="mAdd">Add a line to the diary</button>';
+    h+='<button class="btn primary" id="mClose">Sail on</button><button class="btn quiet" id="mAdd">Add a line to the diary</button>';
     modal(h);wireBaro();
     $("#mClose").onclick=()=>{collectDiary(iso);save();closeModal();render();};
     $("#mAdd").onclick=()=>{collectDiary(iso);save();closeModal();openDiary(iso,true);};
@@ -1657,7 +1624,7 @@
   }
   function voyagesShelfHTML(made){
     const b=ladderBounds();
-    const rows=LADDER.map((r,i)=>{const P=passageById(r.id);const done=made>=b.ends[i];const cur=made>=b.starts[i]&&made<b.ends[i];const cls=done?'done':(cur?'cur':'lock');const status=done?'\u2713 complete':(cur?'under way \u00b7 day '+(made-b.starts[i])+' of '+r.len:'locked \u00b7 '+b.starts[i]+' clean days to reach');return '<div class="vrow '+cls+'" data-r="'+i+'"><div><div class="pname">'+P.title+'</div><div class="vsub">'+r.len+'-day voyage \u00b7 '+status+'</div></div><div class="pchev">'+(done||cur?'\u203a':'\ud83d\udd12')+'</div></div>';}).join("");
+    const rows=LADDER.map((r,i)=>{const P=passageById(r.id);const done=made>=b.ends[i];const cur=made>=b.starts[i]&&made<b.ends[i];const cls=done?'done':(cur?'cur':'lock');const status=done?'\u2713 complete':(cur?'under way \u00b7 day '+(made-b.starts[i])+' of '+r.len:'locked \u00b7 '+b.starts[i]+' clear days to reach');return '<div class="vrow '+cls+'" data-r="'+i+'"><div><div class="pname">'+P.title+'</div><div class="vsub">'+r.len+'-day voyage \u00b7 '+status+'</div></div><div class="pchev">'+(done||cur?'\u203a':'\ud83d\udd12')+'</div></div>';}).join("");
     return '<div class="lh">The voyages</div><div class="vshelf">'+rows+'</div>';
   }
   function openShelf(){
@@ -1760,12 +1727,15 @@
   document.querySelectorAll("#haulSeg button").forEach(b=>{b.onclick=()=>{haulUnit=b.dataset.h;document.querySelectorAll("#haulSeg button").forEach(x=>x.classList.toggle("on",x===b));renderTrends();};});
 
   $("#completeBtn").onclick=completeToday;
-  $("#deviateBtn").onclick=()=>editDay(todayISO());
+  $("#deviateBtn").onclick=()=>editDay(todayISO(),{mode:'weather'});
   $("#editDrinksBtn").onclick=()=>drinksList(null);
   $("#editBaseBtn").onclick=()=>openSetup(false);
   $("#backupBtn").onclick=backup;
   $("#restoreBtn").onclick=restore;
   $("#wipeBtn").onclick=wipe;
+  /* DEV NOTES — temporary scaffolding, safe to remove */
+  $("#devNotesBtn").onclick=openDevNotes;
+  /* /DEV NOTES */
 
   if('serviceWorker' in navigator){
     var _isLocal=(location.hostname==='localhost'||location.hostname==='127.0.0.1'||location.hostname==='');
@@ -1778,7 +1748,7 @@
   }
   if(navigator.storage&&navigator.storage.persist){navigator.storage.persist().catch(function(){});}
   var returning=!!state;
-  try{if(!state){state=seed();save();render();openSetup(true);}else{render();}}catch(e){showRecovery(e);}
+  try{if(!state){if(_loadCorrupt)throw new Error("Saved data was present but unreadable.");state=seed();save();render();openSetup(true);}else{render();}}catch(e){showRecovery(e);}
   if(state&&!state.seenAwards){try{state.seenAwards=earnedAwardKeys();save();}catch(e){}}
   if(state){let _mig=false;if(!state.startAt){state.startAt=parseISO(state.startISO).getTime();_mig=true;}if(!state.weatherAt){state.weatherAt={};_mig=true;}if(!state.diary){state.diary={};_mig=true;}if(!state.lastActive){state.lastActive=todayISO();_mig=true;}if(_mig)save();}
   if(state)autoSnapshot();
