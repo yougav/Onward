@@ -221,8 +221,6 @@
   .awdetail-ring.amber{color:var(--amber);}
   .awdetail-togo{font-size:13px;color:var(--faint);margin-top:2px;}
   .awdetail+.btn{margin-top:18px;}
-  .subseg{margin:0 0 12px;font-size:12px;}
-  .subseg button{padding:5px 10px;white-space:nowrap;flex:none;}
   .helmhead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:16px;}
   .helmhead h1{margin:0;}
   .clocks{display:flex;flex-direction:column;align-items:flex-end;gap:4px;padding-bottom:3px;}
@@ -330,10 +328,7 @@
     </div>
     <div id="trendsView">
       <div class="card">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <h2 style="margin:0">Salvage made good</h2>
-          <div class="seg subseg" id="haulSeg"><button data-h="money" class="on">Salvage</button><button data-h="units">Drift</button></div>
-        </div>
+        <h2>Made good</h2>
         <div class="chartwrap"><div id="salvChart"></div></div>
         <p class="note" style="margin:10px 0 0">A clear day adds the most &middot; a weather day far less &middot; landfalls marked where reached.</p>
       </div>
@@ -369,7 +364,7 @@
   <section id="s-more" class="screen">
     <div class="eyebrow">Onward</div>
     <!-- DEV NOTES — temporary scaffolding, safe to remove (unwrap <h1>Locker</h1> back to standalone when removing) -->
-    <div class="devnotes-headrow"><h1 style="margin:0">Locker</h1><div class="devnotes-link" id="devNotesBtn" aria-label="Dev notes"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 16 L20 16 L17 20 L7 20 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="1.6"/><path d="M12 4 L12 14 L5 14 Z" fill="currentColor"/></svg></div></div>
+    <div class="devnotes-headrow"><h1 style="margin:0">Locker</h1><div class="devnotes-link" id="devNotesBtn" aria-label="Dev notes"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M4 16 L20 16 L17 20 L7 20 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="1.6"/><path d="M12 4 L12 14 L5 14 Z" fill="currentColor"/></svg></div></div>
     <!-- /DEV NOTES -->
     <div class="card">
       <h2>Your hazards &amp; usual week</h2>
@@ -385,7 +380,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.4.5</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.4.6</span></p>
   </section>
 
   <nav class="tabs">
@@ -652,7 +647,6 @@
   let _loadCorrupt=false;
   let state=load();
   let metric="trends";
-  let haulUnit="money";
 
   function seed(){
     return {v:3,startISO:todayISO(),currency:"£",
@@ -1275,20 +1269,18 @@
     });
     return out;
   }
-  function chartSalvage(unit){
+  function chartSalvage(){
     const jd=journeyDays();
     if(!jd.length)return '<div class="muted" style="text-align:center;padding:30px 0">Cast off, and your salvage line begins here.</div>';
-    const key=(unit==='money')?'money':'units';
-    const r=rates(),rate=r[key];
-    const N=jd.length;let cum=[],c=0;jd.forEach(d=>{if(d.counted)c+=(d.av[key]||0);cum.push(c);});
-    const total=c,maxv=Math.max(1,N*rate,total);
-    const fmt=unit==='money'?fmtMoney:(v=>fmtU(v)+' drift');
+    const r=rates(),rate=r.money;
+    const N=jd.length;let cum=[],c=0,cu=0;jd.forEach(d=>{if(d.counted){c+=(d.av.money||0);cu+=(d.av.units||0);}cum.push(c);});
+    const total=c,totalU=cu,maxv=Math.max(1,N*rate,total);
     const W=320,H=200,left=16,right=308,top=54,bottom=172;
     const X=i=>N<=1?left:left+(right-left)*(i/(N-1));
     const Y=v=>bottom-(bottom-top)*Math.max(0,Math.min(1,v/maxv));
     let s='<svg viewBox="0 0 '+W+' '+H+'">';
-    s+='<text x="'+left+'" y="26" fill="#E8B65A" font-size="20" font-weight="600">'+fmt(total)+'</text>';
-    s+='<text x="'+left+'" y="42" fill="#7E92AB" font-size="9">salvage made good \u00b7 '+N+' day'+(N===1?'':'s')+' at sea</text>';
+    s+='<text x="'+left+'" y="26" font-size="20" font-weight="600"><tspan fill="#E8B65A">'+fmtMoney(total)+'</tspan><tspan fill="#7E92AB" font-size="15"> \u00b7 </tspan><tspan fill="#5FD0C5" font-size="15">'+fmtU(totalU)+' drift</tspan></text>';
+    s+='<text x="'+left+'" y="42" fill="#7E92AB" font-size="9">salvage &amp; drift held back \u00b7 '+N+' day'+(N===1?'':'s')+' at sea</text>';
     s+='<line x1="'+X(0).toFixed(1)+'" y1="'+Y(rate).toFixed(1)+'" x2="'+X(N-1).toFixed(1)+'" y2="'+Y(N*rate).toFixed(1)+'" stroke="#7E92AB" stroke-width="1" stroke-dasharray="2 3" opacity="0.5"/>';
     s+='<text x="'+X(N-1).toFixed(1)+'" y="'+(Y(N*rate)-3).toFixed(1)+'" fill="#7E92AB" font-size="7" text-anchor="end">fair winds</text>';
     let pts=[];for(let i=0;i<N;i++)pts.push([X(i),Y(cum[i])]);
@@ -1377,7 +1369,7 @@
     const SD=stageData();
     renderByVoyage();
     if(!SD.hasBase){$("#salvChart").innerHTML='<div class="muted" style="text-align:center;padding:30px 14px;line-height:1.5">Set <b>Your usual week</b> in the Locker — then your charts appear here.</div>';$("#runRibbon").innerHTML='';return;}
-    $("#salvChart").innerHTML=chartSalvage(haulUnit);
+    $("#salvChart").innerHTML=chartSalvage();
     $("#runRibbon").innerHTML=chartRibbon();
   }
 
@@ -1919,7 +1911,6 @@
     var h=gate.querySelector('.hint');if(h)h.addEventListener('click',enter);
   })();
   document.querySelectorAll("#metricSeg button").forEach(b=>{b.onclick=()=>{metric=b.dataset.m;document.querySelectorAll("#metricSeg button").forEach(x=>x.classList.toggle("on",x===b));renderTrends();};});
-  document.querySelectorAll("#haulSeg button").forEach(b=>{b.onclick=()=>{haulUnit=b.dataset.h;document.querySelectorAll("#haulSeg button").forEach(x=>x.classList.toggle("on",x===b));renderTrends();};});
 
   $("#completeBtn").onclick=completeToday;
   $("#deviateBtn").onclick=()=>editDay(todayISO(),{mode:'weather'});
