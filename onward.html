@@ -196,7 +196,7 @@
   .awgrp:first-child{margin-top:2px;}
   .awhd{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;}
   .awwrap{display:flex;flex-wrap:wrap;gap:7px;}
-  .award{display:flex;flex-direction:column;border:1px solid #1f3147;border-radius:9px;padding:6px 9px;opacity:.42;}
+  .award{display:flex;flex-direction:column;border:1px solid #1f3147;border-radius:9px;padding:6px 9px;opacity:.42;cursor:pointer;}
   .award b{font-size:12px;color:var(--mist);font-weight:600;line-height:1.2;}
   .award small{font-size:9.5px;color:var(--faint);margin-top:2px;}
   .award.on{opacity:1;border-color:#2C6B65;background:rgba(95,208,197,.10);}
@@ -204,6 +204,23 @@
   .award.next{opacity:.85;border-style:dashed;border-color:#7a5a25;}
   .award.next b{color:#E8B65A;}
   .award.next small{color:#caa25e;}
+  .awdetail{text-align:center;}
+  .awdetail-motif{width:60px;height:60px;margin:2px auto 14px;}
+  .awdetail-motif svg{width:100%;height:100%;display:block;}
+  .awdetail-motif.teal{color:var(--beacon);}
+  .awdetail-motif.amber{color:var(--amber);}
+  .awdetail-motif.locked{color:#3a5170;}
+  .awdetail-cat{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin-bottom:6px;}
+  .awdetail-label{font-size:20px;font-weight:700;color:var(--mist);margin:0 0 10px;}
+  .awdetail-label.locked{opacity:.65;}
+  .awdetail-date{font-size:12.5px;color:var(--faint);margin:0 0 10px;}
+  .awdetail-line{font-size:14px;line-height:1.55;color:var(--mist);max-width:320px;margin:0 auto;}
+  .awdetail-ring{width:112px;height:112px;margin:6px auto 10px;}
+  .awdetail-ring svg{width:100%;height:100%;display:block;}
+  .awdetail-ring.teal{color:var(--beacon);}
+  .awdetail-ring.amber{color:var(--amber);}
+  .awdetail-togo{font-size:13px;color:var(--faint);margin-top:2px;}
+  .awdetail+.btn{margin-top:18px;}
   .subseg{margin:0 0 12px;font-size:12px;}
   .subseg button{padding:5px 10px;white-space:nowrap;flex:none;}
   .helmhead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:16px;}
@@ -368,7 +385,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.4.3</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.4.4</span></p>
   </section>
 
   <nav class="tabs">
@@ -1042,9 +1059,160 @@
   const AW_DAYS=[[1,'Under Way'],[3,'Finding Your Feet'],[7,'First Week'],[14,'A Fortnight On'],[30,'Able Seaman'],[60,'Seasoned Hand'],[100,'The Hundred'],[150,'Old Salt'],[200,'Far From Shore'],[300,'Master Mariner'],[365,'A Year and a Day'],[500,'Deep Water'],[672,'Round the World'],[1000,'The Thousand']];
   const AW_SALV=[[25,'First Salvage'],[100,'A Full Chest'],[250,'Quartermaster'],[500,'Treasure Hold'],[1000,'King\u2019s Ransom']];
   const AW_DRIFT=[[25,'Steady Hand'],[100,'True Course'],[250,'Weathered Sailor'],[500,'Iron Helm'],[1000,'Unshakeable']];
+  const AWD_DAYS_LINE={
+    1:'The first day logged. Every passage starts here.',
+    3:'Three days. The deck stops pitching once you find your balance.',
+    7:'Seven days made good. A steady first week.',
+    14:'A fortnight clear. The rhythm’s yours now.',
+    30:'Thirty clear days. A proper passage, not just a start.',
+    60:'Sixty days made good. Well past the point most turn back.',
+    100:'A hundred clear days. A long, steady run — few hold a course this far.',
+    150:'A hundred and fifty days. This is seamanship now, not luck.',
+    200:'Two hundred days made good. A long way out, and holding steady.',
+    300:'Three hundred clear days. Not many keep the log this long.',
+    365:'A full year of clear days. Every one of them yours.',
+    500:'Five hundred days made good. Deep water, and a course kept without wavering.',
+    672:'The full circuit — every voyage on the chart sailed.',
+    1000:'A thousand clear days. Little left to prove out here.'
+  };
+  const AWD_SALV_LINE={
+    25:'The first real weight in the chest — money that stayed aboard.',
+    100:'[£X] banked. A full chest, kept instead of gone over the side.',
+    250:'[£X] salvaged and held — a serious sum now.',
+    500:'[£X] banked. A proper haul, all of it kept.',
+    1000:'[£X] salvaged over the long haul. A real fortune held.'
+  };
+  const AWD_DRIFT_LINE={
+    25:'The first drift held off — kept from the current.',
+    100:'[X] of drift turned aside. A course held true.',
+    250:'[X] of drift never let aboard — weathered, not carried.',
+    500:'[X] of drift held off. A firm hand on the tiller, mile after mile.',
+    1000:'[X] of drift turned aside over the long haul. Unshaken.'
+  };
+  const AWD_PORT_LINE={
+    'shakedown|Cast Off':'The hardest day of any passage is the first. Casting off at all is the win — and you’ve done it.',
+    'shakedown|Find Your Feet':'Three clear days. Most of the work of a new habit is done in its first stretch, while the deck still pitches. That part’s behind you.',
+    'shakedown|The First Watch':'The routine is starting to hold of its own accord — and routine is the quiet hero of any long passage.',
+    'shakedown|Steady As She Goes':'Five days on, and the boat all but steers herself. You have real proof now that you can hold the course.',
+    'shakedown|Shakedown Done':'A week made good. The boat is sound, the crew is ready — and the hardest part, you’ve already done once.',
+    'spray|Boston':'One ageing sailor, one hand-rebuilt sloop, and a plan nobody had ever pulled off. You’ve begun the thing itself.',
+    'spray|The Azores':'Your first ocean crossed alone. Slocum marked it with plums and cheese, took a fever, and swore Columbus’s phantom pilot held the wheel through the storm. You’re across.',
+    'spray|Gibraltar':'The Mediterranean gateway — where, warned of pirates, Slocum tore up his plan and reversed the whole voyage. Sometimes the sea sets the course. You’ve reached the turn.',
+    'spray|The Strait':'The frozen maze at the foot of the world, that Slocum clawed through twice and guarded with carpet tacks strewn on deck against night-raiders. Hard-won water, and you’re through.',
+    'spray|Juan Fernández':'Robinson Crusoe’s own island, where Slocum climbed to the castaway’s lookout and fried the locals doughnuts in salvaged tallow. The gentlest landfall of the voyage. Rest earned.',
+    'spray|Samoa':'Seventy-two days without a port — the longest passage of the voyage — then Stevenson’s widow rowed out and gave you the writer’s own sailing books. A long haul, well made.',
+    'spray|Sydney':'The far side of the earth. Low on funds, Slocum charged the curious a coin to see the Spray and lectured for his supper — the first voyage round the world to fund itself.',
+    'spray|Cape of Good Hope':'Africa’s storm-bound corner, rounded — much of the Indian Ocean crossed with the helm untouched, two thousand miles of it, then tea with a president who swore the earth was flat. Nearly round.',
+    'spray|Newport':'46,000 miles, three years, entirely alone — the first man ever to sail around the world by himself. The full circle, made good.',
+    'beagle|Devonport':'A survey brig, a captain who dreaded solitude, and a 22-year-old naturalist who almost stayed home. The voyage that would remake how we see life has begun.',
+    'beagle|Cape Verde':'A white band of old sea-shells, lifted high in a cliff — where Darwin first read deep time in the rock, and later said he became a scientist. Your first real landfall.',
+    'beagle|Bahia':'Tropical rainforest for the first time, and its overwhelming riot of life. It was also where Darwin saw slavery close up, and it sickened him for good. A landfall that marked him.',
+    'beagle|Patagonia':'A low cliff full of the bones of vanished giants — a ground sloth the size of an elephant. Why should the dead and the living of one place share a plan? The question that would haunt him started here.',
+    'beagle|Tierra del Fuego':'The Land of Fire, where a year after being ‘civilised’ in England, Jemmy Button went happily back to the sea. It pressed on Darwin that all people are one kind. A cold, strange landfall.',
+    'beagle|The Andes':'A great earthquake threw down a city — and left mussel-beds stranded above the tideline. Mountains rise, quake by quake, over ages, and Darwin had just watched a piece of it happen.',
+    'beagle|The Galápagos':'Young volcanic islands where the tortoises differ shore to shore. Darwin missed it there; the doubt only ripened years later. But the seed of the whole idea was planted here.',
+    'beagle|The Keeling Islands':'A coral atoll — where Darwin worked out how such rings are built: reef growing upward as its island slowly drowns beneath it. His first great theory, and it proved right.',
+    'beagle|Falmouth':'Home after nearly five years, seasick to the last. Darwin never left Britain again — he didn’t need to. He’d carried the whole world back in the hold, and a question that would change it.',
+    'endurance|Grytviken':'The whalers’ last outpost, and the expedition’s final contact with the world. When they bore away south, it was the last solid ground any of them would touch for 497 days. The edge of the map.',
+    'endurance|The Weddell Sea':'The ice-choked gulf, crossed to within a day’s sail of the continent — then the pack closed and held the ship fast, frozen in, a passenger of the ice. The crossing was lost, but the real story is only starting.',
+    'endurance|Patience Camp':'A tent on a drifting floe, made after the crushed ship went down. Home for over three months, carried north by the current, with nothing to do but wait and hold on. You’ve held on this far.',
+    'endurance|Open Water':'When the floe split, they took to three small boats — seven days through pack ice and gales, soaked and frostbitten, to the nearest land. Moving, at last, toward a shore of their own choosing.',
+    'endurance|Elephant Island':'A bleak, uninhabited rock off every shipping route — the first solid ground in 497 days. Men wept to stand on ground that did not move. But no rescue would ever look here, and the hardest gamble still lay ahead.',
+    'endurance|The Southern Ocean':'The 800-mile open-boat voyage of the James Caird across the stormiest water on earth — six men in a 22-foot boat, sixteen days of bailing and ice, aiming at a target a hundred miles wide. One of the greatest passages ever made.',
+    'endurance|King Haakon Bay':'Safe ashore on South Georgia at last — but on the wild side, a spine of unmapped mountains standing between the men and the help they’d crossed an ocean to reach. So near, the hardest part still to come.',
+    'endurance|The Crossing':'The island’s uncharted interior, on foot — 36 hours without map or tent, screws through their boots for crampons. Near the end, a whaling whistle: the first man-made sound in eighteen months. Almost home.',
+    'endurance|Stromness':'The end of the ordeal. Shackleton failed at the journey he set out to make, and is remembered for a greater one — every one of the 28 who sailed into the Weddell Sea came home alive.',
+    'magellan|Sanlúcar':'Five ships and some 270 men, standing out to sea westward for the Spice Islands by a route no one had found — not even sure the strait they were gambling on was real. The greatest voyage yet attempted, begun.',
+    'magellan|Rio de Janeiro':'Across the Atlantic to the New World, barely a generation after Columbus — a fortnight of fresh water and fruit, then the long cold coast south, probing every bay for a strait that might not be there.',
+    'magellan|Port St Julián':'A bitter Patagonian winter — a mutiny crushed without mercy, a ship wrecked, and the tall hunters the crews called giants. Where the romance died and the true cost began. You’ve weathered it.',
+    'magellan|The Strait':'Found at last — a freezing, fire-lit labyrinth, thirty-eight days long. Magellan wept when he saw open water beyond it, and named the calm sea past it the Pacific. He was right: the passage was real.',
+    'magellan|The Pacific':'Ninety-eight days of empty ocean — leather and sawdust for food, scurvy, and a sea no one had guessed was so vast. Not a battle but distance itself nearly ended it. The true size of the world, revealed — and crossed.',
+    'magellan|Guam':'Land at last, near the point of despair — swift canoes, fresh water, fruit. The endless ocean had an end after all, and the Spice Islands were finally within reach.',
+    'magellan|Cebu':'The far edge of the Asian world, where Magellan’s interpreter suddenly understood the local tongue. Days later, at Mactan, Magellan was killed — the man who forced through the greatest voyage never saw it finished. You sail on without him.',
+    'magellan|The Moluccas':'The Spice Islands themselves, the goal Magellan died for — twenty-six tons of cloves in the holds, enough to repay the whole enterprise. The point of it all, reached; and the smallest hope left, to carry it home.',
+    'magellan|Seville':'One ship, eighteen starving men, three years after five sailed. The first human beings ever to circle the Earth — with a hold of cloves and a missing day in the log. The first circle drawn around the world.'
+  };
+  function fmtDateLong(iso){return parseISO(iso).toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'});}
+  function dateForMade(n){const s=series();let c=0;for(const d of s){if(d.status==='clear'){c++;if(c>=n)return d.iso;}}return null;}
+  function awardMotifSVG(cat){
+    const ring='<circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-width="1.6" opacity=".35"/>';
+    let g;
+    if(cat==='Days made good')g='<circle cx="24" cy="22" r="6" fill="none" stroke="currentColor" stroke-width="1.7"/><line x1="13" y1="28" x2="35" y2="28" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>';
+    else if(cat==='Landfalls')g='<line x1="19" y1="13" x2="19" y2="33" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M19 14 L29 18 L19 22 Z" fill="currentColor"/>';
+    else if(cat==='Salvage banked')g='<ellipse cx="24" cy="30" rx="9" ry="3.4" fill="none" stroke="currentColor" stroke-width="1.6"/><ellipse cx="24" cy="24.5" rx="9" ry="3.4" fill="none" stroke="currentColor" stroke-width="1.6"/><ellipse cx="24" cy="19" rx="9" ry="3.4" fill="none" stroke="currentColor" stroke-width="1.6"/>';
+    else g='<path d="M12 20 Q18 15 24 20 T36 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="M12 29 Q18 24 24 29 T36 29" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>';
+    return '<svg viewBox="0 0 48 48">'+ring+g+'</svg>';
+  }
+  function awardRingSVG(pct){
+    const p=Math.max(0,Math.min(100,pct)),r=44,c=2*Math.PI*r,off=c*(1-p/100);
+    return '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="'+r+'" fill="none" stroke="#20344d" stroke-width="7"/>'
+      +'<circle cx="50" cy="50" r="'+r+'" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 50 50)"/>'
+      +'<text x="50" y="50" text-anchor="middle" dominant-baseline="central" font-size="20" font-weight="700" fill="currentColor">'+Math.round(p)+'%</text></svg>';
+  }
+  function buildAwardDetailHTML(o){
+    const color=o.cat==='Landfalls'?'amber':'teal';
+    let h='<div class="awdetail">'
+      +'<div class="awdetail-motif '+color+(o.earned?'':' locked')+'">'+awardMotifSVG(o.cat)+'</div>'
+      +'<div class="awdetail-cat">'+o.cat+'</div>'
+      +'<div class="awdetail-label'+(o.earned?'':' locked')+'">'+o.label+'</div>';
+    if(o.earned){
+      if(o.dateISO)h+='<div class="awdetail-date">reached '+fmtDateLong(o.dateISO)+'</div>';
+      if(o.reflect)h+='<p class="awdetail-line">'+o.reflect+'</p>';
+    }else{
+      h+='<div class="awdetail-ring '+color+'">'+awardRingSVG(o.pct)+'</div>'
+        +'<div class="awdetail-togo">'+o.togo+'</div>';
+    }
+    h+='</div><button class="btn quiet" id="awdClose">Close</button>';
+    return h;
+  }
+  function openAwardDetail(key){
+    const A=aggregate();
+    let html;
+    if(key[0]==='d'){
+      const n=+key.slice(1),t=AW_DAYS.find(x=>x[0]===n);if(!t)return;
+      const earned=A.made>=n;
+      html=buildAwardDetailHTML({cat:'Days made good',label:t[1],earned,
+        dateISO:earned?dateForMade(n):null,
+        reflect:AWD_DAYS_LINE[n]||'',
+        pct:A.made/n*100,
+        togo:(n-A.made)+((n-A.made)===1?' day to go':' days to go')});
+    }else if(key[0]==='s'){
+      const n=+key.slice(1),t=AW_SALV.find(x=>x[0]===n);if(!t)return;
+      const earned=A.banked.money>=n;
+      html=buildAwardDetailHTML({cat:'Salvage banked',label:t[1],earned,
+        dateISO:null,
+        reflect:(AWD_SALV_LINE[n]||'').replace('[£X]',fmtMoney(n)),
+        pct:A.banked.money/n*100,
+        togo:fmtMoney(Math.max(0,n-A.banked.money))+' to go'});
+    }else if(key[0]==='u'){
+      const n=+key.slice(1),t=AW_DRIFT.find(x=>x[0]===n);if(!t)return;
+      const earned=A.banked.units>=n;
+      html=buildAwardDetailHTML({cat:'Drift held off',label:t[1],earned,
+        dateISO:null,
+        reflect:(AWD_DRIFT_LINE[n]||'').replace('[X]',fmtU(n)),
+        pct:A.banked.units/n*100,
+        togo:fmtU(Math.max(0,n-A.banked.units))+' drift to go'});
+    }else{
+      const m=portMarks().find(x=>x.key===key);if(!m)return;
+      const earned=!!m.reached;
+      const mm=key.match(/^v(\d+)p(\d+)$/);
+      let reflect='';
+      if(mm){const voyId=LADDER[+mm[1]].id;reflect=AWD_PORT_LINE[voyId+'|'+m.name]||'';}
+      const dayGap=Math.max(0,m.day-A.made);
+      html=buildAwardDetailHTML({cat:'Landfalls',label:m.name,earned,
+        dateISO:earned?dateForMade(m.day):null,
+        reflect,
+        pct:A.made/m.day*100,
+        togo:dayGap+(dayGap===1?' day to go':' days to go')});
+    }
+    sheet(html);
+    $("#awdClose").onclick=closeSheet;
+  }
   function portMarks(){
     const A=aggregate(),b=ladderBounds(),made=A.made,marks=[];
     for(let rung=0;rung<LADDER.length;rung++){const P=passageById(LADDER[rung].id),dv=localDays(rung),start=b.starts[rung];P.ports.forEach((pt,i)=>marks.push({key:'v'+rung+'p'+i,name:pt.name,day:start+dv[i]}));}
+    // Beyond the last named port, keep generating waypoints so the Log/diary can still mark days reached —
+    // they just aren't individually badge-worthy, so allAwards() excludes 'os*' keys from Landfalls.
     const osN=["Open Water","The Trade Winds","Blue Water","The Far Reaches","A New Horizon","The Long Swell","Steady Seas","Calm Latitudes","Onward"];
     for(let idx=0;idx<800;idx++){const day=b.total+(idx+1)*90;const lap=Math.floor(idx/osN.length);marks.push({key:'os'+idx,name:osN[idx%osN.length]+(lap?" "+(lap+1):""),day});if(day>made)break;}
     const out=[];
@@ -1054,7 +1222,7 @@
   function allAwards(){
     const A=aggregate(),list=[];
     AW_DAYS.forEach(t=>list.push({key:'d'+t[0],cat:'Days made good',label:t[1],sub:t[0]+(t[0]===1?' day':' days'),earned:A.made>=t[0]}));
-    portMarks().forEach(m=>list.push({key:m.key,cat:'Landfalls',label:m.name,sub:m.reached?'made good':'next landfall',earned:!!m.reached,next:!!m.next}));
+    portMarks().filter(m=>m.key[0]==='v').forEach(m=>list.push({key:m.key,cat:'Landfalls',label:m.name,sub:m.reached?'made good':'next landfall',earned:!!m.reached,next:!!m.next}));
     AW_SALV.forEach(t=>list.push({key:'s'+t[0],cat:'Salvage banked',label:t[1],sub:fmtMoney(t[0]),earned:A.banked.money>=t[0]}));
     AW_DRIFT.forEach(t=>list.push({key:'u'+t[0],cat:'Drift held off',label:t[1],sub:fmtU(t[0])+' drift',earned:A.banked.units>=t[0]}));
     return list;
@@ -1064,8 +1232,9 @@
     const list=allAwards(),cats=['Days made good','Landfalls','Salvage banked','Drift held off'];
     let h='';
     cats.forEach(cat=>{const items=list.filter(a=>a.cat===cat);if(!items.length)return;
-      h+='<div class="awgrp"><div class="awhd">'+cat+'</div><div class="awwrap">'+items.map(a=>'<span class="award '+(a.earned?'on':(a.next?'next':''))+'"><b>'+a.label+'</b><small>'+a.sub+'</small></span>').join('')+'</div></div>';});
+      h+='<div class="awgrp"><div class="awhd">'+cat+'</div><div class="awwrap">'+items.map(a=>'<span class="award '+(a.earned?'on':(a.next?'next':''))+'" data-k="'+a.key+'"><b>'+a.label+'</b><small>'+a.sub+'</small></span>').join('')+'</div></div>';});
     $("#awards").innerHTML=h;
+    document.querySelectorAll('#awards .award').forEach(el=>el.onclick=()=>openAwardDetail(el.dataset.k));
   }
   function earnedAwardKeys(){return allAwards().filter(a=>a.earned).map(a=>a.key);}
   function syncAwards(){
@@ -1213,7 +1382,7 @@
   }
 
   /* ---- actions ---- */
-  function completeToday(){const t=todayISO();if(state.deviations[t]){toast("Today already logged as weather");return;}if(state.completed.indexOf(t)>=0)return;const beforeEarned=earnedAwardKeys(),beforeVoy=voyageContext(aggregate().made).completed;state.completed.push(t);save();const afterEarned=earnedAwardKeys(),afterVoy=voyageContext(aggregate().made).completed;const fresh=afterEarned.filter(k=>beforeEarned.indexOf(k)<0);render();if(afterVoy>beforeVoy){celebrateLanding(afterVoy-1);return;}if(fresh.length){awardCelebrationKeys(fresh);return;}dayClosedSummary();}
+  function completeToday(){const t=todayISO();if(state.deviations[t]){toast("Today already logged as weather");return;}if(state.completed.indexOf(t)>=0)return;const beforeEarned=earnedAwardKeys(),beforeVoy=voyageContext(aggregate().made).completed;state.completed.push(t);save();const afterEarned=earnedAwardKeys(),afterVoy=voyageContext(aggregate().made).completed;const fresh=afterEarned.filter(k=>beforeEarned.indexOf(k)<0);render();if(afterVoy>beforeVoy){celebrateLanding(afterVoy-1,fresh);return;}if(fresh.length){awardCelebrationKeys(fresh);return;}dayClosedSummary();}
 
   function stepperRows(values){
     return state.drinks.filter(d=>!d.archived).map(dr=>{const q=values[dr.id]||0;
@@ -1681,11 +1850,13 @@
     document.querySelectorAll('.vshelf .vrow').forEach(el=>{if(!el.classList.contains('lock'))el.onclick=()=>voyageSheet(+el.dataset.r,false);});
     $("#mClose").onclick=closeModal;
   }
-  function celebrateLanding(rung){
+  function celebrateLanding(rung,freshKeys){
     const P=passageById(LADDER[rung].id),A=aggregate(),b=ladderBounds(),last=(rung===LADDER.length-1);
     let h='<div class="eyebrow">Landfall</div><h2>'+P.title+' \u2014 complete</h2>';
     h+=last?'<p>You have closed the full circuit \u2014 every voyage on the chart, '+b.total+' clear days, the whole world sailed. From here the sea is open and endless, and entirely yours.</p>':'<p>You have made landfall. '+P.title+' is done, and a new voyage opens ahead \u2014 <b>'+A.made+'</b> clear days made good so far.</p>';
     if(!last){const n=rung+1;h+='<p class="muted">Next: '+passageById(LADDER[n].id).title+' \u2014 a '+LADDER[n].len+'-day passage. Trim resets to a fresh 100%; everything you have banked stays banked.</p>';}
+    const others=(freshKeys&&freshKeys.length)?allAwards().filter(a=>freshKeys.indexOf(a.key)>=0&&a.cat!=='Landfalls'):[];
+    if(others.length){const names=others.map(a=>'<b>'+a.label+'</b>');const line=names.length===1?names[0]:(names.slice(0,-1).join(', ')+' and '+names[names.length-1]);h+='<p class="muted">Also earned today: '+line+'.</p>';}
     const iso=todayISO();h+=diaryFieldsHTML(iso)+notePromptHTML(iso);
     h+='<button class="btn primary" id="mClose">Sail on</button><button class="btn quiet" id="mLog">Add a line to the diary</button>';
     modal(h);wireBaro();
