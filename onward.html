@@ -13,7 +13,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="mobile-web-app-capable" content="yes">
 <style>
-  :root{--ink:#0E1A2B;--slate:#16263B;--horizon:#1E3A52;--line:#26405C;--mist:#C9D6E5;--faint:#7E92AB;--beacon:#5FD0C5;--amber:#E8B65A;--danger:#E0746A;--pad:env(safe-area-inset-bottom,0px);}
+  :root{--ink:#0E1A2B;--slate:#16263B;--horizon:#1E3A52;--line:#26405C;--mist:#C9D6E5;--faint:#7E92AB;--beacon:#5FD0C5;--amber:#E8B65A;--squall:#A98BC9;--danger:#E0746A;--pad:env(safe-area-inset-bottom,0px);}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;height:100%;background:var(--ink);}
   body{background:radial-gradient(120% 60% at 50% -10%,#1A3047 0%,var(--ink) 55%);background-color:var(--ink);color:var(--mist);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior:none;}
@@ -131,14 +131,14 @@
   .day .date small{display:block;color:var(--faint);font-size:11px;margin-top:2px;}
   .tag{font-size:11px;padding:4px 9px;border-radius:999px;border:1px solid var(--line);color:var(--faint);white-space:nowrap;}
   .tag.clear{color:var(--beacon);border-color:#2b5650;}
-  .tag.dev{color:var(--amber);border-color:#574420;}
+  .tag.dev{color:var(--squall);border-color:#443850;}
   .tag.log{color:var(--beacon);border-color:#2b5650;background:rgba(95,208,197,.08);cursor:pointer;}
   .dmark{flex:none;width:16px;display:flex;justify-content:center;align-items:center;color:var(--amber);}
   .dmark .dot{width:11px;height:11px;border-radius:50%;}
   .dmark.made .dot{background:var(--beacon);}
   .dmark.made.unconf .dot{background:var(--faint);}
   .dmark.unconf{color:var(--faint);}
-  .dmark.dev .dot{background:transparent;border:1.6px solid var(--amber);box-sizing:border-box;}
+  .dmark.dev .dot{background:transparent;border:1.6px solid var(--squall);box-sizing:border-box;}
   .dmark.today .dot{background:transparent;border:1.6px solid var(--beacon);box-sizing:border-box;}
   .barochip{flex:none;min-width:58px;text-align:center;background:var(--ink);border:1px solid var(--line);border-radius:11px;padding:4px 8px;font-size:10px;color:var(--mist);white-space:nowrap;}
   .dicon{flex:none;display:flex;align-items:center;justify-content:center;padding:5px;cursor:pointer;margin:-2px -2px -2px 0;}
@@ -154,6 +154,7 @@
   .diarypage-eb{text-align:center;}
   .diarypage-eb.teal{color:var(--beacon);}
   .diarypage-eb.amber{color:var(--amber);}
+  .diarypage-eb.squall{color:var(--squall);}
   .diarypage-date{font-size:19px;font-weight:700;color:var(--mist);margin:4px 0 14px;}
   .diarypage-land{display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;color:var(--amber);margin:0 0 14px;font-weight:600;}
   .diarypage-baro{margin:0 0 18px;}
@@ -316,13 +317,13 @@
   .baroReading.unset{color:#3a5170;font-weight:400}
   .barohint{text-align:center;font-size:9px;color:#3a5170;margin-top:9px}
   .daytoggle button.on[data-m="clear"]{background:var(--beacon);color:#0c1a2a}
-  .daytoggle button.on[data-m="weather"]{background:var(--amber);color:#0c1a2a}
+  .daytoggle button.on[data-m="weather"]{background:var(--squall);color:#0c1a2a}
   .dsnip{color:var(--beacon);font-style:italic;opacity:.85}
   .catchlist{max-height:46vh;overflow:auto;-webkit-overflow-scrolling:touch;margin:4px 0 14px}
   .portslink{font-size:12px;color:var(--beacon);margin-top:14px;padding-top:13px;border-top:1px solid #21364f;cursor:pointer;letter-spacing:.02em;text-align:center;}
   .statusline{font-size:13.5px;line-height:1.5;margin:2px 2px 12px;color:var(--mist);}
   .statusline .lead{color:var(--beacon);font-weight:600;}
-  .statusline.weather .lead{color:var(--amber);}
+  .statusline.weather .lead{color:var(--squall);}
   .weatherlink{text-align:center;font-size:12px;color:var(--faint);margin-top:11px;padding:6px;cursor:pointer;letter-spacing:.02em;}
   .portshead{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:0 0 4px;}
 </style>
@@ -381,7 +382,7 @@
       <div class="card">
         <h2>Your run</h2>
         <div id="runRibbon"></div>
-        <p class="note" style="margin:12px 0 0">Each square a day &middot; teal made good &middot; amber weathered &middot; a ring marks a landfall.</p>
+        <p class="note" style="margin:12px 0 0">Each square a day &middot; teal made good &middot; violet weathered &middot; a ring marks a landfall.</p>
       </div>
       <div class="card" id="byVoyageCard">
         <h2>By voyage</h2>
@@ -426,7 +427,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.5.2</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.6.0</span></p>
   </section>
 
   <nav class="tabs">
@@ -929,13 +930,13 @@
     g+='<path d="'+area+'" fill="url(#bfill)"/>';
     g+='<polyline points="'+pts.map(function(p){return p[0].toFixed(0)+','+p[1].toFixed(0);}).join(' ')+'" fill="none" stroke="url(#bvg)" stroke-width="2.5"/>';
     ser.forEach(function(x,i){if(x.weather)return;g+='<circle cx="'+X(i).toFixed(0)+'" cy="'+Y(vals[i]).toFixed(0)+'" r="1.8" fill="#C9D6E5" opacity="0.4"/>';});
-    ser.forEach(function(x,i){if(x.weather)g+='<circle cx="'+X(i).toFixed(0)+'" cy="'+Y(vals[i]).toFixed(0)+'" r="4.3" fill="#16263B" stroke="#E8B65A" stroke-width="1.6"/>';});
+    ser.forEach(function(x,i){if(x.weather)g+='<circle cx="'+X(i).toFixed(0)+'" cy="'+Y(vals[i]).toFixed(0)+'" r="4.3" fill="#16263B" stroke="#A98BC9" stroke-width="1.6"/>';});
     const lx=X(N-1),ly=Y(sm[N-1]);
     g+='<circle cx="'+lx.toFixed(0)+'" cy="'+ly.toFixed(0)+'" r="7" fill="#5FD0C5" opacity="0.22"/><circle cx="'+lx.toFixed(0)+'" cy="'+ly.toFixed(0)+'" r="3.4" fill="#5FD0C5"/></svg>';
     const leg='<div style="display:flex;justify-content:center;gap:13px;margin-top:8px;flex-wrap:wrap">'
       +'<span style="font-size:8.5px;color:var(--faint)"><span style="display:inline-block;width:14px;height:2px;background:#5FD0C5;vertical-align:middle;margin-right:4px"></span>3-day trend</span>'
       +'<span style="font-size:8.5px;color:var(--faint)"><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#C9D6E5;opacity:.5;vertical-align:middle;margin-right:4px"></span>Daily</span>'
-      +'<span style="font-size:8.5px;color:var(--faint)"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;border:1.4px solid #E8B65A;box-sizing:border-box;vertical-align:middle;margin-right:4px"></span>Weather</span>'
+      +'<span style="font-size:8.5px;color:var(--faint)"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;border:1.4px solid #A98BC9;box-sizing:border-box;vertical-align:middle;margin-right:4px"></span>Weather</span>'
       +'</div>';
     el.innerHTML='<div class="portshead">The barometer <span style="float:right;font-size:9px;letter-spacing:1px;color:#3a5170">LAST '+N+' DAYS</span></div>'
       +'<div style="font-size:20px;color:var(--beacon);font-weight:600;margin:3px 0 2px">'+curLab+' <span style="font-size:11px;color:var(--faint);font-weight:400">\u00b7 '+trend+'</span></div>'+g+leg;
@@ -1342,7 +1343,7 @@
     let area='M'+X(0).toFixed(1)+','+bottom+' ';pts.forEach(p=>area+='L'+p[0].toFixed(1)+','+p[1].toFixed(1)+' ');area+='L'+X(N-1).toFixed(1)+','+bottom+' Z';
     s+='<path d="'+area+'" fill="#5FD0C5" opacity="0.16"/>';
     s+='<polyline points="'+pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ')+'" fill="none" stroke="#5FD0C5" stroke-width="2"/>';
-    for(let i=0;i<N;i++){if(jd[i].weather)s+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(cum[i]).toFixed(1)+'" r="2" fill="#E8B65A"/>';}
+    for(let i=0;i<N;i++){if(jd[i].weather)s+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(cum[i]).toFixed(1)+'" r="2" fill="#A98BC9"/>';}
     for(let i=0;i<N;i++){if(jd[i].port)s+='<circle cx="'+X(i).toFixed(1)+'" cy="'+Y(cum[i]).toFixed(1)+'" r="3.2" fill="#16263B" stroke="#E8B65A" stroke-width="1.5"/>';}
     s+='<line x1="'+left+'" y1="'+bottom+'" x2="'+right+'" y2="'+bottom+'" stroke="#26405C"/>';
     return s+'</svg>';
@@ -1359,7 +1360,7 @@
       html+='<div style="display:flex;flex-wrap:wrap;gap:'+gap+'px">';
       band.days.forEach(d=>{
         if(d.pending)html+='<div style="width:'+cs+'px;height:'+cs+'px;border-radius:4px;border:1.4px dashed #7E92AB;box-sizing:border-box"></div>';
-        else if(d.weather)html+='<div style="width:'+cs+'px;height:'+cs+'px;border-radius:4px;border:1.4px solid #E8B65A;opacity:.85;box-sizing:border-box"></div>';
+        else if(d.weather)html+='<div style="width:'+cs+'px;height:'+cs+'px;border-radius:4px;border:1.4px solid #A98BC9;opacity:.85;box-sizing:border-box"></div>';
         else{const dot=d.port?'<div style="position:absolute;top:-2px;right:-2px;width:6px;height:6px;border-radius:50%;background:#16263B;border:1.4px solid #E8B65A;box-sizing:border-box"></div>':'';html+='<div style="position:relative;width:'+cs+'px;height:'+cs+'px;border-radius:4px;background:#5FD0C5;opacity:.9">'+dot+'</div>';}
       });
       html+='</div>';
@@ -1880,7 +1881,7 @@
     const de=(state.diary&&state.diary[d.iso])||{};
     const isLand=!!d.port,isWeather=!!d.weather;
     const eb=isLand?'Clear day · landfall':(isWeather?'Weather day':'Clear day');
-    const ebClass=(isLand||isWeather)?'amber':'teal';
+    const ebClass=isLand?'amber':(isWeather?'squall':'teal');
     let h='<div class="diarypage">';
     h+='<div class="eyebrow diarypage-eb '+ebClass+'">'+eb+'</div>';
     h+='<div class="diarypage-date">'+fmtDateLong(d.iso)+'</div>';
