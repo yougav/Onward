@@ -426,7 +426,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.5.1</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.5.2</span></p>
   </section>
 
   <nav class="tabs">
@@ -1899,14 +1899,17 @@
   function renderDiaryBook(idx){
     DIARY_IDX=Math.max(0,Math.min(DIARY_PAGES.length-1,idx));
     const d=DIARY_PAGES[DIARY_IDX];
-    const hasPrev=DIARY_IDX>0,hasNext=DIARY_IDX<DIARY_PAGES.length-1;
+    // Deliberately mirrored from the usual ‹/› convention, to match the swipe gesture (confirmed correct,
+    // not to be touched): swiping left goes to an earlier page, so the LEFT-positioned button (‹) goes
+    // forward/later to stay physically consistent, and the RIGHT-positioned button (›) goes backward/earlier.
+    const hasLater=DIARY_IDX<DIARY_PAGES.length-1,hasEarlier=DIARY_IDX>0;
     let h='<div class="eyebrow">Captain’s Diary</div>';
     h+='<div class="diarybook">'+diaryPageHTML(d)+'</div>';
-    h+='<div class="chapnav">'+(hasPrev?'<div class="chapnav-btn" id="dpPrev">‹</div>':'<div class="chapnav-btn void"></div>')+'<div class="chapnav-pos">'+fmtDate(d.iso)+' · page '+(DIARY_IDX+1)+' of '+DIARY_PAGES.length+'</div>'+(hasNext?'<div class="chapnav-btn" id="dpNext">›</div>':'<div class="chapnav-btn void"></div>')+'</div>';
+    h+='<div class="chapnav">'+(hasLater?'<div class="chapnav-btn" id="dpPrev">‹</div>':'<div class="chapnav-btn void"></div>')+'<div class="chapnav-pos">'+fmtDate(d.iso)+' · page '+(DIARY_IDX+1)+' of '+DIARY_PAGES.length+'</div>'+(hasEarlier?'<div class="chapnav-btn" id="dpNext">›</div>':'<div class="chapnav-btn void"></div>')+'</div>';
     h+='<button class="btn quiet" id="mClose" style="margin-top:14px">Close</button>';
     modal(h);
-    if(hasPrev)$("#dpPrev").onclick=()=>renderDiaryBook(DIARY_IDX-1);
-    if(hasNext)$("#dpNext").onclick=()=>renderDiaryBook(DIARY_IDX+1);
+    if(hasLater)$("#dpPrev").onclick=()=>renderDiaryBook(DIARY_IDX+1);
+    if(hasEarlier)$("#dpNext").onclick=()=>renderDiaryBook(DIARY_IDX-1);
     $("#dpEdit").onclick=()=>openDiary(d.iso);
     $("#mClose").onclick=closeModal;
   }
