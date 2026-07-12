@@ -36,7 +36,9 @@
   h1{font-size:20px;font-weight:600;margin:2px 0 18px;}
   .muted{color:var(--faint);}
   .bignum{font-size:54px;font-weight:300;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#fff;}
+  .bignum.provisional{color:var(--mist);}
   .biglabel{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-top:6px;}
+  .unconfirmedNote{text-align:center;font-size:12px;color:var(--faint);margin-top:14px;padding:6px;cursor:pointer;letter-spacing:.02em;}
   .sub{margin-top:8px;font-size:13px;color:var(--beacon);}
   .ribbon{display:flex;justify-content:center;gap:10px;margin:16px 0 4px;}
   .pill{background:var(--slate);border:1px solid var(--line);border-radius:14px;padding:12px 10px;flex:1;min-width:0;text-align:center;display:flex;flex-direction:column;justify-content:center;}
@@ -95,6 +97,7 @@
   .vshelf .vrow.cur .pname{color:var(--amber);}
   .vshelf .vsub{font-size:12px;color:var(--faint);margin-top:2px;}
   .vshelf .pchev{margin-left:auto;color:var(--faint);font-size:13px;}
+  .vshelf .vrow-plog{display:inline-block;font-size:11.5px;color:var(--beacon);margin-top:5px;padding:3px 0;cursor:pointer;}
   .btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;}
   .btn.primary{background:var(--beacon);color:#06231f;}
   .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--mist);}
@@ -133,12 +136,33 @@
   .dmark{flex:none;width:16px;display:flex;justify-content:center;align-items:center;}
   .dmark .dot{width:11px;height:11px;border-radius:50%;}
   .dmark.made .dot{background:var(--beacon);}
+  .dmark.made.unconfirmed .dot{background:transparent;border:1.6px solid var(--beacon);box-sizing:border-box;opacity:.55;}
   .dmark.dev .dot{background:transparent;border:1.6px solid var(--amber);box-sizing:border-box;}
   .dmark.today .dot{background:transparent;border:1.6px solid var(--beacon);box-sizing:border-box;}
   .barochip{flex:none;min-width:58px;text-align:center;background:var(--ink);border:1px solid var(--line);border-radius:11px;padding:4px 8px;font-size:10px;color:var(--mist);white-space:nowrap;}
   .dicon{flex:none;display:flex;align-items:center;justify-content:center;padding:5px;cursor:pointer;margin:-2px -2px -2px 0;}
   /* DEV NOTES — temporary scaffolding, safe to remove */
   .devnotes-headrow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 0 18px;}
+  .logheadrow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 0 18px;}
+  .diarybook-link{flex:none;display:flex;align-items:center;justify-content:center;width:44px;height:44px;color:var(--beacon);cursor:pointer;}
+  .diarybook{position:relative;margin-top:4px;padding-bottom:8px;}
+  .diarybook::before,.diarybook::after{content:"";position:absolute;left:10px;right:10px;bottom:0;border-radius:0 0 13px 13px;background:var(--slate);border:1px solid var(--line);border-top:0;}
+  .diarybook::before{height:10px;bottom:-2px;z-index:0;}
+  .diarybook::after{height:6px;left:16px;right:16px;bottom:-6px;opacity:.6;z-index:-1;}
+  .diarypage{position:relative;z-index:1;background:var(--ink);border:1px solid var(--line);border-radius:14px;padding:26px 20px 22px;text-align:center;}
+  .diarypage-eb{text-align:center;}
+  .diarypage-eb.teal{color:var(--beacon);}
+  .diarypage-eb.amber{color:var(--amber);}
+  .diarypage-date{font-size:19px;font-weight:700;color:var(--mist);margin:4px 0 14px;}
+  .diarypage-land{display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;color:var(--amber);margin:0 0 14px;font-weight:600;}
+  .diarypage-baro{margin:0 0 18px;}
+  .diarypage-baro.muted{font-size:13px;color:var(--faint);}
+  .baro-level{display:flex;gap:4px;justify-content:center;margin-bottom:6px;}
+  .baro-level .seg{width:22px;height:6px;border-radius:3px;background:var(--line);}
+  .baro-level .seg.on{background:var(--beacon);}
+  .baro-lvl-label{font-size:12px;color:var(--faint);}
+  .diarypage-entry{text-align:left;max-width:340px;margin:0 auto 18px;font-size:14px;line-height:1.6;color:var(--mist);white-space:pre-wrap;}
+  .diarypage-entry.muted{color:var(--faint);text-align:center;white-space:normal;}
   .devnotes-link{flex:none;display:flex;align-items:center;justify-content:center;width:44px;height:44px;color:var(--beacon);cursor:pointer;}
   .devnotes-textarea{min-height:190px;margin-bottom:14px;}
   .devnotes-viewlink{text-align:center;font-size:12px;color:var(--beacon);letter-spacing:.02em;cursor:pointer;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);}
@@ -221,6 +245,26 @@
   .awdetail-ring.amber{color:var(--amber);}
   .awdetail-togo{font-size:13px;color:var(--faint);margin-top:2px;}
   .awdetail+.btn{margin-top:18px;}
+  .completion-rule{height:3px;background:var(--amber);margin:-22px -20px 20px;}
+  .completion{text-align:center;}
+  .completion-eyebrow{color:var(--amber);}
+  .completion-motif{width:88px;height:88px;margin:6px auto 14px;color:var(--amber);}
+  .completion-motif svg{width:100%;height:100%;display:block;}
+  .completion-h2{margin:0 0 2px;}
+  .completion-era{font-size:13px;color:var(--faint);margin:0 0 8px;}
+  .completion-days{font-size:13px;color:var(--mist);font-weight:600;margin:0 0 16px;}
+  .completion-line{text-align:center;}
+  .plog{text-align:center;}
+  .plog-h{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:24px 0 10px;text-align:center;}
+  .plog-passage{max-width:420px;margin:0 auto;text-align:left;}
+  .plog-passage p{margin:0 0 14px;}
+  .plog-stat{display:flex;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line);font-size:13px;text-align:left;}
+  .plog-stat:last-child{border-bottom:0;}
+  .plog-stat .k{color:var(--faint);}
+  .plog-stat .v{color:var(--mist);font-weight:600;text-align:right;}
+  .plog-port,.plog-award{display:flex;justify-content:space-between;gap:10px;padding:7px 2px;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--mist);text-align:left;}
+  .plog-port:last-child,.plog-award:last-child{border-bottom:0;}
+  .plog-port-date,.plog-award .k{color:var(--faint);font-size:12.5px;text-align:right;}
   .helmhead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:16px;}
   .helmhead h1{margin:0;}
   .clocks{display:flex;flex-direction:column;align-items:flex-end;gap:4px;padding-bottom:3px;}
@@ -293,7 +337,7 @@
     </div>
     <div class="hero">
       <div class="bignum" id="dayNum">0</div>
-      <div class="biglabel">days made good</div>
+      <div class="biglabel" id="dayLabel">days made good</div>
     </div>
     <div class="card goal">
       <div class="gv" id="goalVoyage">&mdash;</div>
@@ -316,6 +360,7 @@
       <div class="weatherlink" id="deviateBtn">Log today as weather</div>
     </div>
     <div class="card" style="margin-top:18px"><div id="baroCard"></div></div>
+    <div class="unconfirmedNote" id="unconfirmedNote" style="display:none"></div>
   </section>
 
   <section id="s-trends" class="screen">
@@ -351,7 +396,7 @@
 
   <section id="s-log" class="screen">
     <div class="eyebrow">Onward</div>
-    <h1>Log</h1>
+    <div class="logheadrow"><h1 style="margin:0">Log</h1><div class="diarybook-link" id="diaryBookBtn" aria-label="Captain's Diary"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><rect x="4" y="3.5" width="16" height="17" rx="1.4" fill="none" stroke="currentColor" stroke-width="1.6"/><line x1="4" y1="8" x2="20" y2="8" stroke="currentColor" stroke-width="1.1" opacity=".55"/><line x1="7" y1="12" x2="17" y2="12" stroke="currentColor" stroke-width="1.1" opacity=".4"/><line x1="7" y1="15.5" x2="15" y2="15.5" stroke="currentColor" stroke-width="1.1" opacity=".4"/><path d="M14.5 3.5 L14.5 11 L16.5 9.2 L18.5 11 L18.5 3.5 Z" fill="currentColor" stroke="none"/></svg></div></div>
     <div class="ribbon">
       <div class="pill"><div class="k">This leg</div><div class="v mono" id="lCur">0</div></div>
       <div class="pill"><div class="k">Longest</div><div class="v mono" id="lBest">0</div></div>
@@ -380,7 +425,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.4.6</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.5.0</span></p>
   </section>
 
   <nav class="tabs">
@@ -906,6 +951,13 @@
     const todayInfo=state.startISO<=t?dayInfo(t):null;
 
     $("#dayNum").textContent=A.made;
+    const uCutoff=addDays(t,-14);
+    const unconf=A.series.filter(d=>d.status==='clear'&&d.iso<t&&d.iso>=uCutoff&&state.completed.indexOf(d.iso)<0);
+    $("#dayNum").classList.toggle("provisional",unconf.length>0);
+    $("#dayLabel").textContent="days made good"+(unconf.length>0?"*":"");
+    const ucNote=$("#unconfirmedNote");
+    if(unconf.length>0){ucNote.style.display="";ucNote.textContent="* "+unconf.length+" day"+(unconf.length===1?"":"s")+" unconfirmed — review in the Log";ucNote.onclick=()=>goTab("log");}
+    else{ucNote.style.display="none";ucNote.onclick=null;}
     const nIdx=nextPortIdx(A.made);
     const gV=$("#goalVoyage"),gK=$("#goalKick"),gTo=$("#goalToRun"),gP=$("#goalPort"),gCr=$("#goalCrumb"),gVS=$("#goalVoyStrip"),gVL=$("#goalVoyLab"),gLB=$("#goalLegBar"),gLL=$("#goalLegLab"),gLU=$("#goalLegUnit");
     const vt=V.openSea?"Open water":passageById(V.id).title;
@@ -965,14 +1017,14 @@
       if(d.status==='deviation'){mark='<span class="dmark dev"><span class="dot"></span></span>';const bl=basketLabel(d.dev),parts=bl?bl.split(' \u00b7 '):[];const cap=parts.length>2?parts[0]+' \u00b7 +'+(parts.length-1)+' more':bl;sub=cap+" \u00b7 salvaged "+fmtMoney(d.avoided.money);}
       else if(d.status==='pending'||d.status==='future'){mark='<span class="dmark today"><span class="dot"></span></span>';sub="under way";}
       else if(land){mark='<span class="dmark">'+FLAG+'</span>';sub="\u2691 Reached "+esc(land);}
-      else{mark='<span class="dmark made"><span class="dot"></span></span>';}
+      else{const unconfirmed=(d.iso<t&&state.completed.indexOf(d.iso)<0);mark='<span class="dmark made'+(unconfirmed?' unconfirmed':'')+'"><span class="dot"></span></span>';if(unconfirmed)sub="not confirmed";}
       const de=(state.diary&&state.diary[d.iso]);
       let chip='';if(de&&de.baro){const lab=BARO[Math.max(0,Math.min(4,Math.round(de.baro)-1))];chip='<span class="barochip">'+lab+'</span>';}
       const icon=(de&&de.note)?'<span class="dicon" data-iso="'+d.iso+'">'+BOOK+'</span>':'';
       return '<div class="day" data-iso="'+d.iso+'">'+mark+'<div class="date">'+fmtDate(d.iso)+(sub?'<small>'+sub+'</small>':'')+'</div>'+icon+chip+'</div>';
     }).join(""):'<div class="muted" style="padding:10px 0">No days yet.</div>';
     document.querySelectorAll('.day').forEach(el=>el.onclick=()=>editDay(el.dataset.iso));
-    document.querySelectorAll('.dicon').forEach(el=>el.onclick=(e)=>{e.stopPropagation();openDiary(el.dataset.iso);});
+    document.querySelectorAll('.dicon').forEach(el=>el.onclick=(e)=>{e.stopPropagation();openDiaryBook(el.dataset.iso);});
     renderTrends();
   }
   function voyageBreakdown(){
@@ -1249,11 +1301,11 @@
     let h='<div class="eyebrow">'+(one?'A new honour':'New honours')+'</div>';
     if(one){h+='<h2>'+items[0].label+'</h2><p>'+awardFlavour(items[0])+'</p>';}
     else{h+='<h2>Well earned</h2><p>You\u2019ve come into '+items.length+' new honours:</p><div class="awwrap" style="margin:10px 0">'+items.map(i=>'<span class="award on"><b>'+i.label+'</b><small>'+i.cat+'</small></span>').join('')+'</div>';}
-    const iso=todayISO();h+=diaryFieldsHTML(iso);const _note=isNoteDay(iso);if(_note)h+=notePromptHTML(iso);
-    h+='<button class="btn primary" id="mClose">Log it with pride</button>'+(_note?'<button class="btn quiet" id="mLog">Add a line to the diary</button>':'');
+    const iso=todayISO();h+=diaryFieldsHTML(iso);if(isNoteDay(iso))h+=notePromptHTML(iso);
+    h+='<button class="btn primary" id="mClose">Log it with pride</button><button class="btn quiet" id="mLog">Add a line to the diary</button>';
     modal(h);wireBaro();
     $("#mClose").onclick=()=>{collectDiary(iso);save();closeModal();render();};
-    const _ml=$("#mLog");if(_ml)_ml.onclick=()=>{collectDiary(iso);save();closeModal();openDiary(iso,true);};
+    $("#mLog").onclick=()=>{collectDiary(iso);save();closeModal();openDiary(iso,true);};
   }
   function journeyDays(){
     const sr=series();
@@ -1463,14 +1515,14 @@
       +'<div class="field"><label>When the weather set in (optional)</label><input id="e_time" type="time" value="'+_wtime+'"></div>'
       +'<div id="e_rows">'+stepperRows(values)+'</div><div class="summary" id="e_calc"></div></div>'
       +diaryFieldsHTML(iso)
-      +'<div id="noteBlock" style="margin-top:8px'+((mode==='weather'||isLand)?'':';display:none')+'"><div class="dreason" id="noteReason" style="margin-top:4px"></div><button class="btn ghost" id="e_diary">Add a line to the diary</button></div>'
+      +'<div id="noteBlock" style="margin-top:8px"><div class="dreason" id="noteReason" style="margin-top:4px;display:none"></div><button class="btn ghost" id="e_diary">Add a line to the diary</button></div>'
       +'<button class="btn primary" id="e_save" style="margin-top:16px">Save</button>'
       +'<button class="btn quiet" id="e_cancel">Cancel</button>');
     function calc(){const c=basketTotals(values),r=rates();const total=Object.keys(values).reduce((a,k)=>a+(values[k]||0),0);if(total===0){$("#e_calc").innerHTML="No hazards yet \u2014 leave it and it\u2019s a clear day.";}else{$("#e_calc").innerHTML="This day <b>"+fmtU(c.units)+" drift</b> \u00b7 "+fmtMoney(c.money)+" \u00b7 "+Math.round(c.kcal)+" ballast<br><span style='color:var(--faint)'>still salvaged "+fmtMoney(Math.max(0,r.money-c.money))+" against your usual</span>";}}
-    function setMode(m){mode=m;document.querySelectorAll('#dayToggle button').forEach(function(b){b.classList.toggle('on',b.dataset.m===m);});$("#wxBlock").style.display=(m==='weather')?'':'none';const sn=(m==='weather'||isLand);$("#noteBlock").style.display=sn?'':'none';$("#noteReason").textContent=(m==='weather')?wReason:(isLand?lReason:'');}
+    function setMode(m){mode=m;document.querySelectorAll('#dayToggle button').forEach(function(b){b.classList.toggle('on',b.dataset.m===m);});$("#wxBlock").style.display=(m==='weather')?'':'none';const reasonText=(m==='weather')?wReason:(isLand?lReason:'');const rEl=$("#noteReason");rEl.style.display=reasonText?'':'none';rEl.textContent=reasonText;}
     document.querySelectorAll('#dayToggle button').forEach(function(b){b.onclick=function(){setMode(b.dataset.m);};});
     bindSteppers(values,calc);calc();wireBaro();setMode(mode);
-    function commit(){collectDiary(iso);if(mode==='weather'){const basket={};let total=0;Object.keys(values).forEach(function(k){if(values[k]>0){basket[k]=values[k];total+=values[k];}});if(total>0){state.deviations[iso]=basket;const ci=state.completed.indexOf(iso);if(ci>=0)state.completed.splice(ci,1);if(!state.weatherAt)state.weatherAt={};const _et=($("#e_time")&&$("#e_time").value)||"20:00";state.weatherAt[iso]=new Date(iso+"T"+_et).getTime();}else{delete state.deviations[iso];if(state.weatherAt)delete state.weatherAt[iso];if(iso===todayISO()&&state.completed.indexOf(iso)<0)state.completed.push(iso);}}else{delete state.deviations[iso];if(state.weatherAt)delete state.weatherAt[iso];if(iso===todayISO()&&state.completed.indexOf(iso)<0)state.completed.push(iso);}return save();}
+    function commit(){collectDiary(iso);if(mode==='weather'){const basket={};let total=0;Object.keys(values).forEach(function(k){if(values[k]>0){basket[k]=values[k];total+=values[k];}});if(total>0){state.deviations[iso]=basket;const ci=state.completed.indexOf(iso);if(ci>=0)state.completed.splice(ci,1);if(!state.weatherAt)state.weatherAt={};const _et=($("#e_time")&&$("#e_time").value)||"20:00";state.weatherAt[iso]=new Date(iso+"T"+_et).getTime();}else{delete state.deviations[iso];if(state.weatherAt)delete state.weatherAt[iso];if(state.completed.indexOf(iso)<0)state.completed.push(iso);}}else{delete state.deviations[iso];if(state.weatherAt)delete state.weatherAt[iso];if(state.completed.indexOf(iso)<0)state.completed.push(iso);}return save();}
     const _ed=$("#e_diary");if(_ed)_ed.onclick=function(){commit();closeSheet();render();openDiary(iso,true);};
     $("#e_save").onclick=function(){const hasWx=(mode==='weather'&&Object.keys(values).some(function(k){return values[k]>0;}));const newWeatherToday=(iso===todayISO()&&hasWx&&!startWeather);const _ok=commit();closeSheet();render();if(opts.onDone){opts.onDone();}else if(newWeatherToday){weatherReassurance();}else if(_ok){toast(hasWx?'Logged':'Set clear');}};
     $("#e_cancel").onclick=function(){closeSheet();if(opts.onDone)opts.onDone();};
@@ -1620,21 +1672,66 @@
   function backupOverdueHTML(){if(!backupOverdue())return '';const _d=daysSinceBackup(),_strong=(_d>=21);return '<p class="'+(_strong?'':'muted')+'"'+(_strong?' style="color:var(--amber)"':'')+'>'+(_d>=9999?'You haven’t saved your papers yet — one tap in the Locker keeps your whole passage safe if anything happens to this device.':(_strong?'It’s been over three weeks since you saved your papers — please save a copy in the Locker. It’s the only thing that protects your passage.':'It’s been a while since you saved your papers. A quick save in the Locker keeps your whole passage safe.'))+'</p>';}
   function progressLine(A,V){if(V.openSea)return "<b>"+A.made+"</b> clear days made good \u2014 out beyond the full circuit now, in open water.";const vt=passageById(V.id).title;return "<b>"+A.made+"</b> clear day"+(A.made===1?"":"s")+" made good \u2014 "+vt+", day "+V.madeIn+" of "+V.length+".";}
   function nextStepLine(A,V){const nIdx=nextPortIdx(A.made);if(V.openSea)return nIdx>=0?("Open water ahead \u2014 the next marker lies "+(PORTS[nIdx].d-A.made)+" days on."):"Open water ahead, and the next day, and the next.";if(nIdx<0)return "You\u2019re within sight of landfall \u2014 one more clear run brings it home.";const p=PORTS[nIdx],to=p.d-A.made;return "Next port, <b>"+p.name+"</b>, lies "+to+" day"+(to===1?"":"s")+" ahead.";}
+
+  // ---- greeting copy pools: headline/opener/closer/button pooled+randomised separately, tiered by days made good ----
+  function pick(arr){return arr[Math.floor(Math.random()*arr.length)];}
+  function pickTier(pool,made){const elig=pool.filter(function(p){return p.tag==='any'||(p.tag==='early'&&made<14)||(p.tag==='long'&&made>=180);});return pick(elig).text;}
+
+  const GR_DAY_HEAD=[{text:'Still sailing',tag:'any'},{text:'Morning watch.',tag:'any'},{text:'The day\u2019s ahead of you.',tag:'any'},{text:'Fresh canvas.',tag:'any'},{text:'Under way.',tag:'early'},{text:'Still on course.',tag:'any'},{text:'Long may it run.',tag:'long'}];
+  const GR_DAY_OPEN=['','Here\u2019s where you stand: ','The reckoning so far: ','Position at first light: ','What\u2019s behind you: ','Steady as she\u2019s been going \u2014 '];
+  const GR_DAY_CLOSE_PENDING=[' Close today\u2019s run to gain on it.',' Keep her steady and the distance comes.',' One more clear day and you\u2019re nearer than you were.'];
+  const GR_DAY_CLOSE_CLEAR=[' Today\u2019s run is already logged \u2014 well sailed.',' Nothing dramatic required \u2014 just the next day, sailed.',' The chart doesn\u2019t fill itself. Neither does it need hurrying.'];
+  const GR_DAY_BTN=['Take the helm','Make way','Steady on','Onward'];
+
+  const GR_DAYWX_HEAD=['Fair winds return','Weather astern.','A clear horizon.','The glass is rising.','Back on the water.'];
+  const GR_DAYWX_OPEN=['The weather closed in on your last run \u2014 and that\u2019s the sea, not a failure of yours. What you\u2019ve banked still stands: ','Weather came through. It does. Nothing you\u2019ve earned went with it: ','The last run met weather \u2014 and the ledger is unchanged: ','Rough water behind you. What\u2019s banked is banked: ','It blew in, and it blew out. You\u2019re still here, and so is this: '];
+  const GR_DAYWX_CLOSE=['The leg starts fresh from here. ','Fresh leg from here. The voyage lost no ground. ','The slate\u2019s clear and the course unchanged. ','Nothing to make up. Just the next day, sailed clean. ','Start again from here \u2014 that\u2019s all a fresh leg ever is. '];
+  const GR_DAYWX_BTN=['Take the helm','Back to it','Make way'];
+
+  const GR_WATCH_HEAD=['Hold your course','The hard hours.','Steady through the evening.','This is the stretch.','Hands on the helm.'];
+  const GR_WATCH_OPEN=['The evening watch is often the hardest stretch \u2014 the wind gets up just as the light goes. But you\u2019ve stood it before: ','Most passages are lost in the evening, not the morning. You know that, and you\u2019re still here: ','The wind always freshens at dusk. It always drops again: ','This is the watch that asks the most of you. Look what you\u2019ve already answered: ','The light goes and the sea gets loud. It\u2019s been loud before: '];
+  const GR_WATCH_CLOSE=[' Hold your course through tonight, and the day is yours to log.',' Get through these few hours and the day is yours.',' You don\u2019t have to sail the whole passage tonight. Just this watch.',' Hold on until the wind drops. It does drop.',' A few hours. That\u2019s the whole ask.'];
+  const GR_WATCH_BTN=['Steady on','Hold the helm','Stand the watch'];
+
+  const GR_WATCHWX_HEAD=['Take the helm again','The turning evening.','This is the one.','Back to the wheel.'];
+  const GR_WATCHWX_OPEN=['After weather, it\u2019s the next clear evening that turns the voyage back \u2014 and this is it. ','The evening after weather is the one that decides the next leg. It\u2019s this one. ','One clear evening is how every recovery starts. Here it is: ','The voyage turns back tonight, if you want it to: '];
+  const GR_WATCHWX_CLOSE=['You don\u2019t have to sail the whole passage tonight \u2014 just hold the helm through these few hours. ','Not the whole voyage. Just tonight. ','Hold on through these hours and the leg begins again at dawn. ','One evening. That\u2019s the whole of it. '];
+
+  const GR_DUSK_HEAD=['Rest easy.','Well sailed.','Log\u2019s closed.','Day\u2019s run is done.','Anchor down.'];
+  const GR_DUSK_OPEN=['Today\u2019s run is already logged \u2014 well sailed. ','Logged and done. Nothing left to ask of you today. ','The day\u2019s in the book. ','Closed out, and closed out clean. '];
+  const GR_DUSK_CLOSE=['Nothing more to do tonight. A fresh horizon comes at dawn.','Nothing more tonight. The horizon keeps.','Sleep on it. Tomorrow\u2019s a new leg.','The watch is over. Rest.'];
+  const GR_DUSK_BTN=['Goodnight','Rest easy','Turn in'];
+
+  const GR_DUSKWX_HEAD=['Weather astern.','Logged, and done.','It happens.','A hard day, closed.'];
+  const GR_DUSKWX_OPEN=['Today was logged as a weather day \u2014 done, and no shame in it. What you\u2019ve banked stands: ','Logged as weather. That\u2019s all it is \u2014 a day, not a verdict. The ledger holds: ','It\u2019s in the book, and nothing you\u2019d earned has gone: ','Weather came through. The voyage is where you left it: '];
+  const GR_DUSKWX_CLOSE=['Rest now; the next clear day starts a fresh leg at dawn.','Rest. The next clear day begins a fresh leg.','Nothing to fix tonight. Just sleep, and start again.','Tomorrow the glass rises. It usually does.'];
+  const GR_DUSKWX_BTN=['Goodnight','Rest now','Turn in'];
+
+  const GR_DUSKOPEN_HEAD=['Close the day\u2019s run','The day\u2019s still open.','One thing left.','Log it before you turn in.'];
+  const GR_DUSKOPEN_TAIL=[' Close today out and make it count.',' Close it out and it\u2019s yours.',' One tap and the day\u2019s in the book.',' Worth closing properly before you sleep.'];
+  const GR_DUSKOPEN_QUIETBTN=['Not just yet','Later','In a while'];
+
+  const GR_WXR_HEAD=['It happens to every sailor.','Weather is not failure.','Part of the passage.','Every voyage has these.','The sea does this.'];
+  const GR_WXR_OPEN=['A weather day is part of the passage, not a failure of it. What you\u2019ve banked stays banked \u2014 ','No voyage on this chart ran clean the whole way. Nothing you\u2019ve earned is gone \u2014 ','This is a day, not a verdict. The ledger is untouched \u2014 ','Weather comes. It came for Shackleton too. What\u2019s banked stays banked \u2014 '];
+  const GR_WXR_CLOSE=['This leg resets, and your next clear day starts a fresh one. No ground lost on the voyage; just weather astern. Fair winds will come again.','The leg resets; the voyage doesn\u2019t. No ground lost \u2014 just weather astern.','Your next clear day opens a fresh leg. That\u2019s the whole mechanism, and it\u2019s on your side.','Nothing to make up, nothing to repay. Just the next clear day, whenever it comes.'];
+
   function dailyGreeting(){
     const A=aggregate();PORTS=currentPorts(A.made);const V=voyageContext(A.made),ti=dayInfo(todayISO());
     const recentWeather=(A.leg===0&&A.made>0);
     let h='<div class="eyebrow">'+greetingTitle(A.made)+'</div>';
     if(recentWeather){
-      h+='<h2>Fair winds return</h2>';
-      h+='<p>The weather closed in on your last run \u2014 and that\u2019s the sea, not a failure of yours. What you\u2019ve banked still stands: '+progressLine(A,V)+'</p>';
-      h+='<p>The leg starts fresh from here. '+nextStepLine(A,V)+(ti.status==='pending'?' Close today\u2019s run when you\u2019re ready, and you\u2019re making way again.':'')+'</p>';
+      h+='<h2>'+pick(GR_DAYWX_HEAD)+'</h2>';
+      h+='<p>'+pick(GR_DAYWX_OPEN)+progressLine(A,V)+'</p>';
+      h+='<p>'+pick(GR_DAYWX_CLOSE)+nextStepLine(A,V)+(ti.status==='pending'?' Close today\u2019s run when you\u2019re ready, and you\u2019re making way again.':'')+'</p>';
+      h+=backupOverdueHTML();
+      h+='<button class="btn primary" id="mClose">'+pick(GR_DAYWX_BTN)+'</button>';
     } else {
-      h+='<h2>'+(A.made===0?'Ready to cast off':'Still sailing')+'</h2>';
-      h+='<p>'+progressLine(A,V)+(A.banked.money>0?' '+fmtMoney(A.banked.money)+' in salvage banked along the way.':'')+'</p>';
-      h+='<p>'+nextStepLine(A,V)+(ti.status==='pending'?' Close today\u2019s run to gain on it.':(ti.status==='clear'?' Today\u2019s run is already logged \u2014 well sailed.':''))+'</p>';
+      h+='<h2>'+(A.made===0?'Ready to cast off':pickTier(GR_DAY_HEAD,A.made))+'</h2>';
+      h+='<p>'+pick(GR_DAY_OPEN)+progressLine(A,V)+(A.banked.money>0?' '+fmtMoney(A.banked.money)+' in salvage banked along the way.':'')+'</p>';
+      h+='<p>'+nextStepLine(A,V)+(ti.status==='pending'?pick(GR_DAY_CLOSE_PENDING):(ti.status==='clear'?pick(GR_DAY_CLOSE_CLEAR):''))+'</p>';
+      h+=backupOverdueHTML();
+      h+='<button class="btn primary" id="mClose">'+pick(GR_DAY_BTN)+'</button>';
     }
-    h+=backupOverdueHTML();
-    h+='<button class="btn primary" id="mClose">Take the helm</button>';
     modal(h);$("#mClose").onclick=closeModal;
   }
   function watchGreeting(){
@@ -1642,30 +1739,32 @@
     const recentWeather=(A.leg===0&&A.made>0);
     let h='<div class="eyebrow">The evening watch</div>';
     if(recentWeather){
-      h+='<h2>Take the helm again</h2>';
-      h+='<p>After weather, it\u2019s the next clear evening that turns the voyage back \u2014 and this is it. '+progressLine(A,V)+'</p>';
-      h+='<p>You don\u2019t have to sail the whole passage tonight \u2014 just hold the helm through these few hours. '+nextStepLine(A,V)+'</p>';
+      h+='<h2>'+pick(GR_WATCHWX_HEAD)+'</h2>';
+      h+='<p>'+pick(GR_WATCHWX_OPEN)+progressLine(A,V)+'</p>';
+      h+='<p>'+pick(GR_WATCHWX_CLOSE)+nextStepLine(A,V)+'</p>';
+      h+=backupOverdueHTML();
+      h+='<button class="btn primary" id="mClose">Steady on</button>';
     } else {
-      h+='<h2>Hold your course</h2>';
-      h+='<p>The evening watch is often the hardest stretch \u2014 the wind gets up just as the light goes. But you\u2019ve stood it before: '+progressLine(A,V)+'</p>';
-      h+='<p>'+nextStepLine(A,V)+' Hold your course through tonight, and the day is yours to log.</p>';
+      h+='<h2>'+pick(GR_WATCH_HEAD)+'</h2>';
+      h+='<p>'+pick(GR_WATCH_OPEN)+progressLine(A,V)+'</p>';
+      h+='<p>'+nextStepLine(A,V)+pick(GR_WATCH_CLOSE)+'</p>';
+      h+=backupOverdueHTML();
+      h+='<button class="btn primary" id="mClose">'+pick(GR_WATCH_BTN)+'</button>';
     }
-    h+=backupOverdueHTML();
-    h+='<button class="btn primary" id="mClose">Steady on</button>';
     modal(h);$("#mClose").onclick=closeModal;
   }
   function duskGreeting(){
     const A=aggregate();PORTS=currentPorts(A.made);const V=voyageContext(A.made),ti=dayInfo(todayISO());
     let h='<div class="eyebrow">Close of day</div>';
     if(ti.status==='clear'){
-      h+='<h2>Rest easy.</h2><p>Today\u2019s run is already logged \u2014 well sailed. '+progressLine(A,V)+'</p><p>Nothing more to do tonight. A fresh horizon comes at dawn.</p>'+backupOverdueHTML()+'<button class="btn primary" id="mClose">Goodnight</button>';
+      h+='<h2>'+pick(GR_DUSK_HEAD)+'</h2><p>'+pick(GR_DUSK_OPEN)+progressLine(A,V)+'</p><p>'+pick(GR_DUSK_CLOSE)+'</p>'+backupOverdueHTML()+'<button class="btn primary" id="mClose">'+pick(GR_DUSK_BTN)+'</button>';
       modal(h);$("#mClose").onclick=closeModal;
     } else if(ti.status==='deviation'){
-      h+='<h2>Weather astern.</h2><p>Today was logged as a weather day \u2014 done, and no shame in it. What you\u2019ve banked stands: '+progressLine(A,V)+'</p><p>Rest now; the next clear day starts a fresh leg at dawn.</p>'+backupOverdueHTML()+'<button class="btn primary" id="mClose">Goodnight</button>';
+      h+='<h2>'+pick(GR_DUSKWX_HEAD)+'</h2><p>'+pick(GR_DUSKWX_OPEN)+progressLine(A,V)+'</p><p>'+pick(GR_DUSKWX_CLOSE)+'</p>'+backupOverdueHTML()+'<button class="btn primary" id="mClose">'+pick(GR_DUSKWX_BTN)+'</button>';
       modal(h);$("#mClose").onclick=closeModal;
     } else {
-      h+='<h2>Close the day\u2019s run</h2><p>'+progressLine(A,V)+' Close today out and make it count.</p><p class="muted">'+nextStepLine(A,V)+'</p>'+backupOverdueHTML();
-      h+='<button class="btn primary" id="mCloseDay">Close the day\u2019s run</button><button class="btn quiet" id="mClose">Not just yet</button>';
+      h+='<h2>'+pick(GR_DUSKOPEN_HEAD)+'</h2><p>'+progressLine(A,V)+pick(GR_DUSKOPEN_TAIL)+'</p><p class="muted">'+nextStepLine(A,V)+'</p>'+backupOverdueHTML();
+      h+='<button class="btn primary" id="mCloseDay">Close the day\u2019s run</button><button class="btn quiet" id="mClose">'+pick(GR_DUSKOPEN_QUIETBTN)+'</button>';
       modal(h);
       $("#mCloseDay").onclick=function(){completeToday();};
       $("#mClose").onclick=closeModal;
@@ -1677,8 +1776,9 @@
     const today=todayISO(),la=state.lastActive||today;
     if(parseISO(state.startISO).getTime()>parseISO(today).getTime()){state.lastActive=today;save();return false;}
     const gap=daysBetween(la,today);
-    if(gap<=1){state.lastActive=today;save();return false;}
-    const days=[];for(let i=1;i<gap;i++){const iso=addDays(la,i);if(iso>=state.startISO&&iso<today)days.push(iso);}
+    const days=[];
+    if(gap>1){for(let i=1;i<gap;i++){const iso=addDays(la,i);if(iso>=state.startISO&&iso<today)days.push(iso);}}
+    else if(gap===1&&la>=state.startISO&&la<today&&!state.deviations[la]&&state.completed.indexOf(la)<0){days.push(la);}
     if(!days.length){state.lastActive=today;save();return false;}
     showCatchUp(days);return true;
   }
@@ -1694,7 +1794,7 @@
     h+='</div><button class="btn primary" id="cuDone">Confirmed \u2014 sail on</button>';
     modal(h);
     document.querySelectorAll('.catchlist .cu').forEach(function(el){el.onclick=function(){closeModal();editDay(el.dataset.iso,{onDone:function(){showCatchUp(days);}});};});
-    $("#cuDone").onclick=function(){state.lastActive=todayISO();save();closeModal();render();};
+    $("#cuDone").onclick=function(){days.forEach(function(iso){if(!state.deviations[iso]&&state.completed.indexOf(iso)<0)state.completed.push(iso);});state.lastActive=todayISO();save();closeModal();render();};
   }
   function updateNudge(worker){
     if(document.getElementById('upNudge'))return;
@@ -1736,7 +1836,7 @@
   }
   function wireBaro(){const sl=$("#baroSlide"),rd=$("#baroRead");if(!sl||!rd)return;function label(){const v=parseFloat(sl.value);rd.textContent=BARO[Math.max(0,Math.min(4,Math.round(v)-1))];}function engage(){if(sl.dataset.unset==='1'){sl.dataset.unset='';sl.classList.remove('notset');rd.classList.remove('unset');const h=$("#baroHint");if(h)h.style.visibility='hidden';label();}}sl.addEventListener('input',function(){engage();label();});sl.addEventListener('pointerdown',engage);if(sl.dataset.unset!=='1')label();}
   function collectDiary(iso){const cur=(state.diary&&state.diary[iso])||{};const sl=$("#baroSlide");const baro=sl?(sl.dataset.unset==='1'?0:Math.round(parseFloat(sl.value)*10)/10):(cur.baro||0);const nEl=$("#d_note"),note=nEl?nEl.value.trim():(cur.note||'');if(!baro&&!note){if(state.diary)delete state.diary[iso];return;}if(!state.diary)state.diary={};const entry={at:Date.now()};if(baro)entry.baro=baro;if(note)entry.note=note;state.diary[iso]=entry;}
-  function cleanCongrats(A){const o=['Another day made good.','Well sailed.','A clear day in the book.'];if(A.leg>=2)o.push('That\u2019s '+A.leg+' days on the trot.');if(A.leg>=7)o.push(A.leg+' clear days running \u2014 real momentum now.');if(A.banked&&A.banked.money>0)o.push('The chest is a little heavier tonight.');if(A.best>1&&A.leg>=A.best)o.push('Your longest clear run yet \u2014 '+A.leg+' days.');return o[Math.floor(Math.random()*o.length)];}
+  function cleanCongrats(A){const o=['Another day made good.','Well sailed.','A clear day in the book.','Another one in the book.','Made good.','That\u2019s the day, sailed clean.','A quiet day, well kept.','Nothing dramatic. Just done.','Steady work.','The chart moves.'];if(A.made>=180)o.push('Still going. Still yours.');if(A.leg>=2)o.push('That\u2019s '+A.leg+' days on the trot.');if(A.leg>=7)o.push(A.leg+' clear days running \u2014 real momentum now.');if(A.banked&&A.banked.money>0)o.push('The chest is a little heavier tonight.');if(A.best>1&&A.leg>=A.best)o.push('Your longest clear run yet \u2014 '+A.leg+' days.');return o[Math.floor(Math.random()*o.length)];}
   function notePromptHTML(iso){
     const weather=!!(state.deviations&&state.deviations[iso]),_port=landfallISOs()[iso];
     const reason=weather?'Weather blew in today \u2014 worth a line on what happened, and the plan.':(_port?('You reached '+esc(_port)+' \u2014 a landfall worth marking.'):'A moment worth marking.');
@@ -1755,6 +1855,82 @@
     $("#dSave").onclick=()=>{collectDiary(iso);save();closeModal();render();};
     $("#dCancel").onclick=closeModal;
   }
+
+  // ---- Captain's Diary: the book (reading view) — one page per day with something on it ----
+  let DIARY_PAGES=[],DIARY_IDX=0;
+  function diaryPages(){
+    return journeyDays().filter(function(d){
+      const de=state.diary&&state.diary[d.iso];
+      return d.weather||d.port||!!(de&&(de.note||de.baro));
+    });
+  }
+  function diaryPageHTML(d){
+    const de=(state.diary&&state.diary[d.iso])||{};
+    const isLand=!!d.port,isWeather=!!d.weather;
+    const eb=isLand?'Clear day · landfall':(isWeather?'Weather day':'Clear day');
+    const ebClass=(isLand||isWeather)?'amber':'teal';
+    let h='<div class="diarypage">';
+    h+='<div class="eyebrow diarypage-eb '+ebClass+'">'+eb+'</div>';
+    h+='<div class="diarypage-date">'+fmtDateLong(d.iso)+'</div>';
+    if(isLand)h+='<div class="diarypage-land"><svg viewBox="0 0 16 20" width="13" height="16"><path d="M3 1 L3 19 M3 1 L13 4 L3 8 Z" fill="#E8B65A" stroke="#E8B65A" stroke-width="1.2" stroke-linejoin="round"/></svg> '+esc(d.port)+'</div>';
+    if(de.baro){
+      const lvl=Math.max(1,Math.min(5,Math.round(de.baro)));
+      let segs='';for(let i=1;i<=5;i++)segs+='<span class="seg'+(i<=lvl?' on':'')+'"></span>';
+      h+='<div class="diarypage-baro"><div class="baro-level">'+segs+'</div><div class="baro-lvl-label">'+BARO[lvl-1]+'</div></div>';
+    }else h+='<div class="diarypage-baro muted">no reading taken</div>';
+    if(de.note)h+='<div class="diarypage-entry">'+esc(de.note).replace(/\n/g,'<br>')+'</div>';
+    else h+='<div class="diarypage-entry muted">No entry written — the day still stands in the log.</div>';
+    h+='<button class="btn ghost" id="dpEdit">Edit this entry</button>';
+    h+='</div>';
+    return h;
+  }
+  function renderDiaryBook(idx){
+    DIARY_IDX=Math.max(0,Math.min(DIARY_PAGES.length-1,idx));
+    const d=DIARY_PAGES[DIARY_IDX];
+    const hasPrev=DIARY_IDX>0,hasNext=DIARY_IDX<DIARY_PAGES.length-1;
+    let h='<div class="eyebrow">Captain’s Diary</div>';
+    h+='<div class="diarybook">'+diaryPageHTML(d)+'</div>';
+    h+='<div class="chapnav">'+(hasPrev?'<div class="chapnav-btn" id="dpPrev">‹</div>':'<div class="chapnav-btn void"></div>')+'<div class="chapnav-pos">'+fmtDate(d.iso)+' · page '+(DIARY_IDX+1)+' of '+DIARY_PAGES.length+'</div>'+(hasNext?'<div class="chapnav-btn" id="dpNext">›</div>':'<div class="chapnav-btn void"></div>')+'</div>';
+    h+='<button class="btn quiet" id="mClose" style="margin-top:14px">Close</button>';
+    modal(h);
+    if(hasPrev)$("#dpPrev").onclick=()=>renderDiaryBook(DIARY_IDX-1);
+    if(hasNext)$("#dpNext").onclick=()=>renderDiaryBook(DIARY_IDX+1);
+    $("#dpEdit").onclick=()=>openDiary(d.iso);
+    $("#mClose").onclick=closeModal;
+  }
+  function openDiaryBook(targetIso){
+    DIARY_PAGES=diaryPages();
+    if(!DIARY_PAGES.length){
+      modal('<div class="eyebrow">Captain’s Diary</div><h2>The book is empty</h2><p class="muted" style="text-align:center">Nothing logged yet. Weather, landfalls, barometer readings and diary notes will appear here as pages, as you sail.</p><button class="btn quiet" id="mClose">Close</button>');
+      $("#mClose").onclick=closeModal;
+      return;
+    }
+    let idx=DIARY_PAGES.length-1;
+    if(targetIso){const f=DIARY_PAGES.findIndex(function(d){return d.iso===targetIso;});if(f>=0)idx=f;}
+    renderDiaryBook(idx);
+  }
+  // Swipe to leaf through the book — same horizontal-flick heuristic as the tab swiper below, scoped to #sheet2
+  // and gated on '.diarypage' being on screen so it never fights the sheet's own vertical scroll or fires for
+  // any other modal. Enhancement only: the ‹ › buttons in renderDiaryBook() work standalone regardless.
+  (function(){
+    let sx=0,sy=0,st=0,track=false;
+    const s2=document.getElementById('sheet2');
+    s2.addEventListener('touchstart',function(e){
+      track=false;
+      if(e.touches.length!==1||!document.querySelector('.diarypage'))return;
+      const t=e.touches[0];sx=t.clientX;sy=t.clientY;st=Date.now();track=true;
+    },{passive:true});
+    s2.addEventListener('touchend',function(e){
+      if(!track)return;track=false;
+      if(!document.querySelector('.diarypage'))return;
+      const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy,dt=Date.now()-st;
+      if(dt>700)return;
+      if(Math.abs(dx)<60||Math.abs(dx)<Math.abs(dy)*1.6)return;
+      if(dx<0){if(DIARY_IDX<DIARY_PAGES.length-1)renderDiaryBook(DIARY_IDX+1);}
+      else{if(DIARY_IDX>0)renderDiaryBook(DIARY_IDX-1);}
+    },{passive:true});
+  })();
+
   function dayClosedSummary(){
     const A=aggregate();PORTS=currentPorts(A.made);const V=voyageContext(A.made),r=rates();
     const iso=todayISO();
@@ -1766,17 +1942,17 @@
     if(reached)h+='<p><b>Landfall at '+reached.name+'.</b> A fresh chapter\u2019s open in the log \u2014 tap the chart to read it.</p>';
     else h+='<p>'+nextStepLine(A,V)+'</p>';
     h+=diaryFieldsHTML(iso);
-    const _note=isNoteDay(iso);if(_note)h+=notePromptHTML(iso);
-    h+='<button class="btn primary" id="mClose">Sail on</button>'+(_note?'<button class="btn quiet" id="mAdd">Add a line to the diary</button>':'');
+    if(isNoteDay(iso))h+=notePromptHTML(iso);
+    h+='<button class="btn primary" id="mClose">Sail on</button><button class="btn quiet" id="mAdd">Add a line to the diary</button>';
     modal(h);wireBaro();
     $("#mClose").onclick=()=>{collectDiary(iso);save();closeModal();render();};
-    const _ma=$("#mAdd");if(_ma)_ma.onclick=()=>{collectDiary(iso);save();closeModal();openDiary(iso,true);};
+    $("#mAdd").onclick=()=>{collectDiary(iso);save();closeModal();openDiary(iso,true);};
   }
   function weatherReassurance(){
     const A=aggregate();PORTS=currentPorts(A.made);const V=voyageContext(A.made);
-    let h='<div class="eyebrow">Weather logged</div><h2>It happens to every sailor.</h2>';
-    h+='<p>A weather day is part of the passage, not a failure of it. What you\u2019ve banked stays banked \u2014 '+progressLine(A,V)+'</p>';
-    h+='<p>This leg resets, and your next clear day starts a fresh one. No ground lost on the voyage; just weather astern. Fair winds will come again.</p>';
+    let h='<div class="eyebrow">Weather logged</div><h2>'+pick(GR_WXR_HEAD)+'</h2>';
+    h+='<p>'+pick(GR_WXR_OPEN)+progressLine(A,V)+'</p>';
+    h+='<p>'+pick(GR_WXR_CLOSE)+'</p>';
     const iso=todayISO();h+=diaryFieldsHTML(iso);
     h+=notePromptHTML(iso);
     h+='<button class="btn primary" id="mClose">Sail on</button><button class="btn quiet" id="mAdd">Add a line to the diary</button>';
@@ -1809,7 +1985,7 @@
   }
   function voyagesShelfHTML(made){
     const b=ladderBounds();
-    const rows=LADDER.map((r,i)=>{const P=passageById(r.id);const done=made>=b.ends[i];const cur=made>=b.starts[i]&&made<b.ends[i];const cls=done?'done':(cur?'cur':'lock');const status=done?'\u2713 complete':(cur?'under way \u00b7 day '+(made-b.starts[i])+' of '+r.len:'locked \u00b7 '+b.starts[i]+' clear days to reach');return '<div class="vrow '+cls+'" data-r="'+i+'"><div><div class="pname">'+P.title+'</div><div class="vsub">'+r.len+'-day voyage \u00b7 '+status+'</div></div><div class="pchev">'+(done||cur?'\u203a':'\ud83d\udd12')+'</div></div>';}).join("");
+    const rows=LADDER.map((r,i)=>{const P=passageById(r.id);const done=made>=b.ends[i];const cur=made>=b.starts[i]&&made<b.ends[i];const cls=done?'done':(cur?'cur':'lock');const status=done?'\u2713 complete':(cur?'under way \u00b7 day '+(made-b.starts[i])+' of '+r.len:'locked \u00b7 '+b.starts[i]+' clear days to reach');return '<div class="vrow '+cls+'" data-r="'+i+'"><div><div class="pname">'+P.title+'</div><div class="vsub">'+r.len+'-day voyage \u00b7 '+status+'</div>'+(done?'<div class="vrow-plog" data-r="'+i+'">passage log \u203a</div>':'')+'</div><div class="pchev">'+(done||cur?'\u203a':'\ud83d\udd12')+'</div></div>';}).join("");
     return '<div class="lh">The voyages</div><div class="vshelf">'+rows+'</div>';
   }
   function openShelf(){
@@ -1817,21 +1993,25 @@
     let h='<div class="eyebrow">The ship\u2019s library</div><h2>All voyages</h2>'+voyagesShelfHTML(made)+'<button class="btn quiet" id="mClose">Close</button>';
     modal(h);
     document.querySelectorAll('.vshelf .vrow').forEach(el=>{if(!el.classList.contains('lock'))el.onclick=()=>voyageSheet(+el.dataset.r,(+el.dataset.r)===V.rung);});
+    document.querySelectorAll('.vshelf .vrow-plog').forEach(el=>{el.onclick=(e)=>{e.stopPropagation();openPassageLog(+el.dataset.r);};});
     $("#mClose").onclick=closeModal;
   }
   function voyageSheet(rung,isHub){
     const A=aggregate(),made=A.made,P=passageById(LADDER[rung].id),L=loreOf(P),b=ladderBounds();
+    const complete=made>=b.ends[rung];
     const eyebrow=isHub?('Current voyage \u00b7 day '+Math.max(0,made-b.starts[rung])+' of '+LADDER[rung].len):('Voyage '+(rung+1)+' of '+LADDER.length);
     let h='<div class="sheethead"><div class="sheethead-title"><div class="eyebrow">'+eyebrow+'</div><h2>'+P.title+'</h2></div><div class="sheethead-lib" id="allVoyages">All voyages <span class="sheethead-chev">\u203a</span></div></div><div class="sub2">'+P.era+'</div>'
       +passageMap(P,-1)
       +L.brief.map(t=>'<p>'+t+'</p>').join("")
       +'<div class="lh lh-stops">Ports of call</div><div class="lstops">'+voyageStopsHTML(rung,made)+'</div>'
+      +(complete?'<div class="portslink" id="plogLink">Read the passage log \u203a</div>':'')
       +factsHTML(L)
       +(L.sources?'<div class="srcs">'+L.sources+'</div>':'')
       +'<button class="btn quiet" id="mClose">Close</button>';
     modal(h);
     document.querySelectorAll('.lstops .lrow').forEach(el=>el.onclick=()=>openChapter(+el.dataset.r,+el.dataset.i));
     $("#allVoyages").onclick=openShelf;
+    if(complete)$("#plogLink").onclick=()=>openPassageLog(rung);
     $("#mClose").onclick=closeModal;
   }
   function openLibrary(){const V=voyageContext(aggregate().made);if(V.openSea){openOpenSea();return;}voyageSheet(V.rung,true);}
@@ -1840,20 +2020,148 @@
     let h='<div class="eyebrow">The passage</div><h2>Open sea</h2><div class="sub2">beyond the circumnavigation</div><p>You have sailed every voyage on the chart and closed the full circuit \u2014 '+b.total+' clear days, the whole world under the keel. There is no last port now; only open water, and the next day, and the next.</p><p><b>'+made+'</b> clear days made good, and counting.</p>'+voyagesShelfHTML(made)+'<button class="btn quiet" id="mClose">Close</button>';
     modal(h);
     document.querySelectorAll('.vshelf .vrow').forEach(el=>{if(!el.classList.contains('lock'))el.onclick=()=>voyageSheet(+el.dataset.r,false);});
+    document.querySelectorAll('.vshelf .vrow-plog').forEach(el=>{el.onclick=(e)=>{e.stopPropagation();openPassageLog(+el.dataset.r);};});
+    $("#mClose").onclick=closeModal;
+  }
+  // ---- voyage completion: bespoke copy (verbatim, do not paraphrase) + the passage log ----
+  const VOYAGE_COMPLETE_LINE={
+    shakedown:'Seven days made good. The boat is sound, the rigging holds, and you know now that she sails. That was the whole purpose of it.',
+    spray:'Thirty days made good, alone. Slocum sailed 46,000 miles by himself because no one had done it and he wanted to know if it could be done. You\u2019ve just sailed his passage.',
+    beagle:'Ninety days made good. Darwin was twenty-two, seasick, and almost didn\u2019t go. He came home with a question that changed the world.',
+    endurance:'A hundred and eighty days made good. Shackleton lost his ship, his goal, and every mile he\u2019d planned \u2014 and brought all twenty-eight men home alive. This is the one that counts.',
+    magellan:'A full year made good, and the whole chart sailed. Five ships and two hundred and seventy men set out to draw the first circle around the world. One ship and eighteen men finished it. You have closed the circuit.'
+  };
+  const VOYAGE_LOG_RETRO={
+    shakedown:[
+      'A shakedown is not a voyage. It is the trial you run before the voyage \u2014 a new or refitted vessel taken out into open water for the first time, deliberately, to find out what gives way under load. Nobody sails a shakedown for the distance. You sail it to learn whether the thing will hold.',
+      'Yours held. {days} days made good, across {span} \u2014 and the boat came back sound. You know something now that you did not know seven days ago: that you can do this.',
+      'Every real passage on this chart was preceded by exactly this \u2014 a hull tested, a crew shaken down, a thousand small failures found in shallow water rather than deep. Slocum spent thirteen months rebuilding the Spray before he dared cast off. Shackleton refitted the Endurance for a year. The trial run is not the lesser thing. It is the thing that makes the rest possible.',
+      'The Spray is next \u2014 thirty days. A real passage. You\u2019re ready for it.'
+    ],
+    spray:[
+      'Joshua Slocum was fifty-one, out of work, and given a derelict oyster sloop rotting in a field as a joke. He spent thirteen months rebuilding her plank by plank, cast off from Boston in 1895, and sailed alone around the world \u2014 the first man ever to do it.',
+      'He had no engine, no radio, and no crew. He navigated by dead reckoning and a tin clock with a broken minute hand. Warned of pirates at Gibraltar, he tore up his entire route and reversed it. He clawed through the Strait of Magellan twice, and slept behind carpet tacks scattered on the deck against night-raiders \u2014 the most-quoted trick of the voyage, and it worked every time. Off the Azores, feverish and alone, he became convinced the phantom pilot of Columbus\u2019s Pinta had taken his wheel through a gale. Across the Indian Ocean, the Spray steered herself for two thousand miles while he read. He arrived at Newport on 27 June 1898, three years out, and could not persuade many people it had really happened.',
+      'The voyage nearly ruined him. He charged the curious a coin to come aboard, and lectured for his supper. He was, in the end, a man who did an impossible thing largely to find out whether he could.',
+      'Slocum was three years at sea and entirely alone. You sailed your passage in {span} \u2014 {days} days made good, and not one of them given away.',
+      'The Beagle is next \u2014 ninety days. Longer water.'
+    ],
+    beagle:[
+      'He nearly stayed home. His father thought it a waste of time; the captain almost rejected him for the shape of his nose. Charles Darwin was twenty-two when the Beagle sailed, and he was violently seasick for most of the next five years.',
+      'What he did was look. In a cliff in Cape Verde he found a white band of ancient sea-shells lifted high above the waves, and understood \u2014 properly, for the first time \u2014 that he was reading deep time in the rock. He said later that this was the moment he became a scientist. In Patagonia he hacked the bones of vanished giants out of a low cliff: a ground sloth the size of an elephant, an armadillo grown vast. Why should the dead and the living of one place share a plan? In Chile he felt a great earthquake throw down a city, then found mussel-beds stranded above the tideline, and saw that mountains rise quake by quake, over ages. On a coral atoll in the Indian Ocean he worked out how such rings are built \u2014 a reef growing upward as its island slowly drowns beneath it \u2014 and he was right.',
+      'The Gal\u00e1pagos, famously, he <i>missed</i>. The tortoises differed shore to shore and he barely noted it; the doubt only ripened years later, at a desk in London. The voyage did not give him the answer. It gave him the question, and the question took him the rest of his life.',
+      'He landed at Falmouth on 2 October 1836 and never left Britain again. He didn\u2019t need to. He had carried the whole world home in the hold.',
+      'Darwin was nearly five years at sea, and seasick for most of them. Yours took {span} \u2014 {days} days made good, and a question or two of your own, most likely.',
+      'The Endurance is next \u2014 a hundred and eighty days. The hardest water on the chart.'
+    ],
+    endurance:[
+      'The expedition failed. That is the first thing to say, because everything else about it depends on it.',
+      'Shackleton set out to cross Antarctica on foot. He never set foot on the continent. Within a day\u2019s sail of the coast the pack ice closed around the Endurance and held her \u2014 for ten months, a passenger of the ice, drifting where the current chose. Then the floes crushed her, and she went down, and twenty-eight men were left standing on a moving sheet of frozen sea with three small boats and no way to tell anyone where they were.',
+      'They camped on the floe for over three months. When it split, they took to the boats: seven days through pack ice and gales, frostbitten and soaked, to Elephant Island \u2014 a bare rock off every shipping route, and the first solid ground any of them had touched in 497 days. Men wept to stand on land that did not move. And it was useless: no rescue would ever look there.',
+      'So Shackleton took five men and an open 22-foot boat, and sailed 800 miles across the Southern Ocean \u2014 the stormiest water on earth \u2014 aiming at a target a hundred miles wide, in sixteen days of bailing and ice. They hit it. Then, because they had landed on the wrong side, he crossed the unmapped interior of South Georgia on foot: thirty-six hours, no map, no tent, screws driven through their boot soles for crampons. Near the end they heard a whaling-station whistle \u2014 the first man-made sound in eighteen months.',
+      'Every one of the twenty-eight came home.',
+      'He is not remembered for the journey he set out to make. He is remembered for what he did when it was taken away from him \u2014 which is a better thing to be remembered for, and harder.',
+      'They were 497 days without solid ground. You were {days} days at sea \u2014 {span} \u2014 and you came through it.',
+      'The Circuit remains \u2014 three hundred and sixty-five days. The whole world.'
+    ],
+    magellan:[
+      'Five ships. Around two hundred and seventy men. A route no one had found, toward a strait no one could prove existed, for a prize \u2014 the Spice Islands \u2014 that might not be reachable at all.',
+      'What followed is not a heroic story. It is a story about cost. A bitter winter at Port St Juli\u00e1n, a mutiny put down without mercy, a ship wrecked. Then the strait itself: a freezing, fire-lit labyrinth thirty-eight days long, at the foot of the world. Magellan wept when he saw open water at the far end of it, and named the calm sea beyond the Pacific. He was right that the passage was real. He was catastrophically wrong about how big the ocean was.',
+      'Ninety-eight days of empty water followed. They ate leather and sawdust. Scurvy took men one by one. It was not a battle or a storm that nearly ended the greatest voyage in history \u2014 it was distance itself, the sheer, unguessed size of the world.',
+      'At Cebu, Magellan\u2019s interpreter \u2014 a Malay man taken years earlier from these waters \u2014 suddenly understood the language being spoken to him. That was the moment: they had sailed clear round to the far edge of the known world. Days later, at Mactan, Magellan was killed in a skirmish he did not need to fight. The man who forced the voyage into existence never saw it finished.',
+      'Juan Sebasti\u00e1n Elcano brought her home. On 6 September 1522, one ship \u2014 the Victoria \u2014 came back into Sanl\u00facar with eighteen starving men aboard and twenty-six tons of cloves in the hold, enough to pay for the whole enterprise. They also brought a puzzle: their meticulous log was a day out. Sailing west with the sun, they had lost one, and no one had ever needed to know that before.',
+      'They were the first human beings to circle the Earth. It cost them almost everything, and they did it anyway.',
+      'Three years out, and eighteen men came home. You were {span} \u2014 {days} days made good, every one of them chosen.',
+      'That is the full chart \u2014 every voyage on it, sailed. From here the sea is open and endless, and entirely yours.'
+    ]
+  };
+  function fmtSpanDate(iso,withYear){const d=parseISO(iso),opts={day:'numeric',month:'short'};if(withYear)opts.year='numeric';return d.toLocaleDateString(undefined,opts);}
+  function fmtSpan(a,b){const ya=parseISO(a).getFullYear(),yb=parseISO(b).getFullYear();return fmtSpanDate(a,ya!==yb)+' \u2013 '+fmtSpanDate(b,true);}
+  // Walk series() once, bucketing by voyage rung the same way voyageBreakdown() does (by cumulative made-count BEFORE today), but also
+  // tracking longest-run, barometer average, and the cumulative salvage/drift totals at the voyage's start and end boundaries \u2014 needed to
+  // tell which Salvage/Drift honours were crossed *during* this voyage specifically (those thresholds aren't day-count based, so dateForMade
+  // can't place them; openAwardDetail() has the same limitation and simply never shows a date for them either).
+  function voyageReckoning(rung){
+    const b=ladderBounds();
+    let made=0,cumMoney=0,cumUnits=0;
+    let started=false,ended=false;
+    let clear=0,weather=0,money=0,units=0,first=null,last=null;
+    let curRun=0,bestRun=0,baroSum=0,baroCount=0;
+    let startMoney=0,startUnits=0,endMoney=0,endUnits=0;
+    series().forEach(function(d){
+      const inBucket=(made>=b.starts[rung]&&made<b.ends[rung]);
+      if(inBucket&&!started){started=true;startMoney=cumMoney;startUnits=cumUnits;}
+      if(inBucket&&d.counted){
+        if(d.status==='clear'){clear++;curRun++;if(curRun>bestRun)bestRun=curRun;}
+        else{weather++;curRun=0;}
+        money+=d.avoided.money;units+=d.avoided.units;
+        if(!first)first=d.iso;last=d.iso;
+        const de=state.diary&&state.diary[d.iso];
+        if(de&&de.baro){baroSum+=de.baro;baroCount++;}
+      }
+      if(d.counted){cumMoney+=d.avoided.money;cumUnits+=d.avoided.units;}
+      if(d.status==='clear')made++;
+      if(started&&!ended&&made>=b.ends[rung]){ended=true;endMoney=cumMoney;endUnits=cumUnits;}
+    });
+    if(!started)return null;
+    return {rung,complete:ended,clear,weather,money,units,first,last,bestRun,
+      baroAvg:baroCount?(baroSum/baroCount):null,
+      startMoney,startUnits,endMoney:ended?endMoney:cumMoney,endUnits:ended?endUnits:cumUnits};
+  }
+  function voyagePortsHTML(rung){
+    return portMarks().filter(function(m){return m.key.indexOf('v'+rung+'p')===0;}).map(function(m){
+      const d=dateForMade(m.day);
+      return '<div class="plog-port"><div>'+m.name+'</div><div class="plog-port-date">'+(d?fmtDate(d):'\u2014')+'</div></div>';
+    }).join('');
+  }
+  function voyageHonoursEarned(rung,reck){
+    const b=ladderBounds(),out=[];
+    AW_DAYS.forEach(function(t){if(t[0]>b.starts[rung]&&t[0]<=b.ends[rung])out.push({label:t[1],sub:t[0]+(t[0]===1?' day':' days')});});
+    AW_SALV.forEach(function(t){if(t[0]>reck.startMoney&&t[0]<=reck.endMoney)out.push({label:t[1],sub:fmtMoney(t[0])});});
+    AW_DRIFT.forEach(function(t){if(t[0]>reck.startUnits&&t[0]<=reck.endUnits)out.push({label:t[1],sub:fmtU(t[0])+' drift'});});
+    return out;
+  }
+  function openPassageLog(rung){
+    const P=passageById(LADDER[rung].id),L=loreOf(P),reck=voyageReckoning(rung);
+    if(!reck)return;
+    const span=(reck.first&&reck.last)?fmtSpan(reck.first,reck.last):'';
+    const paras=(VOYAGE_LOG_RETRO[P.id]||[]).map(function(t){return t.split('{days}').join(reck.clear).split('{span}').join(span);});
+    let h='<div class="plog"><div class="eyebrow">Passage log</div><h2>'+P.title+'</h2><div class="sub2">'+P.era+'</div></div>';
+    h+='<div class="plog-h">The passage</div><div class="plog-passage">'+paras.map(function(t){return '<p>'+t+'</p>';}).join('')+'</div>';
+    h+='<div class="plog-h">Your reckoning</div><div class="plog-reckon">';
+    h+='<div class="plog-stat"><div class="k">Days made good</div><div class="v">'+reck.clear+'</div></div>';
+    if(reck.first&&reck.last)h+='<div class="plog-stat"><div class="k">Calendar span</div><div class="v">'+span+'</div></div>';
+    h+='<div class="plog-stat"><div class="k">Weather days</div><div class="v">'+reck.weather+'</div></div>';
+    if(reck.bestRun>0)h+='<div class="plog-stat"><div class="k">Longest clear run</div><div class="v">'+reck.bestRun+' day'+(reck.bestRun===1?'':'s')+'</div></div>';
+    h+='<div class="plog-stat"><div class="k">Salvage banked</div><div class="v">'+fmtMoney(reck.money)+'</div></div>';
+    h+='<div class="plog-stat"><div class="k">Drift held off</div><div class="v">'+fmtU(reck.units)+' drift</div></div>';
+    if(reck.baroAvg!=null)h+='<div class="plog-stat"><div class="k">Average barometer</div><div class="v">'+BARO[Math.max(0,Math.min(4,Math.round(reck.baroAvg)-1))]+'</div></div>';
+    h+='</div>';
+    const portsH=voyagePortsHTML(rung);
+    if(portsH)h+='<div class="plog-h">Ports of call</div><div class="plog-ports">'+portsH+'</div>';
+    const honours=voyageHonoursEarned(rung,reck);
+    if(honours.length)h+='<div class="plog-h">Honours earned</div><div class="plog-awards">'+honours.map(function(a){return '<div class="plog-award"><div>'+a.label+'</div><div class="k">'+a.sub+'</div></div>';}).join('')+'</div>';
+    if(L.sources)h+='<div class="srcs">'+L.sources+'</div>';
+    h+='<button class="btn quiet" id="mClose" style="margin-top:18px">Close</button>';
+    modal(h);
     $("#mClose").onclick=closeModal;
   }
   function celebrateLanding(rung,freshKeys){
     const P=passageById(LADDER[rung].id),A=aggregate(),b=ladderBounds(),last=(rung===LADDER.length-1);
-    let h='<div class="eyebrow">Landfall</div><h2>'+P.title+' \u2014 complete</h2>';
-    h+=last?'<p>You have closed the full circuit \u2014 every voyage on the chart, '+b.total+' clear days, the whole world sailed. From here the sea is open and endless, and entirely yours.</p>':'<p>You have made landfall. '+P.title+' is done, and a new voyage opens ahead \u2014 <b>'+A.made+'</b> clear days made good so far.</p>';
-    if(!last){const n=rung+1;h+='<p class="muted">Next: '+passageById(LADDER[n].id).title+' \u2014 a '+LADDER[n].len+'-day passage. Trim resets to a fresh 100%; everything you have banked stays banked.</p>';}
+    let h='<div class="completion-rule"></div><div class="completion">';
+    h+='<div class="eyebrow completion-eyebrow">Voyage complete</div>';
+    h+='<div class="completion-motif">'+awardMotifSVG('Landfalls')+'</div>';
+    h+='<h2 class="completion-h2">'+P.title+'</h2><div class="completion-era">'+P.era+'</div>';
+    h+='<div class="completion-days">'+LADDER[rung].len+' days made good</div>';
+    h+='<p class="completion-line">'+(VOYAGE_COMPLETE_LINE[P.id]||'')+'</p>';
+    if(!last){const n=rung+1;h+='<p class="muted completion-line">Next: '+passageById(LADDER[n].id).title+' \u2014 a '+LADDER[n].len+'-day passage. Trim resets to a fresh 100%; everything you have banked stays banked.</p>';}
     const others=(freshKeys&&freshKeys.length)?allAwards().filter(a=>freshKeys.indexOf(a.key)>=0&&a.cat!=='Landfalls'):[];
-    if(others.length){const names=others.map(a=>'<b>'+a.label+'</b>');const line=names.length===1?names[0]:(names.slice(0,-1).join(', ')+' and '+names[names.length-1]);h+='<p class="muted">Also earned today: '+line+'.</p>';}
+    if(others.length){const names=others.map(a=>'<b>'+a.label+'</b>');const line=names.length===1?names[0]:(names.slice(0,-1).join(', ')+' and '+names[names.length-1]);h+='<p class="muted completion-line">Also earned today: '+line+'.</p>';}
+    h+='</div>';
     const iso=todayISO();h+=diaryFieldsHTML(iso)+notePromptHTML(iso);
-    h+='<button class="btn primary" id="mClose">Sail on</button><button class="btn quiet" id="mLog">Add a line to the diary</button>';
+    h+='<button class="btn primary" id="mPlog">Read the passage log \u203a</button><button class="btn quiet" id="mClose">Sail on</button>';
     modal(h);wireBaro();
+    $("#mPlog").onclick=()=>{collectDiary(iso);save();render();openPassageLog(rung);};
     $("#mClose").onclick=()=>{collectDiary(iso);save();closeModal();render();};
-    $("#mLog").onclick=()=>{collectDiary(iso);save();closeModal();openDiary(iso,true);};
   }
     let toastT;function toast(m){const el=$("#toast");el.textContent=m;el.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("on"),1600);}
 
@@ -1921,6 +2229,7 @@
   $("#wipeBtn").onclick=wipe;
   /* DEV NOTES — temporary scaffolding, safe to remove */
   $("#devNotesBtn").onclick=openDevNotes;
+  $("#diaryBookBtn").onclick=()=>openDiaryBook();
   /* /DEV NOTES */
 
   if('serviceWorker' in navigator){
