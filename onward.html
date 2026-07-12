@@ -13,7 +13,7 @@
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="mobile-web-app-capable" content="yes">
 <style>
-  :root{--ink:#0E1A2B;--slate:#16263B;--horizon:#1E3A52;--line:#26405C;--mist:#C9D6E5;--faint:#7E92AB;--beacon:#5FD0C5;--amber:#E8B65A;--squall:#A98BC9;--danger:#E0746A;--pad:env(safe-area-inset-bottom,0px);}
+  :root{--ink:#0E1A2B;--slate:#16263B;--horizon:#1E3A52;--line:#26405C;--mist:#C9D6E5;--faint:#7E92AB;--beacon:#5FD0C5;--amber:#E8B65A;--squall:#A98BC9;--danger:#E0746A;--pad:env(safe-area-inset-bottom,0px);--padtop:env(safe-area-inset-top,0px);}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;height:100%;background:var(--ink);}
   body{background:radial-gradient(120% 60% at 50% -10%,#1A3047 0%,var(--ink) 55%);background-color:var(--ink);color:var(--mist);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior:none;}
@@ -44,6 +44,9 @@
   .pill{background:var(--slate);border:1px solid var(--line);border-radius:14px;padding:12px 10px;flex:1;min-width:0;text-align:center;display:flex;flex-direction:column;justify-content:center;}
   .pill .k{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);}
   .pill .v{font-size:17px;margin-top:5px;font-variant-numeric:tabular-nums;}
+  .trimline{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;margin:2px 0 14px;}
+  .trimline .tk{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);}
+  .trimline .tv{font-size:13px;color:var(--faint);font-variant-numeric:tabular-nums;margin-right:8px;}
   .card{background:var(--slate);border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0;}
   .card h2{font-size:13px;letter-spacing:.04em;margin:0 0 12px;font-weight:600;color:var(--mist);}
   .cond{font-size:14px;line-height:1.5;color:var(--mist);}
@@ -61,7 +64,9 @@
   .facts div+div{margin-top:6px;}
   .facts b{color:var(--faint);font-weight:600;margin-right:4px;}
   .lh{font-size:13px;letter-spacing:.04em;color:var(--faint);text-transform:uppercase;margin:18px 0 6px;}
-  .lh-stops{margin:22px 0 8px;}
+  .lh-stops{margin:22px 0 8px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;}
+  .lh-stops .lh-chev{flex:none;transition:transform .18s ease;}
+  .lh-stops.open .lh-chev{transform:rotate(90deg);}
   .lstops .lrow{display:flex;gap:14px;align-items:center;padding:13px 2px;border-bottom:1px solid var(--line);cursor:pointer;}
   .lstops .lrow:last-child{border-bottom:0;}
   .lrow .dot{width:22px;height:22px;border-radius:50%;flex:none;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--faint);}
@@ -192,7 +197,7 @@
   .tabs button.on{color:var(--beacon);}.tabs button.on svg{stroke:var(--beacon);}
   .scrim{position:fixed;inset:0;background:rgba(6,12,20,.7);display:none;align-items:flex-end;justify-content:center;z-index:50;}
   .scrim.on{display:flex;}
-  .sheet{background:var(--slate);border:1px solid var(--line);border-bottom:0;border-radius:22px 22px 0 0;width:100%;max-width:520px;padding:22px 20px calc(26px + var(--pad));animation:rise .28s ease;max-height:92vh;overflow-y:auto;overflow-x:hidden;}
+  .sheet{background:var(--slate);border:1px solid var(--line);border-bottom:0;border-radius:22px 22px 0 0;width:100%;max-width:520px;padding:22px 20px calc(26px + var(--pad));animation:rise .28s ease;max-height:calc(92vh - var(--padtop));max-height:calc(92dvh - var(--padtop));overflow-y:auto;overflow-x:hidden;}
   @keyframes rise{from{transform:translateY(40px);opacity:.6}to{transform:none;opacity:1}}
   .sheet h2{margin:0 0 6px;font-size:17px;}
   .sheet p{font-size:14px;line-height:1.55;color:var(--faint);margin:0 0 16px;}
@@ -376,6 +381,7 @@
     <div id="trendsView">
       <div class="card">
         <h2>Made good</h2>
+        <div class="trimline" id="trimLine" style="display:none"></div>
         <div class="chartwrap"><div id="salvChart"></div></div>
         <p class="note" style="margin:10px 0 0">A clear day adds the most &middot; a weather day far less &middot; landfalls marked where reached.</p>
       </div>
@@ -427,7 +433,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.6.0</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.7.0</span></p>
   </section>
 
   <nav class="tabs">
@@ -1424,9 +1430,15 @@
     if(view==='ledger'){$("#ledgerBody").innerHTML=renderLedger();return;}
     const SD=stageData();
     renderByVoyage();
-    if(!SD.hasBase){$("#salvChart").innerHTML='<div class="muted" style="text-align:center;padding:30px 14px;line-height:1.5">Set <b>Your usual week</b> in the Locker — then your charts appear here.</div>';$("#runRibbon").innerHTML='';return;}
+    if(!SD.hasBase){$("#salvChart").innerHTML='<div class="muted" style="text-align:center;padding:30px 14px;line-height:1.5">Set <b>Your usual week</b> in the Locker — then your charts appear here.</div>';$("#runRibbon").innerHTML='';$("#trimLine").style.display='none';return;}
     $("#salvChart").innerHTML=chartSalvage();
     $("#runRibbon").innerHTML=chartRibbon();
+    const countedAll=SD.A.series.filter(d=>d.counted).length;
+    const trimParts=[];
+    if(countedAll>0)trimParts.push('<span class="tk">Trim</span><span class="tv">'+Math.round(SD.voyage*100)+'%</span>');
+    if(SD.current.days>0)trimParts.push('<span class="tk">This leg</span><span class="tv">'+Math.round(SD.current.trim*100)+'%</span>');
+    $("#trimLine").innerHTML=trimParts.join('');
+    $("#trimLine").style.display=trimParts.length?'':'none';
   }
 
   /* ---- actions ---- */
@@ -1668,8 +1680,8 @@
   // overflow:hidden isn't reliable against iOS Safari's touch-driven rubber-band scroll, so this uses the
   // standard position:fixed-with-restore technique instead.
   let _scrollLockY=0;
-  function lockScroll(){if(document.body.style.position==='fixed')return;_scrollLockY=window.scrollY||window.pageYOffset||0;document.body.style.position='fixed';document.body.style.top='-'+_scrollLockY+'px';document.body.style.left='0';document.body.style.width='100%';}
-  function unlockScroll(){document.body.style.position='';document.body.style.top='';document.body.style.left='';document.body.style.width='';window.scrollTo(0,_scrollLockY);}
+  function lockScroll(){if(document.body.style.position==='fixed')return;_scrollLockY=window.scrollY||window.pageYOffset||0;document.documentElement.style.overflow='hidden';document.body.style.position='fixed';document.body.style.top='-'+_scrollLockY+'px';document.body.style.left='0';document.body.style.width='100%';}
+  function unlockScroll(){document.documentElement.style.overflow='';document.body.style.position='';document.body.style.top='';document.body.style.left='';document.body.style.width='';window.scrollTo(0,_scrollLockY);}
   function syncScrollLock(){if(document.querySelector('.scrim.on'))lockScroll();else unlockScroll();}
   function sheet(html){$("#sheet").innerHTML=html;$("#scrim").classList.add("on");$("#sheet").scrollTop=0;syncScrollLock();}
   function closeSheet(){$("#scrim").classList.remove("on");syncScrollLock();}
@@ -2015,17 +2027,19 @@
   function voyageSheet(rung,isHub){
     const A=aggregate(),made=A.made,P=passageById(LADDER[rung].id),L=loreOf(P),b=ladderBounds();
     const complete=made>=b.ends[rung];
+    const stopsReached=P.ports.filter((pt,i)=>stopReached(rung,i,made)).length;
     const eyebrow=isHub?('Current voyage \u00b7 day '+Math.max(0,made-b.starts[rung])+' of '+LADDER[rung].len):('Voyage '+(rung+1)+' of '+LADDER.length);
     let h='<div class="sheethead"><div class="sheethead-title"><div class="eyebrow">'+eyebrow+'</div><h2>'+P.title+'</h2></div><div class="sheethead-lib" id="allVoyages">All voyages <span class="sheethead-chev">\u203a</span></div></div><div class="sub2">'+P.era+'</div>'
       +passageMap(P,-1)
       +L.brief.map(t=>'<p>'+t+'</p>').join("")
-      +'<div class="lh lh-stops">Ports of call</div><div class="lstops">'+voyageStopsHTML(rung,made)+'</div>'
       +(complete?'<div class="portslink" id="plogLink">Read the passage log \u203a</div>':'')
       +factsHTML(L)
+      +'<div class="lh lh-stops" id="portsToggle"><span>Ports of call \u00b7 '+stopsReached+' of '+P.ports.length+'</span><span class="lh-chev">\u203a</span></div><div class="lstops" id="portsList" style="display:none">'+voyageStopsHTML(rung,made)+'</div>'
       +(L.sources?'<div class="srcs">'+L.sources+'</div>':'')
       +'<button class="btn quiet" id="mClose">Close</button>';
     modal(h);
     document.querySelectorAll('.lstops .lrow').forEach(el=>el.onclick=()=>openChapter(+el.dataset.r,+el.dataset.i));
+    $("#portsToggle").onclick=()=>{const opening=$("#portsList").style.display==='none';$("#portsList").style.display=opening?'':'none';$("#portsToggle").classList.toggle('open',opening);};
     $("#allVoyages").onclick=openShelf;
     if(complete)$("#plogLink").onclick=()=>openPassageLog(rung);
     $("#mClose").onclick=closeModal;
@@ -2235,6 +2249,9 @@
     var h=gate.querySelector('.hint');if(h)h.addEventListener('click',enter);
   })();
   document.querySelectorAll("#metricSeg button").forEach(b=>{b.onclick=()=>{metric=b.dataset.m;document.querySelectorAll("#metricSeg button").forEach(x=>x.classList.toggle("on",x===b));renderTrends();};});
+  function goTrends(){metric='trends';document.querySelectorAll('#metricSeg button').forEach(x=>x.classList.toggle('on',x.dataset.m==='trends'));goTab('trends');renderTrends();}
+  $("#pTrim").closest(".pill").onclick=goTrends;
+  $("#pSaved").closest(".pill").onclick=goTrends;
 
   $("#completeBtn").onclick=completeToday;
   $("#deviateBtn").onclick=()=>editDay(todayISO(),{mode:'weather'});
