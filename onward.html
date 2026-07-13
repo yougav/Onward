@@ -370,6 +370,8 @@
     <div class="unconfirmedNote" id="unconfirmedNote" style="display:none"></div>
   </section>
 
+  <section id="s-voyage" class="screen"></section>
+
   <section id="s-trends" class="screen">
     <div class="eyebrow">Onward</div>
     <h1>Charts</h1>
@@ -433,11 +435,12 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.7.0</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.8.0</span></p>
   </section>
 
   <nav class="tabs">
     <button data-go="deck" class="on"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18" stroke-width="1.2"/><path d="M12 6 14 12 12 11 10 12z" fill="currentColor" stroke="none"/></svg>Helm</button>
+    <button data-go="voyage"><svg viewBox="0 0 24 24"><path d="M8 3 L8 21 M8 3 L19 7 L8 12 Z" fill="currentColor" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>Voyage</button>
     <button data-go="trends"><svg viewBox="0 0 24 24"><path d="M4 19V9M10 19V5M16 19v-7M22 19H2"/></svg>Charts</button>
     <button data-go="log"><svg viewBox="0 0 24 24"><path d="M5 4h14v16H5zM8 9h8M8 13h8M8 17h5"/></svg>Log</button>
     <button data-go="more"><svg viewBox="0 0 24 24"><path d="M3 7h18l-2 12H5zM3 7l2-3h14l2 3M9 11v4M15 11v4"/></svg>Locker</button>
@@ -688,6 +691,7 @@
   }
   function stopReached(rung,i,made){const b=ladderBounds();if(made>=b.ends[rung])return true;if(made>=b.starts[rung])return (made-b.starts[rung])>=localDays(rung)[i];return false;}
   let PORTS=[];
+  const FLAG='<svg viewBox="0 0 16 20" width="13" height="16"><path d="M3 1 L3 19 M3 1 L13 4 L3 8 Z" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>';
   const $=s=>document.querySelector(s);
   function localISO(dt){const y=dt.getFullYear(),m=String(dt.getMonth()+1).padStart(2,'0'),d=String(dt.getDate()).padStart(2,'0');return y+'-'+m+'-'+d;}
   function todayISO(){return localISO(new Date());}
@@ -952,6 +956,7 @@
     const A=aggregate(),r=rates(),t=todayISO();
     const V=voyageContext(A.made);
     PORTS=currentPorts(A.made);
+    renderVoyage();
     renderClocks();
     if(state.seenVoyages!==V.completed){state.seenVoyages=V.completed;save();}
     syncAwards();
@@ -1018,7 +1023,6 @@
     $("#lCur").textContent=A.leg;$("#lBest").textContent=A.best;$("#lClear").textContent=A.made;
     const recent=A.series.slice().reverse().slice(0,60);
     const _lf=landfallISOs();
-    const FLAG='<svg viewBox="0 0 16 20" width="13" height="16"><path d="M3 1 L3 19 M3 1 L13 4 L3 8 Z" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>';
     const BOOK='<svg viewBox="0 0 20 20" width="17" height="17" fill="none" stroke="#5FD0C5" stroke-width="1.4"><path d="M2 3 L2 16 L9 18 L9 4 Z"/><path d="M9 4 L16 2 L16 15 L9 18"/><line x1="9" y1="4" x2="9" y2="18"/></svg>';
     $("#dayList").innerHTML=recent.length?recent.map(d=>{
       const land=_lf[d.iso];
@@ -1188,6 +1192,54 @@
     'magellan|The Moluccas':'The Spice Islands themselves, the goal Magellan died for — twenty-six tons of cloves in the holds, enough to repay the whole enterprise. The point of it all, reached; and the smallest hope left, to carry it home.',
     'magellan|Seville':'One ship, eighteen starving men, three years after five sailed. The first human beings ever to circle the Earth — with a hold of cloves and a missing day in the log. The first circle drawn around the world.'
   };
+  // Voyage tab's next-landfall bearing lines, keyed voyageId|PortName same as AWD_PORT_LINE.
+  // Source doc grouped the fifth voyage under "circuit|" (its display title, The Circuit) — the
+  // real LADDER/PASSAGES id is "magellan", matching every other magellan|* key in this file, so
+  // those 9 keys are remapped here rather than copied verbatim.
+  const BEARING_LINE={
+    'shakedown|Cast Off':'The hardest line to slip is the first.',
+    'shakedown|Find Your Feet':'Three days, and the deck steadies.',
+    'shakedown|The First Watch':'Routine is the quiet hero out here.',
+    'shakedown|Steady As She Goes':'She’s starting to sail herself.',
+    'shakedown|Shakedown Done':'Prove the boat, and the rest can follow.',
+    'spray|Boston':'One old sailor, one rebuilt sloop, one plan nobody’s tried.',
+    'spray|The Azores':'A first ocean alone — and strange company in the storm.',
+    'spray|Gibraltar':'Where the whole plan gets torn up.',
+    'spray|The Strait':'The frozen maze at the foot of the world.',
+    'spray|Juan Fernández':'Crusoe’s island, and the gentlest landfall of the voyage.',
+    'spray|Samoa':'The longest passage — and a widow’s gift waiting.',
+    'spray|Sydney':'The far side of the earth, on an empty purse.',
+    'spray|Cape of Good Hope':'The storm-bound corner, and tea with a strange host.',
+    'spray|Newport':'The circle closes where no one believed it could.',
+    'beagle|Devonport':'A seasick naturalist who almost stayed home.',
+    'beagle|Cape Verde':'A band of sea-shells, high and dry in a cliff.',
+    'beagle|Bahia':'A first walk into the riot of the rainforest.',
+    'beagle|Patagonia':'Bones of giants in a low cliff.',
+    'beagle|Tierra del Fuego':'The Land of Fire, and a hard lesson in kinship.',
+    'beagle|The Andes':'The ground itself will move.',
+    'beagle|The Galápagos':'Strange islands — stranger than anyone will notice, at first.',
+    'beagle|The Keeling Islands':'A ring of coral with a secret under it.',
+    'beagle|Falmouth':'Home, carrying a question that will change everything.',
+    'endurance|Grytviken':'The last outpost before the edge of the map.',
+    'endurance|The Weddell Sea':'The ice is waiting.',
+    'endurance|Patience Camp':'When the ship is gone, hold on.',
+    'endurance|Open Water':'Three small boats, and a chance.',
+    'endurance|Elephant Island':'Solid ground at last — where no rescue will ever look.',
+    'endurance|The Southern Ocean':'Eight hundred miles in an open boat.',
+    'endurance|King Haakon Bay':'Ashore — on the wrong side of the mountains.',
+    'endurance|The Crossing':'No map, no tent, one way over.',
+    'endurance|Stromness':'The whistle at the end of the world.',
+    'magellan|Sanlúcar':'Five ships, west, for a strait that may not exist.',
+    'magellan|Rio de Janeiro':'The New World, and the long cold coast beyond it.',
+    'magellan|Port St Julián':'A bitter winter where the romance dies.',
+    'magellan|The Strait':'Found at last — thirty-eight days of frozen labyrinth.',
+    'magellan|The Pacific':'No one has guessed how big the ocean is.',
+    'magellan|Guam':'Land, at the point of despair.',
+    'magellan|Cebu':'The far edge of the known world — at a price.',
+    'magellan|The Moluccas':'The Spice Islands themselves: the point of it all.',
+    'magellan|Seville':'One ship will come home.'
+  };
+  function bearingFor(voyageId,portName){return BEARING_LINE[voyageId+'|'+portName]||null;}
   function fmtDateLong(iso){return parseISO(iso).toLocaleDateString(undefined,{day:'numeric',month:'long',year:'numeric'});}
   function dateForMade(n){const s=series();let c=0;for(const d of s){if(d.status==='clear'){c++;if(c>=n)return d.iso;}}return null;}
   function awardMotifSVG(cat){
@@ -1441,6 +1493,110 @@
     $("#trimLine").style.display=trimParts.length?'':'none';
   }
 
+  // The Voyage tab. Depends on PORTS already being set by render() (currentPorts(A.made) system —
+  // see CLAUDE.md §10: this is deliberately NOT portMarks(), which is a separate system that drives
+  // Honours/Log flags only). ①③④⑤ use passageById/ladderBounds/stopReached directly (the same source
+  // voyageStopsHTML/voyagesShelfHTML use), never PORTS, so they read correctly across every voyage,
+  // not just the current one.
+  function renderVoyage(){
+    if(!state)return;
+    const el=$("#s-voyage");if(!el)return;
+    const A=aggregate(),made=A.made,V=voyageContext(made),b=ladderBounds();
+    const t=todayISO();
+    const preSail=state.startISO>t;
+    const todayInfo=(!preSail&&state.startISO<=t)?dayInfo(t):null;
+    const bump=(todayInfo&&todayInfo.status!=='clear')?1:0;
+
+    // ---- ① chart-strip card ----
+    const title=V.openSea?'Open water':passageById(V.id).title;
+    const era=V.openSea?'':passageById(V.id).era;
+    const nIdx=nextPortIdx(made);
+    const stripSpan=V.openSea?(PORTS.length?PORTS[PORTS.length-1].d-V.start:1):V.length;
+    let dayLine;
+    if(preSail){
+      dayLine='First light · <span class="tgt">Cast off</span>, day one tomorrow';
+    } else if(nIdx<0){
+      const last=PORTS[PORTS.length-1];
+      const vday=V.openSea?(V.madeIn+bump):Math.min(V.length,V.madeIn+bump);
+      dayLine='Day '+vday+(V.openSea?'':' of '+V.length)+' · <span class="tgt">'+last.name+'</span>, reached';
+    } else {
+      const p=PORTS[nIdx],to=p.d-made;
+      const vday=V.openSea?(V.madeIn+bump):Math.min(V.length,V.madeIn+bump);
+      dayLine='Day '+vday+(V.openSea?'':' of '+V.length)+' · <span class="tgt">'+p.name+'</span>, '+to+' day'+(to===1?'':'s')+' to run';
+    }
+    let h1='<div class="grow" style="margin-bottom:2px"><h2 style="margin:0">'+title+'</h2>'+(era?'<span style="color:var(--faint);font-size:12px">'+era+'</span>':'')+'</div>'
+      +voyStripSVG(V.start,stripSpan,made,nIdx)
+      +'<div class="gcrumb" style="margin-top:12px">'+dayLine+'</div>'
+      +'<div class="portslink" id="voyAbout">about this voyage ›</div>';
+
+    // ---- ② next-landfall card ----
+    let h2='';
+    if(!V.openSea&&nIdx>=0){
+      const port=PORTS[nIdx],to=port.d-made;
+      const bearing=bearingFor(V.id,port.name);
+      h2='<div class="card"><div class="eyebrow">Next landfall</div>'
+        +'<div style="display:flex;align-items:center;gap:10px;margin-top:9px">'
+        +'<span style="color:var(--amber);flex:none">'+FLAG+'</span>'
+        +'<div class="gport" style="flex:1;margin-top:0">'+port.name+'</div>'
+        +'<div style="color:var(--amber);font-size:13px;white-space:nowrap">'+to+' day'+(to===1?'':'s')+' to run</div>'
+        +'</div>'
+        +(bearing?'<p style="font-style:italic;color:var(--faint);font-size:12.5px;margin:10px 0 0;line-height:1.5">'+bearing+'</p>':'')
+        +'</div>';
+    }
+
+    // ---- ③ this voyage, astern ----
+    const asternRung=V.openSea?LADDER.length-1:V.rung;
+    const asternP=passageById(LADDER[asternRung].id),asternLd=localDays(asternRung);
+    const asternRows=asternP.ports.map((pt,i)=>{
+      if(!stopReached(asternRung,i,made))return null;
+      const absD=b.starts[asternRung]+asternLd[i];
+      const dISO=dateForMade(absD);
+      const madeSub=dISO?('made '+fmtDate(dISO)):'';
+      return '<div class="lrow" data-r="'+asternRung+'" data-i="'+i+'">'
+        +'<span style="color:var(--beacon);flex:none">'+FLAG+'</span>'
+        +'<div style="flex:1;min-width:0"><div class="pname">'+pt.name+'</div>'+(madeSub?'<div style="font-size:12px;color:var(--faint);margin-top:2px">'+madeSub+'</div>':'')+'</div>'
+        +'<div style="color:var(--beacon);font-size:12px;white-space:nowrap">read the chapter ›</div>'
+        +'</div>';
+    }).filter(Boolean);
+    const h3='<div class="lh">This voyage, astern</div><div class="card">'
+      +(asternRows.length?'<div class="lstops">'+asternRows.join('')+'</div>':'<p class="muted" style="text-align:center;margin:0">No landfalls yet this passage.</p>')
+      +'</div>';
+
+    // ---- ④ voyages behind ----
+    const behindRungs=LADDER.map((r,i)=>i).filter(i=>made>=b.ends[i]);
+    let h4='';
+    if(behindRungs.length){
+      const rows=behindRungs.map(i=>{
+        const P=passageById(LADDER[i].id),reck=voyageReckoning(i);
+        const span=(reck&&reck.first&&reck.last)?fmtSpan(reck.first,reck.last):'';
+        return '<div class="vrow" data-r="'+i+'"><div><div class="pname">'+P.title+'</div>'
+          +'<div class="vsub">'+LADDER[i].len+' days'+(span?' · '+span:'')+' · ✓ complete</div>'
+          +'<div class="vrow-plog" style="color:var(--amber)">passage log ›</div></div>'
+          +'<div class="pchev">›</div></div>';
+      }).join('');
+      h4='<div class="lh">Voyages behind</div><div class="card"><div class="vshelf" id="voyBehind">'+rows+'</div></div>';
+    }
+
+    // ---- ⑤ voyages ahead ----
+    const aheadRungs=LADDER.map((r,i)=>i).filter(i=>made<b.starts[i]);
+    let h5='';
+    if(aheadRungs.length){
+      const rows=aheadRungs.map(i=>{
+        const P=passageById(LADDER[i].id);
+        return '<div style="padding:11px 2px;border-bottom:1px solid var(--line)">'
+          +'<div style="color:var(--faint);font-size:15px">'+P.title+'</div>'
+          +'<div style="color:var(--faint);opacity:.7;font-size:12px;margin-top:2px">'+P.era+' · '+LADDER[i].len+' days · starts at '+b.starts[i]+' clear days</div>'
+          +'</div>';
+      }).join('');
+      h5='<div class="lh">Voyages ahead</div><div class="card">'+rows+'</div>';
+    }
+
+    el.innerHTML='<div class="eyebrow">Onward</div><h1>Voyage</h1><div class="card">'+h1+'</div>'+h2+h3+h4+h5;
+    $("#voyAbout").onclick=openLibrary;
+    document.querySelectorAll('#s-voyage .lstops .lrow').forEach(rw=>rw.onclick=()=>openChapter(+rw.dataset.r,+rw.dataset.i));
+    document.querySelectorAll('#voyBehind .vrow').forEach(rw=>rw.onclick=()=>openPassageLog(+rw.dataset.r));
+  }
+
   /* ---- actions ---- */
   function completeToday(){const t=todayISO();if(state.deviations[t]){toast("Today already logged as weather");return;}if(state.completed.indexOf(t)>=0)return;const beforeEarned=earnedAwardKeys(),beforeVoy=voyageContext(aggregate().made).completed;state.completed.push(t);save();const afterEarned=earnedAwardKeys(),afterVoy=voyageContext(aggregate().made).completed;const fresh=afterEarned.filter(k=>beforeEarned.indexOf(k)<0);render();if(afterVoy>beforeVoy){celebrateLanding(afterVoy-1,fresh);return;}if(fresh.length){awardCelebrationKeys(fresh);return;}dayClosedSummary();}
 
@@ -1689,7 +1845,8 @@
   function modal(html){$("#sheet2").innerHTML=html;$("#scrim2").classList.add("on");$("#sheet2").scrollTop=0;syncScrollLock();}
   function closeModal(){$("#scrim2").classList.remove("on");syncScrollLock();}
   $("#scrim2").addEventListener("click",e=>{if(e.target===$("#scrim2"))closeModal();});
-  $("#portsLink").onclick=openLibrary;
+  $("#portsLink").onclick=()=>goTab('voyage');
+  $("#goalVoyage").onclick=()=>goTab('voyage');
   // ---- daily greeting / close-of-day summary / weather reassurance ----
   function greetingTitle(made){const t=["Morning watch","A new day\u2019s sailing","Back at the helm","The day ahead","Dawn on the water","A fresh horizon"];return t[made%t.length];}
   function daysSinceBackup(){if(!state)return 0;const lb=state.lastBackupISO;if(!lb)return 9999;return daysBetween(lb,todayISO());}
@@ -2195,7 +2352,7 @@
   }
     let toastT;function toast(m){const el=$("#toast");el.textContent=m;el.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("on"),1600);}
 
-  const TAB_ORDER=["deck","trends","log","more"];
+  const TAB_ORDER=["deck","voyage","trends","log","more"];
   function goTab(go){
     const cur=document.querySelector(".screen.on");
     const ci=cur?TAB_ORDER.indexOf(cur.id.slice(2)):-1,ti=TAB_ORDER.indexOf(go);
@@ -2208,7 +2365,7 @@
   document.querySelectorAll(".tabs button").forEach(b=>{b.onclick=()=>goTab(b.dataset.go);});
   // ---- swipe between tabs (horizontal flick, adjacent only) ----
   (function(){
-    const ORDER=["deck","trends","log","more"];
+    const ORDER=TAB_ORDER;
     let sx=0,sy=0,st=0,track=false;
     function curIdx(){const on=document.querySelector(".screen.on");return on?ORDER.indexOf(on.id.slice(2)):-1;}
     document.addEventListener("touchstart",function(e){
