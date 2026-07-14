@@ -189,6 +189,8 @@
   .note b{color:var(--mist);font-weight:600;}
   .safety{border:1px solid #2c4a4a;background:#13211f;border-radius:14px;padding:14px;margin:14px 0;font-size:13px;line-height:1.55;color:#bfe0d8;}
   .safety b{color:var(--beacon);}
+  .applink{color:var(--beacon);text-decoration:none;}
+  .supportbtn small{display:block;font-size:12px;font-weight:400;color:var(--faint);margin-top:3px;}
   .chartwrap{background:var(--ink);border:1px solid var(--line);border-radius:14px;padding:12px 8px 6px;}
   .chartwrap svg{width:100%;height:auto;display:block;}
   .tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(14,26,43,.92);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:8px 0 calc(8px + var(--pad));display:flex;}
@@ -422,6 +424,9 @@
     <div class="devnotes-headrow"><h1 style="margin:0">Locker</h1><div class="devnotes-link" id="devNotesBtn" aria-label="Dev notes"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M4 16 L20 16 L17 20 L7 20 Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="1.6"/><path d="M12 4 L12 14 L5 14 Z" fill="currentColor"/></svg></div></div>
     <!-- /DEV NOTES -->
     <div class="card">
+      <button class="btn ghost supportbtn" id="supportBtn">If the weather’s too heavy<small>Support beyond the log book</small></button>
+    </div>
+    <div class="card">
       <h2>Your hazards &amp; usual week</h2>
       <p class="note" style="margin:0 0 12px">The hazards on your chart, and how often they crossed your bow in a usual week. Everything is reckoned from these.</p>
       <button class="btn ghost" id="editDrinksBtn">The hazards</button>
@@ -430,12 +435,14 @@
     <div class="card">
       <h2>The ship’s papers</h2>
       <p class="note" style="margin:0 0 12px">Everything lives only on this vessel. Copy the papers now and then so a cleared deck can’t lose your passage.</p>
+      <p class="note" style="margin:0 0 12px">Onward is in beta — things may change and bugs are possible. Feedback is genuinely wanted: <a class="applink" href="mailto:hello@voyageonward.com">hello@voyageonward.com</a></p>
+      <p class="note" style="margin:0 0 12px"><b>Where your data lives</b> — Everything Onward knows is stored on this phone, in this browser. Nothing is uploaded; there is no account and no way to recover a lost record. Saving your papers now and then is the only backup there is. Adding Onward to your Home Screen also protects it from the browser clearing old site data.</p>
       <button class="btn ghost" id="backupBtn">Copy the papers</button>
       <button class="btn ghost" id="restoreBtn">Restore from papers</button>
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.8.0</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.9.0 · beta</span></p>
   </section>
 
   <nav class="tabs">
@@ -1624,6 +1631,7 @@
       +'<div class="summary" id="wkSum"></div>'
       +'<button class="btn ghost" id="editDr">Edit the hazards</button>'
       +(first?'<p class="note" style="margin:12px 0">If you\u2019re leaving a long, hard run behind, read <b>Before you cast off</b> in the Locker first.</p>':'')
+      +(first?'<p class="note" style="margin:12px 0">Everything stays on this phone \u2014 nothing is uploaded, so save your papers now and then.</p>':'')
       +'<button class="btn primary" id="saveSetup">'+(first?"Get under way":"Save")+'</button>'
       +(first?'':'<button class="btn quiet" id="cancelSetup">Cancel</button>')
     );
@@ -2141,9 +2149,11 @@
     const iso=todayISO();h+=diaryFieldsHTML(iso);
     h+=notePromptHTML(iso);
     h+='<button class="btn primary" id="mClose">Sail on</button><button class="btn quiet" id="mAdd">Add a line to the diary</button>';
+    h+='<p class="note" id="mSupport" style="text-align:center;font-size:12px;margin:14px 0 0;cursor:pointer">Need more than a log book? Support ›</p>';
     modal(h);wireBaro();
     $("#mClose").onclick=()=>{collectDiary(iso);save();closeModal();render();};
     $("#mAdd").onclick=()=>{collectDiary(iso);save();closeModal();openDiary(iso,true);};
+    $("#mSupport").onclick=()=>{collectDiary(iso);save();closeModal();openSupport();};
   }
 
   function loreOf(P){return {brief:(P.brief&&P.brief.length)?P.brief:["This passage follows "+P.title+" — "+P.era+". The full story is still being written."],ship:P.ship||"",crew:P.crew||"",sources:P.sources||""};}
@@ -2172,6 +2182,19 @@
     const b=ladderBounds();
     const rows=LADDER.map((r,i)=>{const P=passageById(r.id);const done=made>=b.ends[i];const cur=made>=b.starts[i]&&made<b.ends[i];const cls=done?'done':(cur?'cur':'lock');const status=done?'\u2713 complete':(cur?'under way \u00b7 day '+(made-b.starts[i])+' of '+r.len:'locked \u00b7 '+b.starts[i]+' clear days to reach');return '<div class="vrow '+cls+'" data-r="'+i+'"><div><div class="pname">'+P.title+'</div><div class="vsub">'+r.len+'-day voyage \u00b7 '+status+'</div>'+(done?'<div class="vrow-plog" data-r="'+i+'">passage log \u203a</div>':'')+'</div><div class="pchev">'+(done||cur?'\u203a':'\ud83d\udd12')+'</div></div>';}).join("");
     return '<div class="lh">The voyages</div><div class="vshelf">'+rows+'</div>';
+  }
+  // The one screen that deliberately drops the theme entirely — plain English throughout,
+  // no nautical vocabulary. See CLAUDE.md §10 for the leak-scan exception this requires.
+  function openSupport(){
+    let h='<div class="eyebrow">Onward</div><h2>If you need more than a log book</h2><div class="supportsheet">'
+      +'<p>Onward is a tracker, not treatment, and it was built by one person, not a clinician. If drinking is causing you harm or you’re finding it hard to stop, real people can help — and asking is not a failure of anything.</p>'
+      +'<p>A note on stopping suddenly: if you’ve been drinking heavily every day, stopping abruptly can be medically dangerous. A doctor can help you come off safely. This matters more than any streak.</p>'
+      +'<p>UK — <a class="applink" href="tel:03001231110">Drinkline: 0300 123 1110</a> (free, confidential) · <a class="applink" href="https://www.nhs.uk/live-well/alcohol-advice/" target="_blank" rel="noopener noreferrer">NHS alcohol advice: nhs.uk/live-well/alcohol-advice</a> · <a class="applink" href="tel:116123">Samaritans: 116 123</a> (any reason, any hour)</p>'
+      +'<p>Everywhere — <a class="applink" href="https://www.aa.org/" target="_blank" rel="noopener noreferrer">Alcoholics Anonymous: aa.org</a> · <a class="applink" href="https://www.smartrecovery.org/" target="_blank" rel="noopener noreferrer">SMART Recovery: smartrecovery.org</a> · <a class="applink" href="https://www.reddit.com/r/stopdrinking/" target="_blank" rel="noopener noreferrer">r/stopdrinking</a> — a kind community, whatever day you’re on</p>'
+      +'<p>Your data never leaves this device; nobody knows you opened this page.</p>'
+      +'</div><button class="btn quiet" id="mClose">Close</button>';
+    modal(h);
+    $("#mClose").onclick=closeModal;
   }
   function openShelf(){
     const made=aggregate().made,V=voyageContext(made);
@@ -2412,6 +2435,7 @@
 
   $("#completeBtn").onclick=completeToday;
   $("#deviateBtn").onclick=()=>editDay(todayISO(),{mode:'weather'});
+  $("#supportBtn").onclick=openSupport;
   $("#editDrinksBtn").onclick=()=>drinksList(null);
   $("#editBaseBtn").onclick=()=>openSetup(false);
   $("#backupBtn").onclick=backup;
