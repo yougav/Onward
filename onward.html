@@ -205,6 +205,8 @@
   .sheetx{position:absolute;top:10px;right:0;width:44px;height:44px;border-radius:50%;background:rgba(14,26,43,.6);border:1px solid var(--line);color:var(--mist);font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;}
   .sheet h2{margin:0 0 6px;font-size:17px;}
   .sheet p{font-size:14px;line-height:1.55;color:var(--faint);margin:0 0 16px;}
+  .sheet.noclose{padding-top:22px;}
+  .sheet.midscroll{border-radius:22px 22px 0 0;border-bottom:0;margin-bottom:0;}
   .toast{position:fixed;left:50%;bottom:calc(86px + var(--pad));transform:translateX(-50%);background:#06231f;color:var(--beacon);border:1px solid var(--beacon);padding:11px 18px;border-radius:999px;font-size:13px;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;}
   .toast.on{opacity:1;}
   #gate{position:fixed;inset:0;z-index:400;background:#0A1525 url(launch-iphone17pro.png) center/cover no-repeat;touch-action:none;transition:transform .52s cubic-bezier(.4,0,.2,1);will-change:transform;}
@@ -444,7 +446,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.9.1 · beta</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.9.2 · beta</span></p>
   </section>
 
   <nav class="tabs">
@@ -1701,7 +1703,7 @@
       +'<button class="btn primary" id="e_save" style="margin-top:16px">Save</button>'
       +'<button class="btn quiet" id="e_cancel">Cancel</button>');
     function calc(){const c=basketTotals(values),r=rates();const total=Object.keys(values).reduce((a,k)=>a+(values[k]||0),0);if(total===0){$("#e_calc").innerHTML="No hazards yet \u2014 leave it and it\u2019s a clear day.";}else{$("#e_calc").innerHTML="This day <b>"+fmtU(c.units)+" drift</b> \u00b7 "+fmtMoney(c.money)+" \u00b7 "+Math.round(c.kcal)+" ballast<br><span style='color:var(--faint)'>still salvaged "+fmtMoney(Math.max(0,r.money-c.money))+" against your usual</span>";}}
-    function setMode(m){mode=m;document.querySelectorAll('#dayToggle button').forEach(function(b){b.classList.toggle('on',b.dataset.m===m);});$("#wxBlock").style.display=(m==='weather')?'':'none';const reasonText=(m==='weather')?wReason:(isLand?lReason:'');const rEl=$("#noteReason");rEl.style.display=reasonText?'':'none';rEl.textContent=reasonText;}
+    function setMode(m){mode=m;document.querySelectorAll('#dayToggle button').forEach(function(b){b.classList.toggle('on',b.dataset.m===m);});$("#wxBlock").style.display=(m==='weather')?'':'none';const reasonText=(m==='weather')?wReason:(isLand?lReason:'');const rEl=$("#noteReason");rEl.style.display=reasonText?'':'none';rEl.textContent=reasonText;refreshSheetChrome($("#sheet"));}
     document.querySelectorAll('#dayToggle button').forEach(function(b){b.onclick=function(){setMode(b.dataset.m);};});
     bindSteppers(values,calc);calc();wireBaro();setMode(mode);
     function commit(){collectDiary(iso);if(mode==='weather'){const basket={};let total=0;Object.keys(values).forEach(function(k){if(values[k]>0){basket[k]=values[k];total+=values[k];}});if(total>0){state.deviations[iso]=basket;const ci=state.completed.indexOf(iso);if(ci>=0)state.completed.splice(ci,1);if(!state.weatherAt)state.weatherAt={};const _et=($("#e_time")&&$("#e_time").value)||"20:00";state.weatherAt[iso]=new Date(iso+"T"+_et).getTime();}else{delete state.deviations[iso];if(state.weatherAt)delete state.weatherAt[iso];if(state.completed.indexOf(iso)<0)state.completed.push(iso);}}else{delete state.deviations[iso];if(state.weatherAt)delete state.weatherAt[iso];if(state.completed.indexOf(iso)<0)state.completed.push(iso);}return save();}
@@ -1805,7 +1807,7 @@
       +'<button class="btn quiet" id="dnClose">Close</button>'
     );
     const ta=$("#dnInput");
-    const grow=function(){ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,340)+'px';};
+    const grow=function(){ta.style.height='auto';ta.style.height=Math.min(ta.scrollHeight,340)+'px';refreshSheetChrome($("#sheet"));};
     ta.addEventListener('input',grow);grow();
     $("#dnAdd").onclick=function(){
       const v=ta.value.trim();if(!v)return;
@@ -1821,6 +1823,7 @@
       const rows=notes.slice().reverse().map(n=>'<div class="devnotes-row" data-at="'+n.at+'"><div class="devnotes-text">'+esc(n.text)+'<small>'+_dnFmt(n.at)+'</small></div><div class="devnotes-del" data-at="'+n.at+'">✕</div></div>').join("");
       $("#dnList").innerHTML=rows||'<div class="muted" style="padding:10px 0">No notes yet.</div>';
       document.querySelectorAll('.devnotes-del').forEach(el=>el.onclick=()=>{const at=+el.dataset.at;const i=notes.findIndex(n=>n.at===at);if(i>=0){notes.splice(i,1);_dnSave(notes);renderList();}});
+      refreshSheetChrome($("#sheet"));
     }
     sheet(
       '<h2>Dev notes</h2>'
@@ -1849,10 +1852,24 @@
   function lockScroll(){if(document.body.style.position==='fixed')return;_scrollLockY=window.scrollY||window.pageYOffset||0;document.documentElement.style.overflow='hidden';document.body.style.position='fixed';document.body.style.top='-'+_scrollLockY+'px';document.body.style.left='0';document.body.style.width='100%';}
   function unlockScroll(){document.documentElement.style.overflow='';document.body.style.position='';document.body.style.top='';document.body.style.left='';document.body.style.width='';window.scrollTo(0,_scrollLockY);}
   function syncScrollLock(){if(document.querySelector('.scrim.on'))lockScroll();else unlockScroll();}
-  function sheet(html){$("#sheet").innerHTML='<div class="sheetxwrap"><button class="sheetx" id="sheetX" aria-label="Close">✕</button></div>'+html;$("#sheetX").onclick=closeSheet;$("#scrim").classList.add("on");$("#sheet").scrollTop=0;syncScrollLock();}
+  // Shared sheet chrome: the ✕ only ever appears on sheets that need scrolling to reach the
+  // bottom (static per open — doesn't hide again once shown, even at the bottom), while the
+  // floating-card bottom treatment (.midscroll's absence) is scroll-position-live, reversible
+  // in both directions. Must run AFTER the scrim gets .on (still display:none before that,
+  // so scrollHeight/clientHeight would both read 0) and after scrollTop is reset.
+  function refreshSheetChrome(el){
+    const wrap=el.querySelector('.sheetxwrap');
+    if(!wrap)return;
+    const overflowing=el.scrollHeight>el.clientHeight+2;
+    wrap.style.display=overflowing?'':'none';
+    el.classList.toggle('noclose',!overflowing);
+    const atBottom=el.scrollTop+el.clientHeight>=el.scrollHeight-12;
+    el.classList.toggle('midscroll',overflowing&&!atBottom);
+  }
+  function sheet(html){const el=$("#sheet");el.innerHTML='<div class="sheetxwrap"><button class="sheetx" id="sheetX" aria-label="Close">✕</button></div>'+html;$("#sheetX").onclick=closeSheet;$("#scrim").classList.add("on");el.scrollTop=0;refreshSheetChrome(el);el.onscroll=function(){refreshSheetChrome(el);};syncScrollLock();}
   function closeSheet(){$("#scrim").classList.remove("on");syncScrollLock();}
   $("#scrim").addEventListener("click",e=>{if(e.target===$("#scrim"))closeSheet();});
-  function modal(html){$("#sheet2").innerHTML='<div class="sheetxwrap"><button class="sheetx" id="sheetX2" aria-label="Close">✕</button></div>'+html;$("#sheetX2").onclick=closeModal;$("#scrim2").classList.add("on");$("#sheet2").scrollTop=0;syncScrollLock();}
+  function modal(html){const el=$("#sheet2");el.innerHTML='<div class="sheetxwrap"><button class="sheetx" id="sheetX2" aria-label="Close">✕</button></div>'+html;$("#sheetX2").onclick=closeModal;$("#scrim2").classList.add("on");el.scrollTop=0;refreshSheetChrome(el);el.onscroll=function(){refreshSheetChrome(el);};syncScrollLock();}
   function closeModal(){$("#scrim2").classList.remove("on");syncScrollLock();}
   $("#scrim2").addEventListener("click",e=>{if(e.target===$("#scrim2"))closeModal();});
   $("#portsLink").onclick=()=>goTab('voyage');
@@ -2221,7 +2238,7 @@
       +'<button class="btn quiet" id="mClose">Close</button>';
     modal(h);
     document.querySelectorAll('.lstops .lrow').forEach(el=>el.onclick=()=>openChapter(+el.dataset.r,+el.dataset.i));
-    $("#portsToggle").onclick=()=>{const opening=$("#portsList").style.display==='none';$("#portsList").style.display=opening?'':'none';$("#portsToggle").classList.toggle('open',opening);};
+    $("#portsToggle").onclick=()=>{const opening=$("#portsList").style.display==='none';$("#portsList").style.display=opening?'':'none';$("#portsToggle").classList.toggle('open',opening);refreshSheetChrome($("#sheet2"));};
     $("#allVoyages").onclick=openShelf;
     if(complete)$("#plogLink").onclick=()=>openPassageLog(rung);
     $("#mClose").onclick=closeModal;
