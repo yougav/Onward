@@ -1,4 +1,4 @@
-const VERSION='onward-v0.9.2';
+const VERSION='onward-v0.9.3';
 const CORE=['./','onward.html','manifest.webmanifest','icon-180.png','icon-192.png','icon-512.png','icon-512-maskable.png','launch-iphone17pro.png'];
 self.addEventListener('install',function(e){self.skipWaiting();e.waitUntil(caches.open(VERSION).then(function(c){return c.addAll(CORE).catch(function(){});}));});
 self.addEventListener('activate',function(e){e.waitUntil(caches.keys().then(function(ks){return Promise.all(ks.map(function(k){if(k!==VERSION)return caches.delete(k);}));}).then(function(){return self.clients.claim();}));});

@@ -92,7 +92,7 @@
   #sheet2 p{font-size:14px;line-height:1.62;color:var(--mist);margin:11px 0;}
   #sheet2 h2{margin-bottom:2px;}
   .mapwrap{background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:8px;margin:14px 0 16px;}
-  .mapwrap svg{display:block;border-radius:6px;}
+  .mapwrap svg{display:block;width:100%;height:auto;border-radius:6px;}
   .mapcap{font-size:11px;color:var(--faint);margin-top:7px;text-align:center;line-height:1.4;}
   .vshelf .vrow{display:flex;gap:12px;align-items:center;padding:11px 2px;border-bottom:1px solid var(--line);}
   .vshelf .vrow:last-child{border-bottom:0;}
@@ -199,14 +199,14 @@
   .tabs button.on{color:var(--beacon);}.tabs button.on svg{stroke:var(--beacon);}
   .scrim{position:fixed;inset:0;background:rgba(6,12,20,.7);display:none;align-items:flex-end;justify-content:center;z-index:50;}
   .scrim.on{display:flex;}
-  .sheet{background:var(--slate);border:1px solid var(--line);border-radius:22px;width:100%;max-width:520px;padding:56px 20px 26px;margin-bottom:calc(10px + var(--pad));animation:rise .28s ease;max-height:calc(92vh - var(--padtop));max-height:calc(92dvh - var(--padtop));overflow-y:auto;overflow-x:hidden;}
+  .sheet{background:var(--slate);border:1px solid var(--line);border-radius:22px;width:100%;max-width:520px;padding:56px 20px 26px;margin-bottom:calc(10px + var(--pad));animation:rise .28s ease;max-height:calc(92vh - var(--padtop));max-height:calc(92dvh - var(--padtop));overflow-y:auto;overflow-x:hidden;position:relative;transition:border-radius .2s ease,margin-bottom .2s ease,border-bottom-color .2s ease;}
   @keyframes rise{from{transform:translateY(40px);opacity:.6}to{transform:none;opacity:1}}
-  .sheetxwrap{position:sticky;top:0;height:0;overflow:visible;z-index:5;}
-  .sheetx{position:absolute;top:10px;right:0;width:44px;height:44px;border-radius:50%;background:rgba(14,26,43,.6);border:1px solid var(--line);color:var(--mist);font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .sheetx{position:absolute;top:10px;right:10px;width:44px;height:44px;border-radius:50%;background:rgba(14,26,43,.6);border:1px solid var(--line);color:var(--mist);font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;}
   .sheet h2{margin:0 0 6px;font-size:17px;}
   .sheet p{font-size:14px;line-height:1.55;color:var(--faint);margin:0 0 16px;}
   .sheet.noclose{padding-top:22px;}
-  .sheet.midscroll{border-radius:22px 22px 0 0;border-bottom:0;margin-bottom:0;}
+  .sheet.midscroll{border-radius:22px 22px 0 0;border-bottom-color:transparent;margin-bottom:0;}
+  .sheetx+.eyebrow,.sheetx+h2,.sheetx+.sheethead{padding-right:54px;}
   .toast{position:fixed;left:50%;bottom:calc(86px + var(--pad));transform:translateX(-50%);background:#06231f;color:var(--beacon);border:1px solid var(--beacon);padding:11px 18px;border-radius:999px;font-size:13px;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;}
   .toast.on{opacity:1;}
   #gate{position:fixed;inset:0;z-index:400;background:#0A1525 url(launch-iphone17pro.png) center/cover no-repeat;touch-action:none;transition:transform .52s cubic-bezier(.4,0,.2,1);will-change:transform;}
@@ -446,7 +446,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.9.2 · beta</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.9.3 · beta</span></p>
   </section>
 
   <nav class="tabs">
@@ -1853,23 +1853,25 @@
   function unlockScroll(){document.documentElement.style.overflow='';document.body.style.position='';document.body.style.top='';document.body.style.left='';document.body.style.width='';window.scrollTo(0,_scrollLockY);}
   function syncScrollLock(){if(document.querySelector('.scrim.on'))lockScroll();else unlockScroll();}
   // Shared sheet chrome: the ✕ only ever appears on sheets that need scrolling to reach the
-  // bottom (static per open — doesn't hide again once shown, even at the bottom), while the
-  // floating-card bottom treatment (.midscroll's absence) is scroll-position-live, reversible
-  // in both directions. Must run AFTER the scrim gets .on (still display:none before that,
-  // so scrollHeight/clientHeight would both read 0) and after scrollTop is reset.
+  // bottom (static per open), and — since it's a plain child of the scrolling sheet, not a
+  // sticky overlay — it scrolls away with the header like any other content once you scroll
+  // past it (by design; see CLAUDE.md v0.9.3). The floating-card bottom treatment (.midscroll's
+  // absence) is scroll-position-live, reversible in both directions. Must run AFTER the scrim
+  // gets .on (still display:none before that, so scrollHeight/clientHeight would both read 0)
+  // and after scrollTop is reset.
   function refreshSheetChrome(el){
-    const wrap=el.querySelector('.sheetxwrap');
-    if(!wrap)return;
+    const x=el.querySelector('.sheetx');
+    if(!x)return;
     const overflowing=el.scrollHeight>el.clientHeight+2;
-    wrap.style.display=overflowing?'':'none';
+    x.style.display=overflowing?'':'none';
     el.classList.toggle('noclose',!overflowing);
     const atBottom=el.scrollTop+el.clientHeight>=el.scrollHeight-12;
     el.classList.toggle('midscroll',overflowing&&!atBottom);
   }
-  function sheet(html){const el=$("#sheet");el.innerHTML='<div class="sheetxwrap"><button class="sheetx" id="sheetX" aria-label="Close">✕</button></div>'+html;$("#sheetX").onclick=closeSheet;$("#scrim").classList.add("on");el.scrollTop=0;refreshSheetChrome(el);el.onscroll=function(){refreshSheetChrome(el);};syncScrollLock();}
+  function sheet(html){const el=$("#sheet");el.innerHTML='<button class="sheetx" id="sheetX" aria-label="Close">✕</button>'+html;$("#sheetX").onclick=closeSheet;$("#scrim").classList.add("on");el.scrollTop=0;refreshSheetChrome(el);el.onscroll=function(){refreshSheetChrome(el);};syncScrollLock();}
   function closeSheet(){$("#scrim").classList.remove("on");syncScrollLock();}
   $("#scrim").addEventListener("click",e=>{if(e.target===$("#scrim"))closeSheet();});
-  function modal(html){const el=$("#sheet2");el.innerHTML='<div class="sheetxwrap"><button class="sheetx" id="sheetX2" aria-label="Close">✕</button></div>'+html;$("#sheetX2").onclick=closeModal;$("#scrim2").classList.add("on");el.scrollTop=0;refreshSheetChrome(el);el.onscroll=function(){refreshSheetChrome(el);};syncScrollLock();}
+  function modal(html){const el=$("#sheet2");el.innerHTML='<button class="sheetx" id="sheetX2" aria-label="Close">✕</button>'+html;$("#sheetX2").onclick=closeModal;$("#scrim2").classList.add("on");el.scrollTop=0;refreshSheetChrome(el);el.onscroll=function(){refreshSheetChrome(el);};syncScrollLock();}
   function closeModal(){$("#scrim2").classList.remove("on");syncScrollLock();}
   $("#scrim2").addEventListener("click",e=>{if(e.target===$("#scrim2"))closeModal();});
   $("#portsLink").onclick=()=>goTab('voyage');
