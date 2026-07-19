@@ -57,8 +57,6 @@
   .sheethead{display:flex;align-items:center;justify-content:space-between;gap:12px;}
   .sheethead-title{min-width:0;}
   .sheethead-title h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .sheethead-lib{flex:none;display:flex;align-items:center;gap:2px;font-size:11.5px;color:var(--beacon);letter-spacing:.02em;cursor:pointer;white-space:nowrap;}
-  .sheethead-chev{font-size:13px;}
   .sub2{font-size:13px;color:var(--faint);margin:2px 0 12px;}
   .facts{background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:14px 0;font-size:13px;line-height:1.5;color:var(--mist);}
   .facts div+div{margin-top:6px;}
@@ -70,10 +68,16 @@
   .lstops .lrow{display:flex;gap:14px;align-items:center;padding:13px 2px;border-bottom:1px solid var(--line);cursor:pointer;}
   .lstops .lrow:last-child{border-bottom:0;}
   .lrow .dot{width:22px;height:22px;border-radius:50%;flex:none;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--faint);}
+  .lrow .dot svg{width:13px;height:16px;}
   .lrow.done .dot{background:var(--beacon);border-color:var(--beacon);color:var(--ink);}
+  .lrow.next .dot{border-color:var(--amber);color:var(--amber);}
+  .lrow.after .dot svg path{fill:none;}
+  .lrow.locked .dot{border-color:transparent;opacity:.55;}
   .lrow .pname{font-size:15px;}
+  .lrow.after .pname,.lrow.locked .pname{color:var(--faint);}
   .lrow .plog{font-size:12px;color:var(--beacon);margin-top:2px;}
   .lrow .pwhen{font-size:12px;color:var(--faint);margin-top:2px;}
+  .lrow.next .pwhen{color:var(--amber);}
   .lrow .pchev{margin-left:auto;color:var(--faint);font-size:13px;}
   .srcs{font-size:12px;color:var(--faint);line-height:1.5;margin:16px 0 4px;padding-top:12px;border-top:1px solid var(--line);}
   .brow{display:flex;gap:12px;padding:9px 2px;border-bottom:1px solid var(--line);}
@@ -446,7 +450,7 @@
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.9.3 · beta</span></p>
+    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.10.0 · beta</span></p>
   </section>
 
   <nav class="tabs">
@@ -701,8 +705,20 @@
     return P.ports.map((pt,i)=>({d:V.start+dv[i],name:pt.name,log:pt.log}));
   }
   function stopReached(rung,i,made){const b=ladderBounds();if(made>=b.ends[rung])return true;if(made>=b.starts[rung])return (made-b.starts[rung])>=localDays(rung)[i];return false;}
+  // A voyage's ports are reached strictly in order (localDays is monotonic), so the unreached
+  // ports always form a suffix of P.ports — a port's rank among that suffix (0/1/2+) is enough
+  // to classify it, no need to re-derive from the global PORTS/currentPorts system. Single source
+  // of truth for both voyageStopsHTML (the list) and openChapter (the chapter) so they can't drift.
+  function portState(rung,i,made){
+    if(stopReached(rung,i,made))return 'done';
+    const P=passageById(LADDER[rung].id);
+    const firstUnreached=P.ports.findIndex((pt,idx)=>!stopReached(rung,idx,made));
+    const rank=i-firstUnreached;
+    return rank===0?'next':(rank===1?'after':'locked');
+  }
   let PORTS=[];
   const FLAG='<svg viewBox="0 0 16 20" width="13" height="16"><path d="M3 1 L3 19 M3 1 L13 4 L3 8 Z" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/></svg>';
+  const LOCK='<svg viewBox="0 0 16 20" width="13" height="16"><path d="M5 10V7a3 3 0 0 1 6 0v3" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><rect x="3" y="10" width="10" height="8" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.3"/><circle cx="8" cy="13.6" r="1" fill="currentColor"/></svg>';
   const $=s=>document.querySelector(s);
   function localISO(dt){const y=dt.getFullYear(),m=String(dt.getMonth()+1).padStart(2,'0'),d=String(dt.getDate()).padStart(2,'0');return y+'-'+m+'-'+d;}
   function todayISO(){return localISO(new Date());}
@@ -850,7 +866,8 @@
     return s+'</svg>';
   }
   // Hand-built equirectangular world chart for the Spray's circumnavigation (schematic coastlines, real port positions).
-  function worldMap(focus,route){
+  function worldMap(focus,route,reachedCount){
+    reachedCount=reachedCount||0;
     const MW=320,MH=160;
     const px=lon=>((lon+180)/360*MW), py=lat=>((90-lat)/180*MH);
     const land=[
@@ -874,12 +891,14 @@
         return 'M'+px(la).toFixed(1)+','+ya.toFixed(1)+'L'+px(edge).toFixed(1)+','+yc.toFixed(1)+'M'+px(edge>0?-180:180).toFixed(1)+','+yc.toFixed(1)+'L'+px(b[1]).toFixed(1)+','+yb.toFixed(1);}
       return 'M'+px(la).toFixed(1)+','+ya.toFixed(1)+'L'+px(b[1]).toFixed(1)+','+yb.toFixed(1);
     }
-    let routeD='';for(let i=0;i<ports.length-1;i++)routeD+=seg(ports[i],ports[i+1]);
-    g+='<path d="'+routeD+'" fill="none" stroke="#E8B65A" stroke-width="1.4" stroke-opacity="0.85" stroke-linejoin="round"/>';
-    ports.forEach((p,i)=>{const x=px(p[1]),y=py(p[0]),on=(i===focus);
-      g+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+(on?4:2.4)+'" fill="'+(on?'#E8B65A':'#5FD0C5')+'"'+(on?' stroke="#0C1A2C" stroke-width="1"':'')+'/>';
+    let sailedD='',aheadD='';
+    for(let i=0;i<ports.length-1;i++){const legD=seg(ports[i],ports[i+1]);if(i+1<reachedCount)sailedD+=legD;else aheadD+=legD;}
+    if(sailedD)g+='<path d="'+sailedD+'" fill="none" stroke="#5FD0C5" stroke-width="1.4" stroke-opacity="0.9" stroke-linejoin="round"/>';
+    if(aheadD)g+='<path d="'+aheadD+'" fill="none" stroke="#7E92AB" stroke-width="1.2" stroke-opacity="0.55" stroke-dasharray="3 3" stroke-linejoin="round"/>';
+    ports.forEach((p,i)=>{const x=px(p[1]),y=py(p[0]),on=(i===focus),reached=i<reachedCount;
+      const fill=on?'#E8B65A':(reached?'#5FD0C5':'#7E92AB');
+      g+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+(on?4:2.4)+'" fill="'+fill+'"'+(on?' stroke="#0C1A2C" stroke-width="1"':'')+'/>';
       if(on)g+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="7" fill="none" stroke="#E8B65A" stroke-width="1" stroke-opacity="0.6"/>';
-      else g+='<text x="'+(x+(x>300?-4:3.5)).toFixed(1)+'" y="'+(y-4).toFixed(1)+'" fill="#7E92AB" font-size="7" text-anchor="'+(x>300?'end':'start')+'">'+(i+1)+'</text>';
     });
     if(typeof focus==="number"&&focus>=0){const x=px(ports[focus][1]),y=py(ports[focus][0]);
       const anc=x>248?'end':(x<74?'start':'middle'),lx=x>248?x-9:(x<74?x+9:x),ly=y>22?y-11:y+16;
@@ -898,7 +917,12 @@
       cap:"The first voyage around the world \u2014 west from Spain, through Magellan's strait, across the vast Pacific to the Spice Islands, and home by the Cape three years later. Schematic chart; ports at their true positions."}
   };
   function passageMap(P,idx){
-    if(MAP_ROUTES[P.id]){const r=MAP_ROUTES[P.id],cap=(idx===-1)?r.cap:"";return '<div class="mapwrap">'+worldMap(idx,r)+(cap?'<div class="mapcap">'+cap+'</div>':'')+'</div>';}
+    if(MAP_ROUTES[P.id]){
+      const r=MAP_ROUTES[P.id],cap=(idx===-1)?r.cap:"";
+      const rung=LADDER.findIndex(x=>x.id===P.id),made=aggregate().made;
+      const reachedCount=rung>=0?P.ports.filter((pt,i)=>stopReached(rung,i,made)).length:0;
+      return '<div class="mapwrap">'+worldMap(idx,r,reachedCount)+(cap?'<div class="mapcap">'+cap+'</div>':'')+'</div>';
+    }
     if(P.id!=="endurance")return "";
     let svg,cap;
     if(idx===-1){svg=regionalSVG(null);cap="The whole passage — ship's track (amber), the ice drift (dashed) and the James Caird's boat journey (dotted).";}
@@ -1529,16 +1553,18 @@
     } else if(nIdx<0){
       const last=PORTS[PORTS.length-1];
       const vday=V.openSea?(V.madeIn+bump):Math.min(V.length,V.madeIn+bump);
-      dayLine='Day '+vday+(V.openSea?'':' of '+V.length)+' · <span class="tgt">'+last.name+'</span>, reached';
+      dayLine='Day '+vday+(V.openSea?'':' of '+V.length)+' · <span class="tgt">'+last.name+'</span><span class="nx"> → …</span>';
     } else {
-      const p=PORTS[nIdx],to=p.d-made;
+      const p=PORTS[nIdx];
       const vday=V.openSea?(V.madeIn+bump):Math.min(V.length,V.madeIn+bump);
-      dayLine='Day '+vday+(V.openSea?'':' of '+V.length)+' · <span class="tgt">'+p.name+'</span>, '+to+' day'+(to===1?'':'s')+' to run';
+      const fromName=nIdx>0?PORTS[nIdx-1].name:(V.rung>0?'Departure':'Cast off');
+      const nextName=(nIdx+1<PORTS.length)?PORTS[nIdx+1].name:null;
+      dayLine='Day '+vday+(V.openSea?'':' of '+V.length)+' · <span>'+fromName+'</span><span class="ar"> → </span><span class="tgt">'+p.name+'</span>'+(nextName?'<span class="nx"> → '+nextName+'</span>':'');
     }
     let h1='<div class="grow" style="margin-bottom:2px"><h2 style="margin:0">'+title+'</h2>'+(era?'<span style="color:var(--faint);font-size:12px">'+era+'</span>':'')+'</div>'
       +voyStripSVG(V.start,stripSpan,made,nIdx)
       +'<div class="gcrumb" style="margin-top:12px">'+dayLine+'</div>'
-      +'<div class="portslink" id="voyAbout">about this voyage ›</div>';
+      +'<div class="portslink" id="voyAbout">About this voyage ›</div>';
 
     // ---- ② next-landfall card ----
     let h2='';
@@ -2179,29 +2205,46 @@
 
   function loreOf(P){return {brief:(P.brief&&P.brief.length)?P.brief:["This passage follows "+P.title+" — "+P.era+". The full story is still being written."],ship:P.ship||"",crew:P.crew||"",sources:P.sources||""};}
   function factsHTML(L){return (L.ship||L.crew)?'<div class="facts">'+(L.ship?'<div><b>Ship</b>'+L.ship+'</div>':'')+(L.crew?'<div><b>Crew</b>'+L.crew+'</div>':'')+'</div>':'';}
-  function chapterBody(P,pt,reached,to){
-    if(reached){const paras=(pt.lore&&pt.lore.length?pt.lore:[pt.log]).map(t=>'<p>'+t+'</p>').join("");return paras+(pt.detail?'<div class="detail">'+pt.detail+'</div>':'');}
-    return '<p class="muted">Still ahead \u2014 '+to+' day'+(to===1?'':'s')+' to run. Reach this port to read its chapter.</p><div class="locknote">'+pt.log+'</div>';
+  function chapterBody(P,pt,state,to){
+    if(state==='done'){const paras=(pt.lore&&pt.lore.length?pt.lore:[pt.log]).map(t=>'<p>'+t+'</p>').join("");return paras+(pt.detail?'<div class="detail">'+pt.detail+'</div>':'');}
+    if(state==='locked')return '<p class="muted">Reach to unlock.</p>';
+    const bearing=state==='next'?bearingFor(P.id,pt.name):null;
+    return '<p class="muted">Still ahead \u2014 '+to+' day'+(to===1?'':'s')+' to run. Reach this port to read its chapter.</p>'
+      +(state==='next'?'<div class="locknote">'+pt.log+'</div>':'')
+      +(bearing?'<p style="font-style:italic;color:var(--faint);font-size:12.5px;margin:10px 0 0;line-height:1.5">'+bearing+'</p>':'');
   }
-  function openChapter(rung,i){
+  function openChapter(rung,i,onBack){
     const A=aggregate(),P=passageById(LADDER[rung].id),pt=P.ports[i],reached=stopReached(rung,i,A.made);
     const b=ladderBounds(),absD=b.starts[rung]+localDays(rung)[i],to=Math.max(0,absD-A.made);
+    const st=portState(rung,i,A.made);
     const hasPrev=i>0,hasNext=i<P.ports.length-1;
     const nav=(hasPrev||hasNext)?('<div class="chapnav">'+(hasPrev?'<div class="chapnav-btn" id="mPrev">\u2039</div>':'<div class="chapnav-btn void"></div>')+'<div class="chapnav-pos">Port '+(i+1)+' of '+P.ports.length+'</div>'+(hasNext?'<div class="chapnav-btn" id="mNext">\u203a</div>':'<div class="chapnav-btn void"></div>')+'</div>'):'';
-    let h='<div class="eyebrow">'+P.title+' \u00b7 '+(reached?'Port '+(i+1):'Uncharted')+'</div><h2>'+pt.name+'</h2>'+passageMap(P,i)+chapterBody(P,pt,reached,to)+nav+'<button class="btn quiet" id="mBack">\u2039 Back</button>';
+    let h='<div class="eyebrow">'+P.title+' \u00b7 '+(reached?'Port '+(i+1):'Uncharted')+'</div><h2>'+pt.name+'</h2>'+passageMap(P,i)+chapterBody(P,pt,st,to)+nav+'<button class="btn quiet" id="mBack">\u2039 Back</button>';
     modal(h);
-    if(hasPrev)$("#mPrev").onclick=()=>openChapter(rung,i-1);
-    if(hasNext)$("#mNext").onclick=()=>openChapter(rung,i+1);
+    if(hasPrev)$("#mPrev").onclick=()=>openChapter(rung,i-1,onBack);
+    if(hasNext)$("#mNext").onclick=()=>openChapter(rung,i+1,onBack);
     const V=voyageContext(A.made);
-    $("#mBack").onclick=()=>voyageSheet(rung,rung===V.rung);
+    $("#mBack").onclick=onBack||(()=>voyageSheet(rung,rung===V.rung));
   }
   function voyageStopsHTML(rung,made){
-    const P=passageById(LADDER[rung].id),b=ladderBounds(),ld=localDays(rung);let firstLocked=true;
-    return P.ports.map((pt,i)=>{const done=stopReached(rung,i,made);let sub;if(done){sub='read the chapter \u203a';}else{const to=Math.max(0,(b.starts[rung]+ld[i])-made);if(firstLocked){firstLocked=false;sub=to+' day'+(to===1?'':'s')+' to run';}else{sub='reach to unlock';}}return '<div class="lrow '+(done?'done':'lock')+'" data-r="'+rung+'" data-i="'+i+'"><div class="dot">'+(done?'\u2713':'\u2217')+'</div><div><div class="pname">'+pt.name+'</div><div class="'+(done?'plog':'pwhen')+'">'+sub+'</div></div><div class="pchev">\u203a</div></div>';}).join("");
+    const P=passageById(LADDER[rung].id),b=ladderBounds(),ld=localDays(rung);
+    return P.ports.map((pt,i)=>{
+      const st=portState(rung,i,made);
+      let marker,sub;
+      if(st==='done'){
+        marker=FLAG;sub='<div class="plog">read the chapter \u203a</div>';
+      } else if(st==='locked'){
+        marker=LOCK;sub='<div class="pwhen">reach to unlock</div>';
+      } else {
+        const to=Math.max(0,(b.starts[rung]+ld[i])-made);
+        marker=FLAG;sub='<div class="pwhen">'+to+' day'+(to===1?'':'s')+' to run</div>';
+      }
+      return '<div class="lrow '+st+'" data-r="'+rung+'" data-i="'+i+'"><div class="dot">'+marker+'</div><div><div class="pname">'+pt.name+'</div>'+sub+'</div><div class="pchev">\u203a</div></div>';
+    }).join("");
   }
   function voyagesShelfHTML(made){
     const b=ladderBounds();
-    const rows=LADDER.map((r,i)=>{const P=passageById(r.id);const done=made>=b.ends[i];const cur=made>=b.starts[i]&&made<b.ends[i];const cls=done?'done':(cur?'cur':'lock');const status=done?'\u2713 complete':(cur?'under way \u00b7 day '+(made-b.starts[i])+' of '+r.len:'locked \u00b7 '+b.starts[i]+' clear days to reach');return '<div class="vrow '+cls+'" data-r="'+i+'"><div><div class="pname">'+P.title+'</div><div class="vsub">'+r.len+'-day voyage \u00b7 '+status+'</div>'+(done?'<div class="vrow-plog" data-r="'+i+'">passage log \u203a</div>':'')+'</div><div class="pchev">'+(done||cur?'\u203a':'\ud83d\udd12')+'</div></div>';}).join("");
+    const rows=LADDER.map((r,i)=>{const P=passageById(r.id);const done=made>=b.ends[i];const cur=made>=b.starts[i]&&made<b.ends[i];const cls=done?'done':(cur?'cur':'lock');const status=done?'\u2713 complete':(cur?'under way \u00b7 day '+(made-b.starts[i])+' of '+r.len:'locked \u00b7 '+b.starts[i]+' clear days to reach');return '<div class="vrow '+cls+'" data-r="'+i+'"><div><div class="pname">'+P.title+'</div><div class="vsub">'+r.len+'-day voyage \u00b7 '+status+'</div>'+(done?'<div class="vrow-plog" data-r="'+i+'">passage log \u203a</div>':'')+'</div><div class="pchev">'+(done||cur?'\u203a':LOCK)+'</div></div>';}).join("");
     return '<div class="lh">The voyages</div><div class="vshelf">'+rows+'</div>';
   }
   // The one screen that deliberately drops the theme entirely — plain English throughout,
@@ -2217,20 +2260,13 @@
     modal(h);
     $("#mClose").onclick=closeModal;
   }
-  function openShelf(){
-    const made=aggregate().made,V=voyageContext(made);
-    let h='<div class="eyebrow">The ship\u2019s library</div><h2>All voyages</h2>'+voyagesShelfHTML(made)+'<button class="btn quiet" id="mClose">Close</button>';
-    modal(h);
-    document.querySelectorAll('.vshelf .vrow').forEach(el=>{if(!el.classList.contains('lock'))el.onclick=()=>voyageSheet(+el.dataset.r,(+el.dataset.r)===V.rung);});
-    document.querySelectorAll('.vshelf .vrow-plog').forEach(el=>{el.onclick=(e)=>{e.stopPropagation();openPassageLog(+el.dataset.r);};});
-    $("#mClose").onclick=closeModal;
-  }
-  function voyageSheet(rung,isHub){
+  function voyageSheet(rung,isHub,onClose){
+    onClose=onClose||closeModal;
     const A=aggregate(),made=A.made,P=passageById(LADDER[rung].id),L=loreOf(P),b=ladderBounds();
     const complete=made>=b.ends[rung];
     const stopsReached=P.ports.filter((pt,i)=>stopReached(rung,i,made)).length;
     const eyebrow=isHub?('Current voyage \u00b7 day '+Math.max(0,made-b.starts[rung])+' of '+LADDER[rung].len):('Voyage '+(rung+1)+' of '+LADDER.length);
-    let h='<div class="sheethead"><div class="sheethead-title"><div class="eyebrow">'+eyebrow+'</div><h2>'+P.title+'</h2></div><div class="sheethead-lib" id="allVoyages">All voyages <span class="sheethead-chev">\u203a</span></div></div><div class="sub2">'+P.era+'</div>'
+    let h='<div class="sheethead"><div class="sheethead-title"><div class="eyebrow">'+eyebrow+'</div><h2>'+P.title+'</h2></div></div><div class="sub2">'+P.era+'</div>'
       +passageMap(P,-1)
       +L.brief.map(t=>'<p>'+t+'</p>').join("")
       +(complete?'<div class="portslink" id="plogLink">Read the passage log \u203a</div>':'')
@@ -2239,11 +2275,10 @@
       +(L.sources?'<div class="srcs">'+L.sources+'</div>':'')
       +'<button class="btn quiet" id="mClose">Close</button>';
     modal(h);
-    document.querySelectorAll('.lstops .lrow').forEach(el=>el.onclick=()=>openChapter(+el.dataset.r,+el.dataset.i));
+    document.querySelectorAll('.lstops .lrow').forEach(el=>el.onclick=()=>openChapter(+el.dataset.r,+el.dataset.i,()=>voyageSheet(rung,isHub,onClose)));
     $("#portsToggle").onclick=()=>{const opening=$("#portsList").style.display==='none';$("#portsList").style.display=opening?'':'none';$("#portsToggle").classList.toggle('open',opening);refreshSheetChrome($("#sheet2"));};
-    $("#allVoyages").onclick=openShelf;
     if(complete)$("#plogLink").onclick=()=>openPassageLog(rung);
-    $("#mClose").onclick=closeModal;
+    $("#mClose").onclick=onClose;
   }
   function openLibrary(){const V=voyageContext(aggregate().made);if(V.openSea){openOpenSea();return;}voyageSheet(V.rung,true);}
   function openOpenSea(){
@@ -2371,9 +2406,11 @@
     if(portsH)h+='<div class="plog-h">Ports of call</div><div class="plog-ports">'+portsH+'</div>';
     const honours=voyageHonoursEarned(rung,reck);
     if(honours.length)h+='<div class="plog-h">Honours earned</div><div class="plog-awards">'+honours.map(function(a){return '<div class="plog-award"><div>'+a.label+'</div><div class="k">'+a.sub+'</div></div>';}).join('')+'</div>';
+    h+='<div class="portslink" id="plogAbout">About this voyage ›<div style="font-size:11px;color:var(--faint);margin-top:2px">Ship, crew, chart &amp; sources</div></div>';
     if(L.sources)h+='<div class="srcs">'+L.sources+'</div>';
     h+='<button class="btn quiet" id="mClose" style="margin-top:18px">Close</button>';
     modal(h);
+    $("#plogAbout").onclick=()=>voyageSheet(rung,false,()=>openPassageLog(rung));
     $("#mClose").onclick=closeModal;
   }
   function celebrateLanding(rung,freshKeys){
