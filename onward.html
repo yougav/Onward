@@ -13,13 +13,13 @@
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="mobile-web-app-capable" content="yes">
 <style>
-  :root{--ink:#0E1A2B;--slate:#16263B;--horizon:#1E3A52;--line:#26405C;--mist:#C9D6E5;--faint:#7E92AB;--beacon:#5FD0C5;--amber:#E8B65A;--squall:#A98BC9;--danger:#E0746A;--pad:env(safe-area-inset-bottom,0px);--padtop:env(safe-area-inset-top,0px);}
+  :root{--ink:#0E1A2B;--slate:#16263B;--horizon:#1E3A52;--line:#26405C;--mist:#C9D6E5;--faint:#7E92AB;--beacon:#5FD0C5;--amber:#E8B65A;--squall:#A98BC9;--danger:#E0746A;--pad:env(safe-area-inset-bottom,0px);--padtop:env(safe-area-inset-top,0px);--text-display:54px;--text-title:22px;--text-heading:17px;--text-body:15px;--text-small:13px;--text-caption:11px;--text-micro:10px;--text-7:7px;--text-7-5:7.5px;--text-8:8px;--text-8-5:8.5px;--text-9:9px;--text-9-5:9.5px;--text-10-5:10.5px;--text-11-5:11.5px;--text-12:12px;--text-12-5:12.5px;--text-13-5:13.5px;--text-14:14px;--text-16:16px;--text-18:18px;--text-19:19px;--text-20:20px;--text-24:24px;--text-32:32px;--space-1:1px;--space-2:2px;--space-3:3px;--space-4:4px;--space-5:5px;--space-6:6px;--space-7:7px;--space-8:8px;--space-9:9px;--space-10:10px;--space-11:11px;--space-12:12px;--space-13:13px;--space-14:14px;--space-15:15px;--space-16:16px;--space-17:17px;--space-18:18px;--space-20:20px;--space-22:22px;--space-24:24px;--space-26:26px;--space-30:30px;--space-34:34px;--space-40:40px;--space-54:54px;--space-56:56px;--space-104:104px;--radius-md:14px;--radius-pill:999px;--radius-3:3px;--radius-3-5:3.5px;--radius-4:4px;--radius-6:6px;--radius-8:8px;--radius-9:9px;--radius-10:10px;--radius-11:11px;--radius-12:12px;--radius-13:13px;--radius-18:18px;--radius-22:22px;--radius-circle:50%;--lh-tight:1.2;--lh-body:1.5;--lh-read:1.6;--lh-1:1;--lh-1-05:1.05;--lh-1-4:1.4;--lh-1-45:1.45;--lh-1-55:1.55;--lh-1-62:1.62;}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
   html,body{margin:0;height:100%;background:var(--ink);}
   body{background:radial-gradient(120% 60% at 50% -10%,#1A3047 0%,var(--ink) 55%);background-color:var(--ink);color:var(--mist);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior:none;}
   .mono{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;}
   .app{max-width:520px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;overflow-x:clip;}
-  .screen{flex:1;padding:calc(22px + env(safe-area-inset-top,0px)) 20px 104px;display:none;animation:fade .35s ease;}
+  .screen{flex:1;padding:calc(var(--space-22) + env(safe-area-inset-top,0px)) var(--space-20) var(--space-104);display:none;animation:fade .35s ease;}
   .screen.on{display:block;}
   @keyframes slideInR{from{opacity:0;transform:translateX(64px)}to{opacity:1;transform:none}}
   @keyframes slideInL{from{opacity:0;transform:translateX(-64px)}to{opacity:1;transform:none}}
@@ -30,317 +30,317 @@
   #rotate{display:none;}
   @media (orientation:landscape) and (max-height:520px){
     .app,#gate{display:none !important;}
-    #rotate{display:flex;position:fixed;inset:0;z-index:500;background:var(--ink);color:var(--faint);align-items:center;justify-content:center;text-align:center;padding:40px;font-size:15px;line-height:1.55;}
+    #rotate{display:flex;position:fixed;inset:0;z-index:500;background:var(--ink);color:var(--faint);align-items:center;justify-content:center;text-align:center;padding:var(--space-40);font-size:var(--text-body);line-height:var(--lh-1-55);}
   }
-  .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--faint);}
-  h1{font-size:20px;font-weight:600;margin:2px 0 18px;}
+  .eyebrow{font-size:var(--text-caption);letter-spacing:.22em;text-transform:uppercase;color:var(--faint);}
+  h1{font-size:var(--text-20);font-weight:600;margin:var(--space-2) 0 var(--space-18);}
   .muted{color:var(--faint);}
-  .bignum{font-size:54px;font-weight:300;line-height:1;letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#fff;}
+  .bignum{font-size:var(--text-display);font-weight:300;line-height:var(--lh-1);letter-spacing:-.02em;font-variant-numeric:tabular-nums;color:#fff;}
   .bignum.provisional{color:var(--faint);}
-  .biglabel{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-top:6px;}
-  .unconfirmedNote{text-align:center;font-size:12px;color:var(--faint);margin-top:14px;padding:6px;cursor:pointer;letter-spacing:.02em;}
-  .sub{margin-top:8px;font-size:13px;color:var(--beacon);}
-  .ribbon{display:flex;justify-content:center;gap:10px;margin:16px 0 4px;}
-  .pill{background:var(--slate);border:1px solid var(--line);border-radius:14px;padding:12px 10px;flex:1;min-width:0;text-align:center;display:flex;flex-direction:column;justify-content:center;}
-  .pill .k{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);}
-  .pill .v{font-size:17px;margin-top:5px;font-variant-numeric:tabular-nums;}
-  .trimline{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;margin:2px 0 14px;}
-  .trimline .tk{font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);}
-  .trimline .tv{font-size:13px;color:var(--faint);font-variant-numeric:tabular-nums;margin-right:8px;}
-  .card{background:var(--slate);border:1px solid var(--line);border-radius:18px;padding:18px;margin:14px 0;}
-  .card h2{font-size:13px;letter-spacing:.04em;margin:0 0 12px;font-weight:600;color:var(--mist);}
-  .cond{font-size:14px;line-height:1.5;color:var(--mist);}
+  .biglabel{font-size:var(--text-caption);letter-spacing:.24em;text-transform:uppercase;color:var(--faint);margin-top:var(--space-6);}
+  .unconfirmedNote{text-align:center;font-size:var(--text-12);color:var(--faint);margin-top:var(--space-14);padding:var(--space-6);cursor:pointer;letter-spacing:.02em;}
+  .sub{margin-top:var(--space-8);font-size:var(--text-small);color:var(--beacon);}
+  .ribbon{display:flex;justify-content:center;gap:10px;margin:var(--space-16) 0 var(--space-4);}
+  .pill{background:var(--slate);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-12) var(--space-10);flex:1;min-width:0;text-align:center;display:flex;flex-direction:column;justify-content:center;}
+  .pill .k{font-size:var(--text-micro);letter-spacing:.16em;text-transform:uppercase;color:var(--faint);}
+  .pill .v{font-size:var(--text-heading);margin-top:var(--space-5);font-variant-numeric:tabular-nums;}
+  .trimline{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px;margin:var(--space-2) 0 var(--space-14);}
+  .trimline .tk{font-size:var(--text-micro);letter-spacing:.16em;text-transform:uppercase;color:var(--faint);}
+  .trimline .tv{font-size:var(--text-small);color:var(--faint);font-variant-numeric:tabular-nums;margin-right:var(--space-8);}
+  .card{background:var(--slate);border:1px solid var(--line);border-radius:var(--radius-18);padding:var(--space-18);margin:var(--space-14) 0;}
+  .card h2{font-size:var(--text-small);letter-spacing:.04em;margin:0 0 var(--space-12);font-weight:600;color:var(--mist);}
+  .cond{font-size:var(--text-14);line-height:var(--lh-body);color:var(--mist);}
   .cond .lead{color:var(--beacon);font-weight:600;}
-  .stat-row{display:flex;align-items:baseline;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--line);}
+  .stat-row{display:flex;align-items:baseline;justify-content:space-between;padding:var(--space-13) 0;border-bottom:1px solid var(--line);}
   .stat-row:last-child{border-bottom:0;}
-  .stat-row .lbl{font-size:13px;color:var(--faint);}
+  .stat-row .lbl{font-size:var(--text-small);color:var(--faint);}
   .sheethead{display:flex;align-items:center;justify-content:space-between;gap:12px;}
   .sheethead-title{min-width:0;}
   .sheethead-title h2{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .sub2{font-size:13px;color:var(--faint);margin:2px 0 12px;}
-  .facts{background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:14px 0;font-size:13px;line-height:1.5;color:var(--mist);}
-  .facts div+div{margin-top:6px;}
-  .facts b{color:var(--faint);font-weight:600;margin-right:4px;}
-  .lh{font-size:13px;letter-spacing:.04em;color:var(--faint);text-transform:uppercase;margin:18px 0 6px;}
-  .lh-stops{margin:22px 0 8px;display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;}
+  .sub2{font-size:var(--text-small);color:var(--faint);margin:var(--space-2) 0 var(--space-12);}
+  .facts{background:var(--ink);border:1px solid var(--line);border-radius:var(--radius-12);padding:var(--space-12) var(--space-14);margin:var(--space-14) 0;font-size:var(--text-small);line-height:var(--lh-body);color:var(--mist);}
+  .facts div+div{margin-top:var(--space-6);}
+  .facts b{color:var(--faint);font-weight:600;margin-right:var(--space-4);}
+  .lh{font-size:var(--text-small);letter-spacing:.04em;color:var(--faint);text-transform:uppercase;margin:var(--space-18) 0 var(--space-6);}
+  .lh-stops{margin:var(--space-22) 0 var(--space-8);display:flex;align-items:center;justify-content:space-between;gap:10px;cursor:pointer;}
   .lh-stops .lh-chev{flex:none;transition:transform .18s ease;}
   .lh-stops.open .lh-chev{transform:rotate(90deg);}
-  .lstops .lrow{display:flex;gap:14px;align-items:center;padding:13px 2px;border-bottom:1px solid var(--line);cursor:pointer;}
+  .lstops .lrow{display:flex;gap:14px;align-items:center;padding:var(--space-13) var(--space-2);border-bottom:1px solid var(--line);cursor:pointer;}
   .lstops .lrow:last-child{border-bottom:0;}
-  .lrow .dot{width:22px;height:22px;border-radius:50%;flex:none;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--faint);}
+  .lrow .dot{width:22px;height:22px;border-radius:var(--radius-circle);flex:none;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:var(--text-caption);color:var(--faint);}
   .lrow .dot svg{width:13px;height:16px;}
   .lrow.done .dot{background:var(--beacon);border-color:var(--beacon);color:var(--ink);}
   .lrow.next .dot{border-color:var(--amber);color:var(--amber);}
   .lrow.after .dot svg path{fill:none;}
   .lrow.locked .dot{border-color:transparent;opacity:.55;}
-  .lrow .pname{font-size:15px;}
+  .lrow .pname{font-size:var(--text-body);}
   .lrow.after .pname,.lrow.locked .pname{color:var(--faint);}
-  .lrow .plog{font-size:12px;color:var(--beacon);margin-top:2px;}
-  .lrow .pwhen{font-size:12px;color:var(--faint);margin-top:2px;}
+  .lrow .plog{font-size:var(--text-12);color:var(--beacon);margin-top:var(--space-2);}
+  .lrow .pwhen{font-size:var(--text-12);color:var(--faint);margin-top:var(--space-2);}
   .lrow.next .pwhen{color:var(--amber);}
-  .lrow .pchev{margin-left:auto;color:var(--faint);font-size:13px;}
-  .srcs{font-size:12px;color:var(--faint);line-height:1.5;margin:16px 0 4px;padding-top:12px;border-top:1px solid var(--line);}
-  .brow{display:flex;gap:12px;padding:9px 2px;border-bottom:1px solid var(--line);}
+  .lrow .pchev{margin-left:auto;color:var(--faint);font-size:var(--text-small);}
+  .srcs{font-size:var(--text-12);color:var(--faint);line-height:var(--lh-body);margin:var(--space-16) 0 var(--space-4);padding-top:var(--space-12);border-top:1px solid var(--line);}
+  .brow{display:flex;gap:12px;padding:var(--space-9) var(--space-2);border-bottom:1px solid var(--line);}
   .brow:last-child{border-bottom:0;}
-  .brow .bn{flex:none;width:22px;height:22px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--faint);}
-  .brow b{font-size:14px;}
-  .muted2{font-size:12px;color:var(--faint);margin-top:2px;line-height:1.45;font-style:italic;}
-  .detail{background:rgba(95,208,197,.08);border-left:2px solid var(--beacon);border-radius:0 8px 8px 0;padding:10px 12px;margin:16px 0 0;font-size:13px;line-height:1.55;color:var(--mist);}
-  .locknote{font-size:13px;color:var(--faint);font-style:italic;margin-top:10px;opacity:.75;}
-  .chapnav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:16px 0 4px;padding-top:12px;border-top:1px solid var(--line);}
-  .chapnav-btn{width:38px;height:38px;flex:none;border-radius:10px;border:1px solid var(--line);background:var(--ink);color:var(--mist);font-size:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;}
+  .brow .bn{flex:none;width:22px;height:22px;border-radius:var(--radius-circle);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-size:var(--text-caption);color:var(--faint);}
+  .brow b{font-size:var(--text-14);}
+  .muted2{font-size:var(--text-12);color:var(--faint);margin-top:var(--space-2);line-height:var(--lh-1-45);font-style:italic;}
+  .detail{background:rgba(95,208,197,.08);border-left:2px solid var(--beacon);border-radius:0 var(--radius-8) var(--radius-8) 0;padding:var(--space-10) var(--space-12);margin:var(--space-16) 0 0;font-size:var(--text-small);line-height:var(--lh-1-55);color:var(--mist);}
+  .locknote{font-size:var(--text-small);color:var(--faint);font-style:italic;margin-top:var(--space-10);opacity:.75;}
+  .chapnav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:var(--space-16) 0 var(--space-4);padding-top:var(--space-12);border-top:1px solid var(--line);}
+  .chapnav-btn{width:38px;height:38px;flex:none;border-radius:var(--radius-10);border:1px solid var(--line);background:var(--ink);color:var(--mist);font-size:var(--text-18);display:flex;align-items:center;justify-content:center;cursor:pointer;}
   .chapnav-btn.void{visibility:hidden;}
-  .chapnav-pos{flex:1;min-width:0;text-align:center;font-size:12px;color:var(--faint);letter-spacing:.03em;}
-  .readstory{display:inline-block;font-size:12px;color:var(--beacon);margin-top:9px;font-weight:600;}
-  .libhint{font-size:11px;color:var(--faint);margin-top:10px;letter-spacing:.02em;cursor:pointer;}
-  #sheet2 p{font-size:14px;line-height:1.62;color:var(--mist);margin:11px 0;}
-  #sheet2 h2{margin-bottom:2px;}
-  .mapwrap{background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:8px;margin:14px 0 16px;}
-  .mapwrap svg{display:block;width:100%;height:auto;border-radius:6px;}
-  .mapcap{font-size:11px;color:var(--faint);margin-top:7px;text-align:center;line-height:1.4;}
-  .vshelf .vrow{display:flex;gap:12px;align-items:center;padding:11px 2px;border-bottom:1px solid var(--line);}
+  .chapnav-pos{flex:1;min-width:0;text-align:center;font-size:var(--text-12);color:var(--faint);letter-spacing:.03em;}
+  .readstory{display:inline-block;font-size:var(--text-12);color:var(--beacon);margin-top:var(--space-9);font-weight:600;}
+  .libhint{font-size:var(--text-caption);color:var(--faint);margin-top:var(--space-10);letter-spacing:.02em;cursor:pointer;}
+  #sheet2 p{font-size:var(--text-14);line-height:var(--lh-1-62);color:var(--mist);margin:var(--space-11) 0;}
+  #sheet2 h2{margin-bottom:var(--space-2);}
+  .mapwrap{background:var(--ink);border:1px solid var(--line);border-radius:var(--radius-12);padding:var(--space-8);margin:var(--space-14) 0 var(--space-16);}
+  .mapwrap svg{display:block;width:100%;height:auto;border-radius:var(--radius-6);}
+  .mapcap{font-size:var(--text-caption);color:var(--faint);margin-top:var(--space-7);text-align:center;line-height:var(--lh-1-4);}
+  .vshelf .vrow{display:flex;gap:12px;align-items:center;padding:var(--space-11) var(--space-2);border-bottom:1px solid var(--line);}
   .vshelf .vrow:last-child{border-bottom:0;}
   .vshelf .vrow.lock{opacity:.5;}
   .vshelf .vrow.done,.vshelf .vrow.cur{cursor:pointer;}
-  .vshelf .vrow .pname{font-size:15px;}
+  .vshelf .vrow .pname{font-size:var(--text-body);}
   .vshelf .vrow.cur .pname{color:var(--amber);}
-  .vshelf .vsub{font-size:12px;color:var(--faint);margin-top:2px;}
-  .vshelf .pchev{margin-left:auto;color:var(--faint);font-size:13px;}
-  .vshelf .vrow-plog{display:inline-block;font-size:11.5px;color:var(--beacon);margin-top:5px;padding:3px 0;cursor:pointer;}
-  .btn{display:block;width:100%;border:0;border-radius:14px;padding:16px;font-size:16px;font-weight:600;font-family:inherit;cursor:pointer;}
+  .vshelf .vsub{font-size:var(--text-12);color:var(--faint);margin-top:var(--space-2);}
+  .vshelf .pchev{margin-left:auto;color:var(--faint);font-size:var(--text-small);}
+  .vshelf .vrow-plog{display:inline-block;font-size:var(--text-11-5);color:var(--beacon);margin-top:var(--space-5);padding:var(--space-3) 0;cursor:pointer;}
+  .btn{display:block;width:100%;border:0;border-radius:var(--radius-md);padding:var(--space-16);font-size:var(--text-16);font-weight:600;font-family:inherit;cursor:pointer;}
   .btn.primary{background:var(--beacon);color:#06231f;}
   .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--mist);}
-  .btn.quiet{background:transparent;color:var(--faint);font-weight:500;font-size:14px;padding:10px;}
+  .btn.quiet{background:transparent;color:var(--faint);font-weight:500;font-size:var(--text-14);padding:var(--space-10);}
   .btn.danger{background:transparent;border:1px solid #50342f;color:var(--danger);}
   .btn[disabled]{opacity:.55;}
-  .btn+.btn{margin-top:10px;}
-  .btn .small{display:block;font-size:12px;font-weight:500;opacity:.8;margin-top:2px;}
-  .field{margin:14px 0;}
-  .field label{display:block;font-size:12px;letter-spacing:.04em;color:var(--faint);margin-bottom:7px;}
-  .field input,.field textarea{width:100%;max-width:100%;min-width:0;-webkit-appearance:none;appearance:none;background:var(--ink);border:1px solid var(--line);color:var(--mist);border-radius:12px;padding:14px;font-size:16px;font-family:inherit;}
+  .btn+.btn{margin-top:var(--space-10);}
+  .btn .small{display:block;font-size:var(--text-12);font-weight:500;opacity:.8;margin-top:var(--space-2);}
+  .field{margin:var(--space-14) 0;}
+  .field label{display:block;font-size:var(--text-12);letter-spacing:.04em;color:var(--faint);margin-bottom:var(--space-7);}
+  .field input,.field textarea{width:100%;max-width:100%;min-width:0;-webkit-appearance:none;appearance:none;background:var(--ink);border:1px solid var(--line);color:var(--mist);border-radius:var(--radius-12);padding:var(--space-14);font-size:var(--text-16);font-family:inherit;}
   .field input[type=date]{text-align:left;}
-  .field .hint{font-size:11px;color:var(--faint);margin-top:6px;}
+  .field .hint{font-size:var(--text-caption);color:var(--faint);margin-top:var(--space-6);}
   .two{display:flex;gap:12px;}.two .field{flex:1;}
-  .seg{display:flex;background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin:4px 0 16px;}
-  .seg button{flex:1;min-width:0;background:0;border:0;color:var(--faint);font-family:inherit;font-size:13px;font-weight:600;padding:9px 0;border-radius:9px;cursor:pointer;}
+  .seg{display:flex;background:var(--ink);border:1px solid var(--line);border-radius:var(--radius-12);padding:var(--space-4);gap:4px;margin:var(--space-4) 0 var(--space-16);}
+  .seg button{flex:1;min-width:0;background:0;border:0;color:var(--faint);font-family:inherit;font-size:var(--text-small);font-weight:600;padding:var(--space-9) 0;border-radius:var(--radius-9);cursor:pointer;}
   .seg button.on{background:var(--horizon);color:#fff;}
-  .qrow{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line);}
+  .qrow{display:flex;align-items:center;gap:12px;padding:var(--space-12) 0;border-bottom:1px solid var(--line);}
   .qrow:last-of-type{border-bottom:0;}
   .qrow .meta{flex:1;min-width:0;}
-  .qrow .meta b{font-size:15px;font-weight:600;}
-  .qrow .meta small{display:block;color:var(--faint);font-size:11px;margin-top:2px;}
+  .qrow .meta b{font-size:var(--text-body);font-weight:600;}
+  .qrow .meta small{display:block;color:var(--faint);font-size:var(--text-caption);margin-top:var(--space-2);}
   .mini{display:flex;align-items:center;gap:10px;}
-  .mini button{width:38px;height:38px;border-radius:10px;border:1px solid var(--line);background:var(--ink);color:var(--mist);font-size:20px;cursor:pointer;}
-  .mini .val{min-width:28px;text-align:center;font-size:19px;font-variant-numeric:tabular-nums;}
-  .summary{background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:13px;margin:14px 0;text-align:center;font-size:14px;}
+  .mini button{width:38px;height:38px;border-radius:var(--radius-10);border:1px solid var(--line);background:var(--ink);color:var(--mist);font-size:var(--text-20);cursor:pointer;}
+  .mini .val{min-width:28px;text-align:center;font-size:var(--text-19);font-variant-numeric:tabular-nums;}
+  .summary{background:var(--ink);border:1px solid var(--line);border-radius:var(--radius-12);padding:var(--space-13);margin:var(--space-14) 0;text-align:center;font-size:var(--text-14);}
   .summary b{color:var(--beacon);}
-  .day{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line);cursor:pointer;}
+  .day{display:flex;align-items:center;gap:12px;padding:var(--space-12) var(--space-2);border-bottom:1px solid var(--line);cursor:pointer;}
   .day:last-child{border-bottom:0;}
-  .day .date{flex:1;font-size:14px;}
-  .day .date small{display:block;color:var(--faint);font-size:11px;margin-top:2px;}
-  .tag{font-size:11px;padding:4px 9px;border-radius:999px;border:1px solid var(--line);color:var(--faint);white-space:nowrap;}
+  .day .date{flex:1;font-size:var(--text-14);}
+  .day .date small{display:block;color:var(--faint);font-size:var(--text-caption);margin-top:var(--space-2);}
+  .tag{font-size:var(--text-caption);padding:var(--space-4) var(--space-9);border-radius:var(--radius-pill);border:1px solid var(--line);color:var(--faint);white-space:nowrap;}
   .tag.clear{color:var(--beacon);border-color:#2b5650;}
   .tag.dev{color:var(--squall);border-color:#443850;}
   .tag.log{color:var(--beacon);border-color:#2b5650;background:rgba(95,208,197,.08);cursor:pointer;}
   .dmark{flex:none;width:16px;display:flex;justify-content:center;align-items:center;color:var(--amber);}
-  .dmark .dot{width:11px;height:11px;border-radius:50%;}
+  .dmark .dot{width:11px;height:11px;border-radius:var(--radius-circle);}
   .dmark.made .dot{background:var(--beacon);}
   .dmark.made.unconf .dot{background:var(--faint);}
   .dmark.unconf{color:var(--faint);}
   .dmark.dev .dot{background:transparent;border:1.6px solid var(--squall);box-sizing:border-box;}
   .dmark.today .dot{background:transparent;border:1.6px solid var(--beacon);box-sizing:border-box;}
-  .barochip{flex:none;min-width:58px;text-align:center;background:var(--ink);border:1px solid var(--line);border-radius:11px;padding:4px 8px;font-size:10px;color:var(--mist);white-space:nowrap;}
-  .dicon{flex:none;display:flex;align-items:center;justify-content:center;padding:5px;cursor:pointer;margin:-2px -2px -2px 0;}
+  .barochip{flex:none;min-width:58px;text-align:center;background:var(--ink);border:1px solid var(--line);border-radius:var(--radius-11);padding:var(--space-4) var(--space-8);font-size:var(--text-micro);color:var(--mist);white-space:nowrap;}
+  .dicon{flex:none;display:flex;align-items:center;justify-content:center;padding:var(--space-5);cursor:pointer;margin:calc(var(--space-2) * -1) calc(var(--space-2) * -1) calc(var(--space-2) * -1) 0;}
   /* DEV NOTES — temporary scaffolding, safe to remove */
-  .devnotes-headrow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 0 18px;}
-  .logheadrow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:2px 0 18px;}
+  .devnotes-headrow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:var(--space-2) 0 var(--space-18);}
+  .logheadrow{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:var(--space-2) 0 var(--space-18);}
   .diarybook-link{flex:none;display:flex;align-items:center;justify-content:center;width:44px;height:44px;color:var(--beacon);cursor:pointer;}
-  .diarybook{position:relative;margin-top:4px;padding-bottom:8px;}
-  .diarybook::before,.diarybook::after{content:"";position:absolute;left:10px;right:10px;bottom:0;border-radius:0 0 13px 13px;background:var(--slate);border:1px solid var(--line);border-top:0;}
+  .diarybook{position:relative;margin-top:var(--space-4);padding-bottom:var(--space-8);}
+  .diarybook::before,.diarybook::after{content:"";position:absolute;left:10px;right:10px;bottom:0;border-radius:0 0 var(--radius-13) var(--radius-13);background:var(--slate);border:1px solid var(--line);border-top:0;}
   .diarybook::before{height:10px;bottom:-2px;z-index:0;}
   .diarybook::after{height:6px;left:16px;right:16px;bottom:-6px;opacity:.6;z-index:-1;}
-  .diarypage{position:relative;z-index:1;background:var(--ink);border:1px solid var(--line);border-radius:14px;padding:26px 20px 22px;text-align:center;min-height:340px;box-sizing:border-box;}
+  .diarypage{position:relative;z-index:1;background:var(--ink);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-26) var(--space-20) var(--space-22);text-align:center;min-height:340px;box-sizing:border-box;}
   .diarypage-eb{text-align:center;}
   .diarypage-eb.teal{color:var(--beacon);}
   .diarypage-eb.amber{color:var(--amber);}
   .diarypage-eb.squall{color:var(--squall);}
-  .diarypage-date{font-size:19px;font-weight:700;color:var(--mist);margin:4px 0 14px;}
-  .diarypage-land{display:flex;align-items:center;justify-content:center;gap:6px;font-size:14px;color:var(--amber);margin:0 0 14px;font-weight:600;}
-  .diarypage-baro{margin:0 0 18px;}
-  .diarypage-baro.muted{font-size:13px;color:var(--faint);}
-  .baro-level{display:flex;gap:4px;justify-content:center;margin-bottom:6px;}
-  .baro-level .seg{width:22px;height:6px;border-radius:3px;background:var(--line);}
+  .diarypage-date{font-size:var(--text-19);font-weight:700;color:var(--mist);margin:var(--space-4) 0 var(--space-14);}
+  .diarypage-land{display:flex;align-items:center;justify-content:center;gap:6px;font-size:var(--text-14);color:var(--amber);margin:0 0 var(--space-14);font-weight:600;}
+  .diarypage-baro{margin:0 0 var(--space-18);}
+  .diarypage-baro.muted{font-size:var(--text-small);color:var(--faint);}
+  .baro-level{display:flex;gap:4px;justify-content:center;margin-bottom:var(--space-6);}
+  .baro-level .seg{width:22px;height:6px;border-radius:var(--radius-3);background:var(--line);}
   .baro-level .seg.on{background:var(--beacon);}
-  .baro-lvl-label{font-size:12px;color:var(--faint);}
-  .diarypage-entry{text-align:left;max-width:340px;margin:0 auto 18px;font-size:14px;line-height:1.6;color:var(--mist);white-space:pre-wrap;}
+  .baro-lvl-label{font-size:var(--text-12);color:var(--faint);}
+  .diarypage-entry{text-align:left;max-width:340px;margin:0 auto var(--space-18);font-size:var(--text-14);line-height:var(--lh-read);color:var(--mist);white-space:pre-wrap;}
   .diarypage-entry.muted{color:var(--faint);text-align:center;white-space:normal;}
   .devnotes-link{flex:none;display:flex;align-items:center;justify-content:center;width:44px;height:44px;color:var(--beacon);cursor:pointer;}
-  .devnotes-textarea{min-height:190px;margin-bottom:14px;}
-  .devnotes-viewlink{text-align:center;font-size:12px;color:var(--beacon);letter-spacing:.02em;cursor:pointer;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);}
-  .devnotes-row{display:flex;align-items:flex-start;gap:12px;padding:13px 2px;border-bottom:1px solid var(--line);}
+  .devnotes-textarea{min-height:190px;margin-bottom:var(--space-14);}
+  .devnotes-viewlink{text-align:center;font-size:var(--text-12);color:var(--beacon);letter-spacing:.02em;cursor:pointer;margin-top:var(--space-16);padding-top:var(--space-14);border-top:1px solid var(--line);}
+  .devnotes-row{display:flex;align-items:flex-start;gap:12px;padding:var(--space-13) var(--space-2);border-bottom:1px solid var(--line);}
   .devnotes-row:last-child{border-bottom:0;}
-  .devnotes-row .devnotes-text{flex:1;min-width:0;font-size:14px;line-height:1.5;white-space:pre-wrap;word-break:break-word;}
-  .devnotes-row .devnotes-text small{display:block;color:var(--faint);font-size:11px;margin-top:5px;white-space:normal;}
-  .devnotes-del{flex:none;color:var(--faint);font-size:15px;cursor:pointer;padding:2px 4px;}
-  .devnotes-actions{display:flex;gap:10px;border-top:1px solid var(--line);margin-top:2px;padding-top:16px;}
+  .devnotes-row .devnotes-text{flex:1;min-width:0;font-size:var(--text-14);line-height:var(--lh-body);white-space:pre-wrap;word-break:break-word;}
+  .devnotes-row .devnotes-text small{display:block;color:var(--faint);font-size:var(--text-caption);margin-top:var(--space-5);white-space:normal;}
+  .devnotes-del{flex:none;color:var(--faint);font-size:var(--text-body);cursor:pointer;padding:var(--space-2) var(--space-4);}
+  .devnotes-actions{display:flex;gap:10px;border-top:1px solid var(--line);margin-top:var(--space-2);padding-top:var(--space-16);}
   .devnotes-actions .btn{width:auto;flex:1;margin-top:0;}
   /* /DEV NOTES */
-  .hz{display:flex;align-items:center;gap:12px;padding:13px 2px;border-bottom:1px solid var(--line);cursor:pointer;}
+  .hz{display:flex;align-items:center;gap:12px;padding:var(--space-13) var(--space-2);border-bottom:1px solid var(--line);cursor:pointer;}
   .hz:last-of-type{border-bottom:0;}
-  .hz .meta{flex:1;}.hz .meta b{font-size:15px;}.hz .meta small{display:block;color:var(--faint);font-size:11px;margin-top:2px;font-style:italic;}
+  .hz .meta{flex:1;}.hz .meta b{font-size:var(--text-body);}.hz .meta small{display:block;color:var(--faint);font-size:var(--text-caption);margin-top:var(--space-2);font-style:italic;}
   .hz .chev{color:var(--faint);}
-  .note{font-size:13px;line-height:1.55;color:var(--faint);}
+  .note{font-size:var(--text-small);line-height:var(--lh-1-55);color:var(--faint);}
   .note b{color:var(--mist);font-weight:600;}
-  .safety{border:1px solid #2c4a4a;background:#13211f;border-radius:14px;padding:14px;margin:14px 0;font-size:13px;line-height:1.55;color:#bfe0d8;}
+  .safety{border:1px solid #2c4a4a;background:#13211f;border-radius:var(--radius-md);padding:var(--space-14);margin:var(--space-14) 0;font-size:var(--text-small);line-height:var(--lh-1-55);color:#bfe0d8;}
   .safety b{color:var(--beacon);}
   .applink{color:var(--beacon);text-decoration:none;}
-  .supportbtn small{display:block;font-size:12px;font-weight:400;color:var(--faint);margin-top:3px;}
-  .chartwrap{background:var(--ink);border:1px solid var(--line);border-radius:14px;padding:12px 8px 6px;}
+  .supportbtn small{display:block;font-size:var(--text-12);font-weight:400;color:var(--faint);margin-top:var(--space-3);}
+  .chartwrap{background:var(--ink);border:1px solid var(--line);border-radius:var(--radius-md);padding:var(--space-12) var(--space-8) var(--space-6);}
   .chartwrap svg{width:100%;height:auto;display:block;}
-  .tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(14,26,43,.92);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:8px 0 calc(8px + var(--pad));display:flex;}
-  .tabs button{flex:1;background:0;border:0;color:var(--faint);font-family:inherit;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:6px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;}
+  .tabs{position:fixed;left:0;right:0;bottom:0;background:rgba(14,26,43,.92);backdrop-filter:blur(12px);border-top:1px solid var(--line);padding:var(--space-8) 0 calc(var(--space-8) + var(--pad));display:flex;}
+  .tabs button{flex:1;background:0;border:0;color:var(--faint);font-family:inherit;font-size:var(--text-micro);letter-spacing:.08em;text-transform:uppercase;padding:var(--space-6) 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:5px;}
   .tabs button svg{width:22px;height:22px;stroke:var(--faint);fill:none;stroke-width:1.7;}
   .tabs button.on{color:var(--beacon);}.tabs button.on svg{stroke:var(--beacon);}
   .scrim{position:fixed;inset:0;background:rgba(6,12,20,.7);display:none;align-items:flex-end;justify-content:center;z-index:50;}
   .scrim.on{display:flex;}
-  .sheet{background:var(--slate);border:1px solid var(--line);border-radius:22px;width:100%;max-width:520px;padding:56px 20px 26px;margin-bottom:calc(10px + var(--pad));animation:rise .28s ease;max-height:calc(92vh - var(--padtop));max-height:calc(92dvh - var(--padtop));overflow-y:auto;overflow-x:hidden;position:relative;transition:border-radius .2s ease,margin-bottom .2s ease,border-bottom-color .2s ease;}
+  .sheet{background:var(--slate);border:1px solid var(--line);border-radius:var(--radius-22);width:100%;max-width:520px;padding:var(--space-56) var(--space-20) var(--space-26);margin-bottom:calc(var(--space-10) + var(--pad));animation:rise .28s ease;max-height:calc(92vh - var(--padtop));max-height:calc(92dvh - var(--padtop));overflow-y:auto;overflow-x:hidden;position:relative;transition:border-radius .2s ease,margin-bottom .2s ease,border-bottom-color .2s ease;}
   @keyframes rise{from{transform:translateY(40px);opacity:.6}to{transform:none;opacity:1}}
-  .sheetx{position:absolute;top:10px;right:10px;width:44px;height:44px;border-radius:50%;background:rgba(14,26,43,.6);border:1px solid var(--line);color:var(--mist);font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;}
-  .sheet h2{margin:0 0 6px;font-size:17px;}
-  .sheet p{font-size:14px;line-height:1.55;color:var(--faint);margin:0 0 16px;}
-  .sheet.noclose{padding-top:22px;}
-  .sheet.midscroll{border-radius:22px 22px 0 0;border-bottom-color:transparent;margin-bottom:0;}
-  .sheetx+.eyebrow,.sheetx+h2,.sheetx+.sheethead{padding-right:54px;}
-  .toast{position:fixed;left:50%;bottom:calc(86px + var(--pad));transform:translateX(-50%);background:#06231f;color:var(--beacon);border:1px solid var(--beacon);padding:11px 18px;border-radius:999px;font-size:13px;z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;}
+  .sheetx{position:absolute;top:10px;right:10px;width:44px;height:44px;border-radius:var(--radius-circle);background:rgba(14,26,43,.6);border:1px solid var(--line);color:var(--mist);font-size:var(--text-16);line-height:var(--lh-1);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:5;}
+  .sheet h2{margin:0 0 var(--space-6);font-size:var(--text-heading);}
+  .sheet p{font-size:var(--text-14);line-height:var(--lh-1-55);color:var(--faint);margin:0 0 var(--space-16);}
+  .sheet.noclose{padding-top:var(--space-22);}
+  .sheet.midscroll{border-radius:var(--radius-22) var(--radius-22) 0 0;border-bottom-color:transparent;margin-bottom:0;}
+  .sheetx+.eyebrow,.sheetx+h2,.sheetx+.sheethead{padding-right:var(--space-54);}
+  .toast{position:fixed;left:50%;bottom:calc(86px + var(--pad));transform:translateX(-50%);background:#06231f;color:var(--beacon);border:1px solid var(--beacon);padding:var(--space-11) var(--space-18);border-radius:var(--radius-pill);font-size:var(--text-small);z-index:60;opacity:0;transition:opacity .25s;pointer-events:none;}
   .toast.on{opacity:1;}
   #gate{position:fixed;inset:0;z-index:400;background:#0A1525 url(launch-iphone17pro.png) center/cover no-repeat;touch-action:none;transition:transform .52s cubic-bezier(.4,0,.2,1);will-change:transform;}
   #gate .hint{position:absolute;left:0;right:0;bottom:calc(60px + var(--pad));display:flex;flex-direction:column;align-items:center;gap:7px;color:var(--faint);opacity:0;animation:gateHint .45s ease .12s forwards;}
-  #gate .hint span{font-size:11px;letter-spacing:.22em;text-transform:uppercase;}
+  #gate .hint span{font-size:var(--text-caption);letter-spacing:.22em;text-transform:uppercase;}
   #gate .chev{width:26px;height:26px;stroke:var(--beacon);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;animation:chevBob 1.9s ease-in-out infinite;}
   @keyframes gateHint{to{opacity:1;}}
   @keyframes chevBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
   @media (prefers-reduced-motion:reduce){#gate{transition:none;}#gate .hint{animation:none;opacity:1;}#gate .chev{animation:none;}}
-  .bvrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid #1b2c40;cursor:pointer;}
+  .bvrow{display:flex;align-items:center;gap:10px;padding:var(--space-10) 0;border-top:1px solid #1b2c40;cursor:pointer;}
   .bvrow:first-child{border-top:0;}
   .bvn{flex:1;min-width:0;}
-  .bvn b{font-size:14px;color:var(--mist);}
-  .bvn small{display:block;color:var(--faint);font-size:11px;margin-top:2px;}
-  .bvfig{text-align:right;font-variant-numeric:tabular-nums;font-size:14px;color:var(--mist);white-space:nowrap;}
-  .bvfig small{display:block;color:var(--faint);font-size:11px;margin-top:2px;}
-  .bvchev{color:var(--faint);font-size:16px;flex:none;}
-  .bvtag{font-size:9.5px;color:#E8B65A;border:1px solid #E8B65A;border-radius:6px;padding:1px 5px;margin-left:6px;vertical-align:middle;letter-spacing:.04em;}
-  .vstats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
-  .vstat{background:rgba(95,208,197,.06);border:1px solid #1b2c40;border-radius:10px;padding:9px 11px;}
-  .vk{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);}
-  .vv{font-size:18px;color:var(--mist);font-variant-numeric:tabular-nums;margin-top:3px;}
-  .awgrp{margin-top:15px;}
-  .awgrp:first-child{margin-top:2px;}
-  .awhd{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin-bottom:8px;}
+  .bvn b{font-size:var(--text-14);color:var(--mist);}
+  .bvn small{display:block;color:var(--faint);font-size:var(--text-caption);margin-top:var(--space-2);}
+  .bvfig{text-align:right;font-variant-numeric:tabular-nums;font-size:var(--text-14);color:var(--mist);white-space:nowrap;}
+  .bvfig small{display:block;color:var(--faint);font-size:var(--text-caption);margin-top:var(--space-2);}
+  .bvchev{color:var(--faint);font-size:var(--text-16);flex:none;}
+  .bvtag{font-size:var(--text-9-5);color:#E8B65A;border:1px solid #E8B65A;border-radius:var(--radius-6);padding:var(--space-1) var(--space-5);margin-left:var(--space-6);vertical-align:middle;letter-spacing:.04em;}
+  .vstats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:var(--space-8);}
+  .vstat{background:rgba(95,208,197,.06);border:1px solid #1b2c40;border-radius:var(--radius-10);padding:var(--space-9) var(--space-11);}
+  .vk{font-size:var(--text-micro);letter-spacing:.07em;text-transform:uppercase;color:var(--faint);}
+  .vv{font-size:var(--text-18);color:var(--mist);font-variant-numeric:tabular-nums;margin-top:var(--space-3);}
+  .awgrp{margin-top:var(--space-15);}
+  .awgrp:first-child{margin-top:var(--space-2);}
+  .awhd{font-size:var(--text-caption);letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin-bottom:var(--space-8);}
   .awwrap{display:flex;flex-wrap:wrap;gap:7px;}
-  .award{display:flex;flex-direction:column;border:1px solid #1f3147;border-radius:9px;padding:6px 9px;opacity:.42;cursor:pointer;}
-  .award b{font-size:12px;color:var(--mist);font-weight:600;line-height:1.2;}
-  .award small{font-size:9.5px;color:var(--faint);margin-top:2px;}
+  .award{display:flex;flex-direction:column;border:1px solid #1f3147;border-radius:var(--radius-9);padding:var(--space-6) var(--space-9);opacity:.42;cursor:pointer;}
+  .award b{font-size:var(--text-12);color:var(--mist);font-weight:600;line-height:var(--lh-tight);}
+  .award small{font-size:var(--text-9-5);color:var(--faint);margin-top:var(--space-2);}
   .award.on{opacity:1;border-color:#2C6B65;background:rgba(95,208,197,.10);}
   .award.on b{color:#7FE0D5;}
   .award.next{opacity:.85;border-style:dashed;border-color:#7a5a25;}
   .award.next b{color:#E8B65A;}
   .award.next small{color:#caa25e;}
   .awdetail{text-align:center;}
-  .awdetail-motif{width:60px;height:60px;margin:2px auto 14px;}
+  .awdetail-motif{width:60px;height:60px;margin:var(--space-2) auto var(--space-14);}
   .awdetail-motif svg{width:100%;height:100%;display:block;}
   .awdetail-motif.teal{color:var(--beacon);}
   .awdetail-motif.amber{color:var(--amber);}
   .awdetail-motif.locked{color:#3a5170;}
-  .awdetail-cat{font-size:11px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin-bottom:6px;}
-  .awdetail-label{font-size:20px;font-weight:700;color:var(--mist);margin:0 0 10px;}
+  .awdetail-cat{font-size:var(--text-caption);letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin-bottom:var(--space-6);}
+  .awdetail-label{font-size:var(--text-20);font-weight:700;color:var(--mist);margin:0 0 var(--space-10);}
   .awdetail-label.locked{opacity:.65;}
-  .awdetail-date{font-size:12.5px;color:var(--faint);margin:0 0 10px;}
-  .awdetail .awdetail-line{font-size:14px;line-height:1.55;color:var(--mist);max-width:320px;margin:0 auto;}
-  .awdetail-ring{width:112px;height:112px;margin:6px auto 10px;}
+  .awdetail-date{font-size:var(--text-12-5);color:var(--faint);margin:0 0 var(--space-10);}
+  .awdetail .awdetail-line{font-size:var(--text-14);line-height:var(--lh-1-55);color:var(--mist);max-width:320px;margin:0 auto;}
+  .awdetail-ring{width:112px;height:112px;margin:var(--space-6) auto var(--space-10);}
   .awdetail-ring svg{width:100%;height:100%;display:block;}
   .awdetail-ring.teal{color:var(--beacon);}
   .awdetail-ring.amber{color:var(--amber);}
-  .awdetail-togo{font-size:13px;color:var(--faint);margin-top:2px;}
-  .awdetail+.btn{margin-top:18px;}
-  .completion-rule{height:3px;background:var(--amber);margin:-22px -20px 20px;}
+  .awdetail-togo{font-size:var(--text-small);color:var(--faint);margin-top:var(--space-2);}
+  .awdetail+.btn{margin-top:var(--space-18);}
+  .completion-rule{height:3px;background:var(--amber);margin:calc(var(--space-22) * -1) calc(var(--space-20) * -1) var(--space-20);}
   .completion{text-align:center;}
   .completion-eyebrow{color:var(--amber);}
-  .completion-motif{width:88px;height:88px;margin:6px auto 14px;color:var(--amber);}
+  .completion-motif{width:88px;height:88px;margin:var(--space-6) auto var(--space-14);color:var(--amber);}
   .completion-motif svg{width:100%;height:100%;display:block;}
-  .completion-h2{margin:0 0 2px;}
-  .completion-era{font-size:13px;color:var(--faint);margin:0 0 8px;}
-  .completion-days{font-size:13px;color:var(--mist);font-weight:600;margin:0 0 16px;}
+  .completion-h2{margin:0 0 var(--space-2);}
+  .completion-era{font-size:var(--text-small);color:var(--faint);margin:0 0 var(--space-8);}
+  .completion-days{font-size:var(--text-small);color:var(--mist);font-weight:600;margin:0 0 var(--space-16);}
   .completion-line{text-align:center;}
   .plog{text-align:center;}
-  .plog-h{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:24px 0 10px;text-align:center;}
+  .plog-h{font-size:var(--text-caption);letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:var(--space-24) 0 var(--space-10);text-align:center;}
   .plog-passage{max-width:420px;margin:0 auto;text-align:left;}
-  .plog-passage p{margin:0 0 14px;}
-  .plog-stat{display:flex;justify-content:space-between;gap:10px;padding:8px 2px;border-bottom:1px solid var(--line);font-size:13px;text-align:left;}
+  .plog-passage p{margin:0 0 var(--space-14);}
+  .plog-stat{display:flex;justify-content:space-between;gap:10px;padding:var(--space-8) var(--space-2);border-bottom:1px solid var(--line);font-size:var(--text-small);text-align:left;}
   .plog-stat:last-child{border-bottom:0;}
   .plog-stat .k{color:var(--faint);}
   .plog-stat .v{color:var(--mist);font-weight:600;text-align:right;}
-  .plog-port,.plog-award{display:flex;justify-content:space-between;gap:10px;padding:7px 2px;border-bottom:1px solid var(--line);font-size:13.5px;color:var(--mist);text-align:left;}
+  .plog-port,.plog-award{display:flex;justify-content:space-between;gap:10px;padding:var(--space-7) var(--space-2);border-bottom:1px solid var(--line);font-size:var(--text-13-5);color:var(--mist);text-align:left;}
   .plog-port:last-child,.plog-award:last-child{border-bottom:0;}
-  .plog-port-date,.plog-award .k{color:var(--faint);font-size:12.5px;text-align:right;}
-  .helmhead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:16px;}
+  .plog-port-date,.plog-award .k{color:var(--faint);font-size:var(--text-12-5);text-align:right;}
+  .helmhead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:var(--space-16);}
   .helmhead h1{margin:0;}
-  .clocks{display:flex;flex-direction:column;align-items:flex-end;gap:4px;padding-bottom:3px;}
-  .clk{display:flex;align-items:baseline;gap:7px;line-height:1.05;white-space:nowrap;}
-  .clk .cl{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);}
-  .clk .cv{font-variant-numeric:tabular-nums;letter-spacing:.02em;font-size:13px;color:var(--faint);}
-  .clk.hero .cv{font-size:18px;color:var(--mist);}
+  .clocks{display:flex;flex-direction:column;align-items:flex-end;gap:4px;padding-bottom:var(--space-3);}
+  .clk{display:flex;align-items:baseline;gap:7px;line-height:var(--lh-1-05);white-space:nowrap;}
+  .clk .cl{font-size:var(--text-9);letter-spacing:.1em;text-transform:uppercase;color:var(--faint);}
+  .clk .cv{font-variant-numeric:tabular-nums;letter-spacing:.02em;font-size:var(--text-small);color:var(--faint);}
+  .clk.hero .cv{font-size:var(--text-18);color:var(--mist);}
   .clk .sec{opacity:.5;}
-  .fill{font-size:10.5px;color:var(--faint);font-variant-numeric:tabular-nums;margin-top:4px;letter-spacing:.01em;}
-  .hero{text-align:center;margin:4px 0 18px;}
-  .goal{padding:15px 17px;}
-  .gv{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--beacon);}
-  .gdiv{height:1px;background:#21364f;margin:11px 0 12px;}
+  .fill{font-size:var(--text-10-5);color:var(--faint);font-variant-numeric:tabular-nums;margin-top:var(--space-4);letter-spacing:.01em;}
+  .hero{text-align:center;margin:var(--space-4) 0 var(--space-18);}
+  .goal{padding:var(--space-15) var(--space-17);}
+  .gv{font-size:var(--text-10-5);letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--beacon);}
+  .gdiv{height:1px;background:#21364f;margin:var(--space-11) 0 var(--space-12);}
   .grow{display:flex;justify-content:space-between;align-items:baseline;}
-  .gk{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);}
-  .gto{font-size:12px;color:var(--faint);}
-  .gport{font-size:22px;font-weight:600;color:var(--mist);margin-top:3px;}
-  .gbar{height:8px;border-radius:4px;background:#20344d;margin-top:12px;overflow:hidden;}
-  .gbar > i{display:block;height:100%;border-radius:4px;background:var(--beacon);width:0;}
-  .gcap{font-size:11px;color:var(--faint);margin-top:8px;}
-  .vstrip{margin-top:14px;}
-  .vslab{font-size:8.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin-bottom:6px;}
+  .gk{font-size:var(--text-9);letter-spacing:.16em;text-transform:uppercase;color:var(--faint);}
+  .gto{font-size:var(--text-12);color:var(--faint);}
+  .gport{font-size:var(--text-title);font-weight:600;color:var(--mist);margin-top:var(--space-3);}
+  .gbar{height:8px;border-radius:var(--radius-4);background:#20344d;margin-top:var(--space-12);overflow:hidden;}
+  .gbar > i{display:block;height:100%;border-radius:var(--radius-4);background:var(--beacon);width:0;}
+  .gcap{font-size:var(--text-caption);color:var(--faint);margin-top:var(--space-8);}
+  .vstrip{margin-top:var(--space-14);}
+  .vslab{font-size:var(--text-8-5);letter-spacing:.13em;text-transform:uppercase;color:var(--faint);margin-bottom:var(--space-6);}
   .vstrip svg,.legwrap svg{display:block;}
-  .legwrap{margin-top:15px;}
-  .leglab{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
-  .leglab .l{font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);}
-  .leglab .r{font-size:9px;letter-spacing:.03em;color:var(--faint);}
-  .gcrumb{font-size:11.5px;margin-top:14px;line-height:1.4;color:var(--faint);}
+  .legwrap{margin-top:var(--space-15);}
+  .leglab{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:var(--space-6);}
+  .leglab .l{font-size:var(--text-8-5);letter-spacing:.14em;text-transform:uppercase;color:var(--amber);}
+  .leglab .r{font-size:var(--text-9);letter-spacing:.03em;color:var(--faint);}
+  .gcrumb{font-size:var(--text-11-5);margin-top:var(--space-14);line-height:var(--lh-1-4);color:var(--faint);}
   .gcrumb .tgt{color:var(--amber);}
   .gcrumb .nx,.gcrumb .ar{color:#4a5d78;}
-  .diary{margin-top:16px;margin-bottom:20px;text-align:left}
-  .dlab{font-size:11px;color:var(--faint);margin-bottom:9px}
-  .baroWrap{margin:6px 0 4px}
-  .baroReading{text-align:center;color:var(--beacon);font-weight:600;font-size:15px;margin-bottom:16px}
-  .baroSlide{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:linear-gradient(90deg,#6b7a91,var(--beacon));outline:none;margin:0;padding:0}
-  .baroSlide::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:50%;background:var(--slate);border:2px solid var(--beacon);cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.45)}
-  .baroSlide::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--slate);border:2px solid var(--beacon);cursor:pointer}
-  .baroScale{display:flex;justify-content:space-between;margin-top:16px}
-  .baroScale span{font-size:8px;color:var(--faint);flex:1;text-align:center}
+  .diary{margin-top:var(--space-16);margin-bottom:var(--space-20);text-align:left}
+  .dlab{font-size:var(--text-caption);color:var(--faint);margin-bottom:var(--space-9)}
+  .baroWrap{margin:var(--space-6) 0 var(--space-4)}
+  .baroReading{text-align:center;color:var(--beacon);font-weight:600;font-size:var(--text-body);margin-bottom:var(--space-16)}
+  .baroSlide{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:var(--radius-3);background:linear-gradient(90deg,#6b7a91,var(--beacon));outline:none;margin:0;padding:0}
+  .baroSlide::-webkit-slider-thumb{-webkit-appearance:none;width:24px;height:24px;border-radius:var(--radius-circle);background:var(--slate);border:2px solid var(--beacon);cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,.45)}
+  .baroSlide::-moz-range-thumb{width:24px;height:24px;border-radius:var(--radius-circle);background:var(--slate);border:2px solid var(--beacon);cursor:pointer}
+  .baroScale{display:flex;justify-content:space-between;margin-top:var(--space-16)}
+  .baroScale span{font-size:var(--text-8);color:var(--faint);flex:1;text-align:center}
   .baroScale span:first-child{text-align:left}.baroScale span:last-child{text-align:right}
-  .dreason{font-size:12.5px;color:var(--mist);margin:22px 0 10px;line-height:1.45}
-  .diary + .btn{margin-top:4px}
-  .dnote{width:100%;box-sizing:border-box;background:#0e1b2e;border:1px solid var(--line);border-radius:10px;color:var(--mist);padding:10px;font:inherit;font-size:16px;resize:none;margin-top:2px}
-  .dnote-lg{min-height:150px;padding:14px;line-height:1.6;margin-top:4px}
+  .dreason{font-size:var(--text-12-5);color:var(--mist);margin:var(--space-22) 0 var(--space-10);line-height:var(--lh-1-45)}
+  .diary + .btn{margin-top:var(--space-4)}
+  .dnote{width:100%;box-sizing:border-box;background:#0e1b2e;border:1px solid var(--line);border-radius:var(--radius-10);color:var(--mist);padding:var(--space-10);font:inherit;font-size:var(--text-16);resize:none;margin-top:var(--space-2)}
+  .dnote-lg{min-height:150px;padding:var(--space-14);line-height:var(--lh-read);margin-top:var(--space-4)}
   .baroSlide.notset{background:#20344d;opacity:.75}
   .baroSlide.notset::-webkit-slider-thumb{opacity:0}
   .baroSlide.notset::-moz-range-thumb{opacity:0}
   .baroReading.unset{color:#3a5170;font-weight:400}
-  .barohint{text-align:center;font-size:9px;color:#3a5170;margin-top:9px}
+  .barohint{text-align:center;font-size:var(--text-9);color:#3a5170;margin-top:var(--space-9)}
   .daytoggle button.on[data-m="clear"]{background:var(--beacon);color:#0c1a2a}
   .daytoggle button.on[data-m="weather"]{background:var(--squall);color:#0c1a2a}
   .dsnip{color:var(--beacon);font-style:italic;opacity:.85}
-  .catchlist{max-height:46vh;overflow:auto;-webkit-overflow-scrolling:touch;margin:4px 0 14px}
-  .portslink{font-size:12px;color:var(--beacon);margin-top:14px;padding-top:13px;border-top:1px solid #21364f;cursor:pointer;letter-spacing:.02em;text-align:center;}
-  .statusline{font-size:13.5px;line-height:1.5;margin:2px 2px 12px;color:var(--mist);}
+  .catchlist{max-height:46vh;overflow:auto;-webkit-overflow-scrolling:touch;margin:var(--space-4) 0 var(--space-14)}
+  .portslink{font-size:var(--text-12);color:var(--beacon);margin-top:var(--space-14);padding-top:var(--space-13);border-top:1px solid #21364f;cursor:pointer;letter-spacing:.02em;text-align:center;}
+  .statusline{font-size:var(--text-13-5);line-height:var(--lh-body);margin:var(--space-2) var(--space-2) var(--space-12);color:var(--mist);}
   .statusline .lead{color:var(--beacon);font-weight:600;}
   .statusline.weather .lead{color:var(--squall);}
-  .weatherlink{text-align:center;font-size:12px;color:var(--faint);margin-top:11px;padding:6px;cursor:pointer;letter-spacing:.02em;}
-  .portshead{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:0 0 4px;}
+  .weatherlink{text-align:center;font-size:var(--text-12);color:var(--faint);margin-top:var(--space-11);padding:var(--space-6);cursor:pointer;letter-spacing:.02em;}
+  .portshead{font-size:var(--text-caption);letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin:0 0 var(--space-4);}
 </style>
 </head>
 <body>
@@ -367,16 +367,16 @@
       <div class="portslink" id="portsLink">Ports of call &rsaquo;</div>
     </div>
     <div class="statusline" id="conditions">&mdash;</div>
-    <div class="note" id="legTrim" style="margin:0 2px 6px"></div>
+    <div class="note" id="legTrim" style="margin:0 var(--space-2) var(--space-6)"></div>
     <div class="ribbon">
       <div class="pill"><div class="k">Trim &middot; this leg</div><div class="v mono" id="pTrim">&mdash;</div></div>
       <div class="pill"><div class="k">Salvage &middot; banked</div><div class="v mono" id="pSaved">&mdash;</div><div class="fill" id="salvFill" style="display:none"></div></div>
     </div>
-    <div style="margin-top:16px">
+    <div style="margin-top:var(--space-16)">
       <button class="btn primary" id="completeBtn"><span>Close the day&rsquo;s run</span></button>
       <div class="weatherlink" id="deviateBtn">Log today as weather</div>
     </div>
-    <div class="card" style="margin-top:18px"><div id="baroCard"></div></div>
+    <div class="card" style="margin-top:var(--space-18)"><div id="baroCard"></div></div>
     <div class="unconfirmedNote" id="unconfirmedNote" style="display:none"></div>
   </section>
 
@@ -395,12 +395,12 @@
         <h2>Made good</h2>
         <div class="trimline" id="trimLine" style="display:none"></div>
         <div class="chartwrap"><div id="salvChart"></div></div>
-        <p class="note" style="margin:10px 0 0">A clear day adds the most &middot; a weather day far less &middot; landfalls marked where reached.</p>
+        <p class="note" style="margin:var(--space-10) 0 0">A clear day adds the most &middot; a weather day far less &middot; landfalls marked where reached.</p>
       </div>
       <div class="card">
         <h2>Your run</h2>
         <div id="runRibbon"></div>
-        <p class="note" style="margin:12px 0 0">Each square a day &middot; teal made good &middot; violet weathered &middot; a ring marks a landfall.</p>
+        <p class="note" style="margin:var(--space-12) 0 0">Each square a day &middot; teal made good &middot; violet weathered &middot; a ring marks a landfall.</p>
       </div>
       <div class="card" id="byVoyageCard">
         <h2>By voyage</h2>
@@ -436,21 +436,21 @@
     </div>
     <div class="card">
       <h2>Your hazards &amp; usual week</h2>
-      <p class="note" style="margin:0 0 12px">The hazards on your chart, and how often they crossed your bow in a usual week. Everything is reckoned from these.</p>
+      <p class="note" style="margin:0 0 var(--space-12)">The hazards on your chart, and how often they crossed your bow in a usual week. Everything is reckoned from these.</p>
       <button class="btn ghost" id="editDrinksBtn">The hazards</button>
       <button class="btn ghost" id="editBaseBtn">Your usual week</button>
     </div>
     <div class="card">
       <h2>The ship’s papers</h2>
-      <p class="note" style="margin:0 0 12px">Everything lives only on this vessel. Copy the papers now and then so a cleared deck can’t lose your passage.</p>
-      <p class="note" style="margin:0 0 12px">Onward is in beta — things may change and bugs are possible. Feedback is genuinely wanted: <a class="applink" href="mailto:hello@voyageonward.com">hello@voyageonward.com</a></p>
-      <p class="note" style="margin:0 0 12px"><b>Where your data lives</b> — Everything Onward knows is stored on this phone, in this browser. Nothing is uploaded; there is no account and no way to recover a lost record. Saving your papers now and then is the only backup there is. Adding Onward to your Home Screen also protects it from the browser clearing old site data.</p>
+      <p class="note" style="margin:0 0 var(--space-12)">Everything lives only on this vessel. Copy the papers now and then so a cleared deck can’t lose your passage.</p>
+      <p class="note" style="margin:0 0 var(--space-12)">Onward is in beta — things may change and bugs are possible. Feedback is genuinely wanted: <a class="applink" href="mailto:hello@voyageonward.com">hello@voyageonward.com</a></p>
+      <p class="note" style="margin:0 0 var(--space-12)"><b>Where your data lives</b> — Everything Onward knows is stored on this phone, in this browser. Nothing is uploaded; there is no account and no way to recover a lost record. Saving your papers now and then is the only backup there is. Adding Onward to your Home Screen also protects it from the browser clearing old site data.</p>
       <button class="btn ghost" id="backupBtn">Copy the papers</button>
       <button class="btn ghost" id="restoreBtn">Restore from papers</button>
     </div>
     <div class="safety"><b>Before you cast off.</b> If you’re leaving a long, hard run behind, the first days out can be rough going. If you ever feel genuinely unwell — shaking, sweating, queasy or very on edge — don’t tough it out alone; get a professional aboard. That’s seamanship, not weakness.</div>
     <button class="btn danger" id="wipeBtn">Scuttle &amp; start over</button>
-    <p class="note" style="text-align:center;margin-top:18px">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.10.0 · beta</span></p>
+    <p class="note" style="text-align:center;margin-top:var(--space-18)">Onward · sails offline · nothing leaves this vessel<br><span style="opacity:.55">v0.11.1 · beta</span></p>
   </section>
 
   <nav class="tabs">
@@ -831,38 +831,38 @@
   function regionalSVG(focus){
     const P={horn:[30,57],falk:[93,23],sg:[261,44],eleph:[122,97],beset:[300,210],sink:[141,156],launch:[132,101],jc:[198,69]};
     const dot=(p,r,c)=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="'+r+'" fill="'+c+'"/>';
-    const lab=(p,t,dx,dy,anc)=>'<text x="'+(p[0]+dx)+'" y="'+(p[1]+dy)+'" font-size="8" fill="#9fb3c8" text-anchor="'+(anc||'start')+'">'+t+'</text>';
+    const lab=(p,t,dx,dy,anc)=>'<text x="'+(p[0]+dx)+'" y="'+(p[1]+dy)+'" font-size="var(--text-8)" fill="#9fb3c8" text-anchor="'+(anc||'start')+'">'+t+'</text>';
     let s='<svg viewBox="0 0 320 232" width="100%" style="display:block">';
     s+='<rect x="0" y="0" width="320" height="232" rx="6" fill="#0b1622"/>';
     s+='<path d="M0 232 L0 202 Q90 192 175 203 T320 200 L320 232 Z" fill="#16273a" opacity="0.6"/>';
     s+='<path d="M62 232 L96 150 L110 158 L92 232 Z" fill="#16273a" opacity="0.45"/>';
     s+='<path d="M0 28 L42 40 L34 66 L0 72 Z" fill="#16273a" opacity="0.45"/>';
-    s+='<text x="158" y="226" font-size="8" fill="#7b91a8" text-anchor="middle" letter-spacing="1">WEDDELL SEA</text>';
-    s+='<text x="14" y="40" font-size="8" fill="#7b91a8">S. AMERICA</text>';
+    s+='<text x="158" y="226" font-size="var(--text-8)" fill="#7b91a8" text-anchor="middle" letter-spacing="1">WEDDELL SEA</text>';
+    s+='<text x="14" y="40" font-size="var(--text-8)" fill="#7b91a8">S. AMERICA</text>';
     s+='<polyline points="261,44 300,210" fill="none" stroke="#E8B65A" stroke-width="1.6" opacity="0.85"/>';
     s+='<polyline points="300,210 141,156 132,101" fill="none" stroke="#9fb3c8" stroke-width="1.5" stroke-dasharray="2 3" opacity="0.85"/>';
     s+='<polyline points="122,97 198,69 261,44" fill="none" stroke="#5FD0C5" stroke-width="1.6" stroke-dasharray="1 3.5" stroke-linecap="round"/>';
     [['horn','Cape Horn',-4,4,'end'],['falk','Falklands',6,3,'start'],['sg','South Georgia',-6,-4,'end'],['eleph','Elephant I.',6,-3,'start'],['beset','beset 1915',-4,-4,'end']].forEach(o=>{const p=P[o[0]];s+=dot(p,2,'#9fb3c8')+lab(p,o[1],o[2],o[3],o[4]);});
     if(focus&&P[focus==='drift'?'sink':focus]){const fp=P[focus==='drift'?'sink':focus];s+='<circle cx="'+fp[0]+'" cy="'+fp[1]+'" r="7" fill="none" stroke="#5FD0C5" stroke-width="1.4" opacity="0.6"/>'+dot(fp,3.4,'#5FD0C5');if(focus==='jamescaird')s+='<polyline points="122,97 198,69 261,44" fill="none" stroke="#5FD0C5" stroke-width="2.2" stroke-linecap="round"/>';}
-    s+='<g opacity="0.7"><line x1="284" y1="14" x2="284" y2="26" stroke="#7b91a8" stroke-width="1"/><path d="M284 12 l-3 5 h6 z" fill="#7b91a8"/><text x="284" y="36" font-size="7" fill="#7b91a8" text-anchor="middle">N</text></g>';
+    s+='<g opacity="0.7"><line x1="284" y1="14" x2="284" y2="26" stroke="#7b91a8" stroke-width="1"/><path d="M284 12 l-3 5 h6 z" fill="#7b91a8"/><text x="284" y="36" font-size="var(--text-7)" fill="#7b91a8" text-anchor="middle">N</text></g>';
     return s+'</svg>';
   }
   function southGeorgiaSVG(focus){
     const KH=[92,132],STR=[214,103],GRY=[238,110],MID=[150,103];
     const dot=(p,r,c)=>'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="'+r+'" fill="'+c+'"/>';
-    const lab=(p,t,dx,dy,anc)=>'<text x="'+(p[0]+dx)+'" y="'+(p[1]+dy)+'" font-size="8" fill="#9fb3c8" text-anchor="'+(anc||'start')+'">'+t+'</text>';
+    const lab=(p,t,dx,dy,anc)=>'<text x="'+(p[0]+dx)+'" y="'+(p[1]+dy)+'" font-size="var(--text-8)" fill="#9fb3c8" text-anchor="'+(anc||'start')+'">'+t+'</text>';
     let s='<svg viewBox="0 0 320 184" width="100%" style="display:block">';
     s+='<rect x="0" y="0" width="320" height="184" rx="6" fill="#0b1622"/>';
     s+='<path d="M40 120 Q80 96 150 99 Q220 102 284 92 Q256 128 196 132 Q120 140 72 138 Q48 134 40 120 Z" fill="#16273a" stroke="#2a3f57" stroke-width="1"/>';
     s+='<path d="M118 110 l7 -13 7 13 z M138 108 l6 -11 6 11 z M160 110 l7 -14 7 14 z M182 107 l6 -11 6 11 z" fill="#22364c"/>';
-    s+='<text x="160" y="150" font-size="8" fill="#7b91a8" text-anchor="middle" letter-spacing="1">SOUTH GEORGIA</text>';
+    s+='<text x="160" y="150" font-size="var(--text-8)" fill="#7b91a8" text-anchor="middle" letter-spacing="1">SOUTH GEORGIA</text>';
     s+='<path d="M92 132 Q126 96 214 103" fill="none" stroke="#5FD0C5" stroke-width="'+(focus==='crossing'?2.4:1.5)+'" stroke-dasharray="2 3"/>';
     s+=dot(KH,2.4,'#9fb3c8')+lab(KH,'King Haakon Bay',-6,8,'middle');
     s+=dot(STR,2.4,'#9fb3c8')+lab(STR,'Stromness',-2,-6,'end');
     s+=dot(GRY,2.4,'#9fb3c8')+lab(GRY,'Grytviken',6,12,'start');
     const F={haakon:KH,crossing:MID,stromness:STR,grytviken:GRY}[focus];
     if(F)s+='<circle cx="'+F[0]+'" cy="'+F[1]+'" r="7" fill="none" stroke="#5FD0C5" stroke-width="1.4" opacity="0.6"/>'+dot(F,3.4,'#5FD0C5');
-    s+='<g opacity="0.7"><line x1="298" y1="16" x2="298" y2="28" stroke="#7b91a8" stroke-width="1"/><path d="M298 14 l-3 5 h6 z" fill="#7b91a8"/><text x="298" y="38" font-size="7" fill="#7b91a8" text-anchor="middle">N</text></g>';
+    s+='<g opacity="0.7"><line x1="298" y1="16" x2="298" y2="28" stroke="#7b91a8" stroke-width="1"/><path d="M298 14 l-3 5 h6 z" fill="#7b91a8"/><text x="298" y="38" font-size="var(--text-7)" fill="#7b91a8" text-anchor="middle">N</text></g>';
     return s+'</svg>';
   }
   // Hand-built equirectangular world chart for the Spray's circumnavigation (schematic coastlines, real port positions).
@@ -902,7 +902,7 @@
     });
     if(typeof focus==="number"&&focus>=0){const x=px(ports[focus][1]),y=py(ports[focus][0]);
       const anc=x>248?'end':(x<74?'start':'middle'),lx=x>248?x-9:(x<74?x+9:x),ly=y>22?y-11:y+16;
-      g+='<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" fill="#E8B65A" font-size="9" font-weight="600" text-anchor="'+anc+'">'+names[focus]+'</text>';}
+      g+='<text x="'+lx.toFixed(1)+'" y="'+ly.toFixed(1)+'" fill="#E8B65A" font-size="var(--text-9)" font-weight="600" text-anchor="'+anc+'">'+names[focus]+'</text>';}
     return '<svg viewBox="0 0 320 162">'+g+'</svg>';
   }
   const MAP_ROUTES={
@@ -943,9 +943,9 @@
   function castOffMs(){return (state&&state.startAt)||(state&&state.startISO?parseISO(state.startISO).getTime():Date.now());}
   function lastWeatherMs(){if(!state||!state.deviations)return null;const isos=Object.keys(state.deviations);if(!isos.length)return null;isos.sort();const last=isos[isos.length-1];if(state.weatherAt&&state.weatherAt[last])return state.weatherAt[last];return parseISO(last).getTime()+86400000;}
   function clockParts(ms){ms=Math.max(0,ms);const s=Math.floor(ms/1000);const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),sec=s%60;const p=n=>String(n).padStart(2,'0');return {main:(d>0?d+'d ':'')+p(h)+':'+p(m),sec:':'+p(sec)};}
-  function tickClocks(){if(!state)return;const pre=state.startISO>todayISO();if(_pre===true&&!pre){_pre=pre;render();return;}_pre=pre;const now=Date.now();const a=$("#ckA");if(a){const P=clockParts(now-castOffMs());a.innerHTML=P.main+'<span class="sec">'+P.sec+'</span>';}const lw=lastWeatherMs(),b=$("#ckB");if(b&&lw){const P=clockParts(now-lw);b.innerHTML=P.main+'<span class="sec">'+P.sec+'</span>';}updateSalvFill();}
+  function tickClocks(){if(!state)return;const t=todayISO();if(lastRenderISO&&lastRenderISO!==t){render();return;}const pre=state.startISO>t;if(_pre===true&&!pre){_pre=pre;render();return;}_pre=pre;const now=Date.now();const a=$("#ckA");if(a){const P=clockParts(now-castOffMs());a.innerHTML=P.main+'<span class="sec">'+P.sec+'</span>';}const lw=lastWeatherMs(),b=$("#ckB");if(b&&lw){const P=clockParts(now-lw);b.innerHTML=P.main+'<span class="sec">'+P.sec+'</span>';}updateSalvFill();}
   function renderClocks(){const el=$("#clocks");if(!el||!state)return;const lw=lastWeatherMs();let h='<div class="clk hero"><span class="cl">Under way</span><span class="cv" id="ckA">\u2014</span></div>';if(lw)h+='<div class="clk"><span class="cl">Clean run</span><span class="cv" id="ckB">\u2014</span></div>';el.innerHTML=h;tickClocks();}
-  let clockTimer=null,_pre=null,salvToday=0;
+  let clockTimer=null,_pre=null,salvToday=0,lastRenderISO=null;
   function startClocks(){if(clockTimer)return;tickClocks();clockTimer=setInterval(tickClocks,1000);}
   function stopClocks(){if(clockTimer){clearInterval(clockTimer);clockTimer=null;}}
   function updateSalvFill(){const sf=$("#salvFill");if(!sf)return;if(salvToday>0){const n=new Date(),mid=new Date(n.getFullYear(),n.getMonth(),n.getDate()).getTime();const frac=Math.max(0,Math.min(1,(Date.now()-mid)/86400000));sf.textContent="+"+((state&&state.currency)||"£")+(salvToday*frac).toFixed(2)+" today · filling";sf.style.display="";}else{sf.style.display="none";}}
@@ -953,7 +953,7 @@
   function renderBaro(){
     const el=$("#baroCard");if(!el)return;
     let ser=baroSeries();if(ser.length>14)ser=ser.slice(ser.length-14);
-    if(ser.length<7){el.innerHTML='<div class="portshead">The barometer</div><div class="muted" style="padding:16px 2px 4px;font-size:12.5px;line-height:1.5">Your barometer trend fills in as the days pass \u2014 about a week of daily readings and it appears here.</div>';return;}
+    if(ser.length<7){el.innerHTML='<div class="portshead">The barometer</div><div class="muted" style="padding:var(--space-16) var(--space-2) var(--space-4);font-size:var(--text-12-5);line-height:var(--lh-body)">Your barometer trend fills in as the days pass \u2014 about a week of daily readings and it appears here.</div>';return;}
     const vals=ser.map(function(x){return x.baro;}),N=vals.length;
     const sm=vals.map(function(v,i){let lo=Math.max(0,i-2),a=0,c=0;for(let k=lo;k<=i;k++){a+=vals[k];c++;}return a/c;});
     const avg=vals.reduce(function(a,b){return a+b;},0)/N;
@@ -963,13 +963,13 @@
     const W=320,H=232,L=64,Rr=W-14,T=16,B=H-30;
     const X=function(i){return N<=1?L:L+(Rr-L)*i/(N-1);};
     const Y=function(v){return B-(B-T)*(v-1)/4;};
-    let g='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;margin-top:6px">';
+    let g='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;margin-top:var(--space-6)">';
     g+='<defs><linearGradient id="bvg" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#6b7a91"/><stop offset="0.55" stop-color="#7fb8c9"/><stop offset="1" stop-color="#5FD0C5"/></linearGradient>';
     g+='<linearGradient id="bzone" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5FD0C5" stop-opacity="0.09"/><stop offset="0.5" stop-color="#5FD0C5" stop-opacity="0.012"/><stop offset="1" stop-color="#6b7a91" stop-opacity="0.09"/></linearGradient>';
     g+='<linearGradient id="bfill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5FD0C5" stop-opacity="0.16"/><stop offset="1" stop-color="#5FD0C5" stop-opacity="0"/></linearGradient></defs>';
     g+='<rect x="'+L+'" y="'+T+'" width="'+(Rr-L)+'" height="'+(B-T)+'" fill="url(#bzone)"/>';
-    for(let i=0;i<5;i++){const ly=B-(B-T)*i/4;g+='<line x1="'+L+'" y1="'+ly.toFixed(0)+'" x2="'+Rr+'" y2="'+ly.toFixed(0)+'" stroke="#26405C" stroke-width="1" opacity="0.4"/><text x="'+(L-8)+'" y="'+(ly+3).toFixed(0)+'" font-size="7.5" fill="#3a5170" text-anchor="end">'+BARO[i]+'</text>';}
-    g+='<line x1="'+L+'" y1="'+Y(avg).toFixed(0)+'" x2="'+Rr+'" y2="'+Y(avg).toFixed(0)+'" stroke="#7E92AB" stroke-width="1" stroke-dasharray="2 4" opacity="0.5"/><text x="'+(Rr-2)+'" y="'+(Y(avg)-4).toFixed(0)+'" font-size="7" fill="#7E92AB" text-anchor="end">avg</text>';
+    for(let i=0;i<5;i++){const ly=B-(B-T)*i/4;g+='<line x1="'+L+'" y1="'+ly.toFixed(0)+'" x2="'+Rr+'" y2="'+ly.toFixed(0)+'" stroke="#26405C" stroke-width="1" opacity="0.4"/><text x="'+(L-8)+'" y="'+(ly+3).toFixed(0)+'" font-size="var(--text-7-5)" fill="#3a5170" text-anchor="end">'+BARO[i]+'</text>';}
+    g+='<line x1="'+L+'" y1="'+Y(avg).toFixed(0)+'" x2="'+Rr+'" y2="'+Y(avg).toFixed(0)+'" stroke="#7E92AB" stroke-width="1" stroke-dasharray="2 4" opacity="0.5"/><text x="'+(Rr-2)+'" y="'+(Y(avg)-4).toFixed(0)+'" font-size="var(--text-7)" fill="#7E92AB" text-anchor="end">avg</text>';
     const pts=sm.map(function(v,i){return [X(i),Y(v)];});
     let area='M'+X(0).toFixed(0)+','+B+' '+pts.map(function(p){return 'L'+p[0].toFixed(0)+','+p[1].toFixed(0);}).join(' ')+' L'+X(N-1).toFixed(0)+','+B+' Z';
     g+='<path d="'+area+'" fill="url(#bfill)"/>';
@@ -978,17 +978,18 @@
     ser.forEach(function(x,i){if(x.weather)g+='<circle cx="'+X(i).toFixed(0)+'" cy="'+Y(vals[i]).toFixed(0)+'" r="4.3" fill="#16263B" stroke="#A98BC9" stroke-width="1.6"/>';});
     const lx=X(N-1),ly=Y(sm[N-1]);
     g+='<circle cx="'+lx.toFixed(0)+'" cy="'+ly.toFixed(0)+'" r="7" fill="#5FD0C5" opacity="0.22"/><circle cx="'+lx.toFixed(0)+'" cy="'+ly.toFixed(0)+'" r="3.4" fill="#5FD0C5"/></svg>';
-    const leg='<div style="display:flex;justify-content:center;gap:13px;margin-top:8px;flex-wrap:wrap">'
-      +'<span style="font-size:8.5px;color:var(--faint)"><span style="display:inline-block;width:14px;height:2px;background:#5FD0C5;vertical-align:middle;margin-right:4px"></span>3-day trend</span>'
-      +'<span style="font-size:8.5px;color:var(--faint)"><span style="display:inline-block;width:5px;height:5px;border-radius:50%;background:#C9D6E5;opacity:.5;vertical-align:middle;margin-right:4px"></span>Daily</span>'
-      +'<span style="font-size:8.5px;color:var(--faint)"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;border:1.4px solid #A98BC9;box-sizing:border-box;vertical-align:middle;margin-right:4px"></span>Weather</span>'
+    const leg='<div style="display:flex;justify-content:center;gap:13px;margin-top:var(--space-8);flex-wrap:wrap">'
+      +'<span style="font-size:var(--text-8-5);color:var(--faint)"><span style="display:inline-block;width:14px;height:2px;background:#5FD0C5;vertical-align:middle;margin-right:var(--space-4)"></span>3-day trend</span>'
+      +'<span style="font-size:var(--text-8-5);color:var(--faint)"><span style="display:inline-block;width:5px;height:5px;border-radius:var(--radius-circle);background:#C9D6E5;opacity:.5;vertical-align:middle;margin-right:var(--space-4)"></span>Daily</span>'
+      +'<span style="font-size:var(--text-8-5);color:var(--faint)"><span style="display:inline-block;width:8px;height:8px;border-radius:var(--radius-circle);border:1.4px solid #A98BC9;box-sizing:border-box;vertical-align:middle;margin-right:var(--space-4)"></span>Weather</span>'
       +'</div>';
-    el.innerHTML='<div class="portshead">The barometer <span style="float:right;font-size:9px;letter-spacing:1px;color:#3a5170">LAST '+N+' DAYS</span></div>'
-      +'<div style="font-size:20px;color:var(--beacon);font-weight:600;margin:3px 0 2px">'+curLab+' <span style="font-size:11px;color:var(--faint);font-weight:400">\u00b7 '+trend+'</span></div>'+g+leg;
+    el.innerHTML='<div class="portshead">The barometer <span style="float:right;font-size:var(--text-9);letter-spacing:1px;color:#3a5170">LAST '+N+' DAYS</span></div>'
+      +'<div style="font-size:var(--text-20);color:var(--beacon);font-weight:600;margin:var(--space-3) 0 var(--space-2)">'+curLab+' <span style="font-size:var(--text-caption);color:var(--faint);font-weight:400">\u00b7 '+trend+'</span></div>'+g+leg;
   }
   function render(){
     if(!state){openSetup(true);return;}
     const A=aggregate(),r=rates(),t=todayISO();
+    lastRenderISO=t;
     const V=voyageContext(A.made);
     PORTS=currentPorts(A.made);
     renderVoyage();
@@ -1071,7 +1072,7 @@
       let chip='';if(de&&de.baro){const lab=BARO[Math.max(0,Math.min(4,Math.round(de.baro)-1))];chip='<span class="barochip">'+lab+'</span>';}
       const icon=(de&&de.note)?'<span class="dicon" data-iso="'+d.iso+'">'+BOOK+'</span>':'';
       return '<div class="day" data-iso="'+d.iso+'">'+mark+'<div class="date">'+fmtDate(d.iso)+(sub?'<small>'+sub+'</small>':'')+'</div>'+icon+chip+'</div>';
-    }).join(""):'<div class="muted" style="padding:10px 0">No days yet.</div>';
+    }).join(""):'<div class="muted" style="padding:var(--space-10) 0">No days yet.</div>';
     document.querySelectorAll('.day').forEach(el=>el.onclick=()=>editDay(el.dataset.iso));
     document.querySelectorAll('.dicon').forEach(el=>el.onclick=(e)=>{e.stopPropagation();openDiaryBook(el.dataset.iso);});
     renderTrends();
@@ -1090,7 +1091,7 @@
   }
   function renderByVoyage(){
     const bd=voyageBreakdown(),A=aggregate(),b=ladderBounds();
-    if(!bd.length){$("#byVoyage").innerHTML='<div class="muted" style="padding:6px 0 2px;line-height:1.5">Your first voyage\u2019s figures appear here once you\u2019re under way.</div>';return;}
+    if(!bd.length){$("#byVoyage").innerHTML='<div class="muted" style="padding:var(--space-6) 0 var(--space-2);line-height:var(--lh-body)">Your first voyage\u2019s figures appear here once you\u2019re under way.</div>';return;}
     $("#byVoyage").innerHTML=bd.map(v=>{
       const under=(v.rung===99)?(A.made>=b.total):(A.made>=b.starts[v.rung]&&A.made<b.ends[v.rung]);
       return '<div class="bvrow" data-rung="'+v.rung+'"><div class="bvn"><b>'+v.name+'</b>'+(under?'<span class="bvtag">under way</span>':'')+'<small>'+v.clean+' day'+(v.clean===1?'':'s')+' made good \u00b7 '+Math.round(v.trim*100)+'% trim</small></div>'
@@ -1115,12 +1116,12 @@
     const slotW=(right-left)/N,bw=Math.min(24,slotW*0.6),ny=v=>bottom-(bottom-top)*Math.max(0,Math.min(1,v)),by=ny(1);
     let s='<svg viewBox="0 0 '+W+' '+H+'">';
     s+='<line x1="'+left+'" y1="'+by.toFixed(1)+'" x2="'+right+'" y2="'+by.toFixed(1)+'" stroke="#C9D6E5" stroke-dasharray="3 4" opacity=".35"/>';
-    s+='<text x="'+right+'" y="'+(by-3).toFixed(1)+'" fill="#7E92AB" font-size="8" text-anchor="end">100%</text>';
+    s+='<text x="'+right+'" y="'+(by-3).toFixed(1)+'" fill="#7E92AB" font-size="var(--text-8)" text-anchor="end">100%</text>';
     s+='<line x1="'+left+'" y1="'+bottom+'" x2="'+right+'" y2="'+bottom+'" stroke="#26405C"/>';
     legs.forEach((lg,i)=>{const cx=left+slotW*i+slotW/2,x=cx-bw/2;
-      if(lg.trim!=null){const y=ny(lg.trim);s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-y).toFixed(1)+'" rx="2" fill="#5FD0C5"/><text x="'+cx.toFixed(1)+'" y="'+(y-3).toFixed(1)+'" fill="#9fb3c8" font-size="7" text-anchor="middle">'+Math.round(lg.trim*100)+'</text>';}
+      if(lg.trim!=null){const y=ny(lg.trim);s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-y).toFixed(1)+'" rx="2" fill="#5FD0C5"/><text x="'+cx.toFixed(1)+'" y="'+(y-3).toFixed(1)+'" fill="#9fb3c8" font-size="var(--text-7)" text-anchor="middle">'+Math.round(lg.trim*100)+'</text>';}
       else{const y=ny(1);s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)+'" height="'+(bottom-y).toFixed(1)+'" rx="2" fill="none" stroke="#26405C" stroke-dasharray="2 3"/>';}
-      s+='<text x="'+cx.toFixed(1)+'" y="'+(H-7)+'" fill="#7E92AB" font-size="7.5" text-anchor="middle">'+(i+1)+'</text>';});
+      s+='<text x="'+cx.toFixed(1)+'" y="'+(H-7)+'" fill="#7E92AB" font-size="var(--text-7-5)" text-anchor="middle">'+(i+1)+'</text>';});
     return s+'</svg>';
   }
   function voyStatsHTML(bd,best){
@@ -1129,7 +1130,7 @@
       +'<div class="vstat"><div class="vk">Voyage trim</div><div class="vv">'+Math.round(bd.trim*100)+'%</div></div>'
       +'<div class="vstat"><div class="vk">Salvage</div><div class="vv">'+fmtMoney(bd.money)+'</div></div>'
       +'<div class="vstat"><div class="vk">Drift held off</div><div class="vv">'+fmtU(bd.units)+'</div></div></div>';
-    if(best)h+='<p class="note" style="margin-top:10px">Cleanest leg: <b>'+best.name+'</b> at '+Math.round(best.trim*100)+'%.</p>';
+    if(best)h+='<p class="note" style="margin-top:var(--space-10)">Cleanest leg: <b>'+best.name+'</b> at '+Math.round(best.trim*100)+'%.</p>';
     return h;
   }
   function voyageDetail(rung){
@@ -1144,7 +1145,7 @@
     let best=null;legs.forEach(l=>{if(l.trim!=null&&(!best||l.trim>best.trim))best=l;});
     let h='<div class="eyebrow">Voyage '+(rung+1)+' of '+LADDER.length+(done?' \u00b7 complete':(cur?' \u00b7 under way':''))+'</div><h2>'+P.title+'</h2>';
     if(bd.first)h+='<div class="sub2">'+fmtDate(bd.first)+' \u2013 '+(done?fmtDate(bd.last):'now')+'</div>';
-    h+='<div class="chartwrap" style="margin-top:10px">'+chartLegMini(legs)+'</div>';
+    h+='<div class="chartwrap" style="margin-top:var(--space-10)">'+chartLegMini(legs)+'</div>';
     h+=voyStatsHTML(bd,best);
     h+='<button class="btn primary" id="mLog">Read the log</button><button class="btn quiet" id="mClose">Close</button>';
     modal(h);
@@ -1290,7 +1291,7 @@
     const p=Math.max(0,Math.min(100,pct)),r=44,c=2*Math.PI*r,off=c*(1-p/100);
     return '<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="'+r+'" fill="none" stroke="#20344d" stroke-width="7"/>'
       +'<circle cx="50" cy="50" r="'+r+'" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-dasharray="'+c.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 50 50)"/>'
-      +'<text x="50" y="50" text-anchor="middle" dominant-baseline="central" font-size="20" font-weight="700" fill="currentColor">'+Math.round(p)+'%</text></svg>';
+      +'<text x="50" y="50" text-anchor="middle" dominant-baseline="central" font-size="var(--text-20)" font-weight="700" fill="currentColor">'+Math.round(p)+'%</text></svg>';
   }
   function buildAwardDetailHTML(o){
     const color=o.cat==='Landfalls'?'amber':'teal';
@@ -1397,7 +1398,7 @@
     const one=items.length===1;
     let h='<div class="eyebrow">'+(one?'A new honour':'New honours')+'</div>';
     if(one){h+='<h2>'+items[0].label+'</h2><p>'+awardFlavour(items[0])+'</p>';}
-    else{h+='<h2>Well earned</h2><p>You\u2019ve come into '+items.length+' new honours:</p><div class="awwrap" style="margin:10px 0">'+items.map(i=>'<span class="award on"><b>'+i.label+'</b><small>'+i.cat+'</small></span>').join('')+'</div>';}
+    else{h+='<h2>Well earned</h2><p>You\u2019ve come into '+items.length+' new honours:</p><div class="awwrap" style="margin:var(--space-10) 0">'+items.map(i=>'<span class="award on"><b>'+i.label+'</b><small>'+i.cat+'</small></span>').join('')+'</div>';}
     const iso=todayISO();h+=diaryFieldsHTML(iso);if(isNoteDay(iso))h+=notePromptHTML(iso);
     h+='<button class="btn primary" id="mClose">Log it with pride</button><button class="btn quiet" id="mLog">Add a line to the diary</button>';
     modal(h);wireBaro();
@@ -1420,7 +1421,7 @@
   }
   function chartSalvage(){
     const jd=journeyDays();
-    if(!jd.length)return '<div class="muted" style="text-align:center;padding:30px 0">Cast off, and your salvage line begins here.</div>';
+    if(!jd.length)return '<div class="muted" style="text-align:center;padding:var(--space-30) 0">Cast off, and your salvage line begins here.</div>';
     const r=rates(),rate=r.money;
     const N=jd.length;let cum=[],c=0,cu=0;jd.forEach(d=>{if(d.counted){c+=(d.av.money||0);cu+=(d.av.units||0);}cum.push(c);});
     const total=c,totalU=cu,maxv=Math.max(1,N*rate,total);
@@ -1428,10 +1429,10 @@
     const X=i=>N<=1?left:left+(right-left)*(i/(N-1));
     const Y=v=>bottom-(bottom-top)*Math.max(0,Math.min(1,v/maxv));
     let s='<svg viewBox="0 0 '+W+' '+H+'">';
-    s+='<text x="'+left+'" y="26" font-size="20" font-weight="600"><tspan fill="#E8B65A">'+fmtMoney(total)+'</tspan><tspan fill="#7E92AB" font-size="15"> \u00b7 </tspan><tspan fill="#5FD0C5" font-size="15">'+fmtU(totalU)+' drift</tspan></text>';
-    s+='<text x="'+left+'" y="42" fill="#7E92AB" font-size="9">salvage &amp; drift held back \u00b7 '+N+' day'+(N===1?'':'s')+' at sea</text>';
+    s+='<text x="'+left+'" y="26" font-size="var(--text-20)" font-weight="600"><tspan fill="#E8B65A">'+fmtMoney(total)+'</tspan><tspan fill="#7E92AB" font-size="var(--text-body)"> \u00b7 </tspan><tspan fill="#5FD0C5" font-size="var(--text-body)">'+fmtU(totalU)+' drift</tspan></text>';
+    s+='<text x="'+left+'" y="42" fill="#7E92AB" font-size="var(--text-9)">salvage &amp; drift held back \u00b7 '+N+' day'+(N===1?'':'s')+' at sea</text>';
     s+='<line x1="'+X(0).toFixed(1)+'" y1="'+Y(rate).toFixed(1)+'" x2="'+X(N-1).toFixed(1)+'" y2="'+Y(N*rate).toFixed(1)+'" stroke="#7E92AB" stroke-width="1" stroke-dasharray="2 3" opacity="0.5"/>';
-    s+='<text x="'+X(N-1).toFixed(1)+'" y="'+(Y(N*rate)-3).toFixed(1)+'" fill="#7E92AB" font-size="7" text-anchor="end">fair winds</text>';
+    s+='<text x="'+X(N-1).toFixed(1)+'" y="'+(Y(N*rate)-3).toFixed(1)+'" fill="#7E92AB" font-size="var(--text-7)" text-anchor="end">fair winds</text>';
     let pts=[];for(let i=0;i<N;i++)pts.push([X(i),Y(cum[i])]);
     let area='M'+X(0).toFixed(1)+','+bottom+' ';pts.forEach(p=>area+='L'+p[0].toFixed(1)+','+p[1].toFixed(1)+' ');area+='L'+X(N-1).toFixed(1)+','+bottom+' Z';
     s+='<path d="'+area+'" fill="#5FD0C5" opacity="0.16"/>';
@@ -1443,18 +1444,18 @@
   }
   function chartRibbon(){
     const jd=journeyDays();
-    if(!jd.length)return '<div class="muted" style="text-align:center;padding:24px 0">Your run appears here once you are under way.</div>';
+    if(!jd.length)return '<div class="muted" style="text-align:center;padding:var(--space-24) 0">Your run appears here once you are under way.</div>';
     const bands=[];jd.forEach(d=>{const last=bands[bands.length-1];if(last&&last.rung===d.rung)last.days.push(d);else bands.push({rung:d.rung,days:[d]});});
     const cs=15,gap=4;let html='';
     bands.forEach(band=>{
       const L=LADDER[band.rung],title=L?passageById(L.id).title:'Open water';
       const cleanCt=band.days.filter(d=>d.clean).length;
-      html+='<div style="font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:#5FD0C5;margin:12px 0 6px">'+title+' \u00b7 '+cleanCt+'</div>';
+      html+='<div style="font-size:var(--text-8-5);letter-spacing:.12em;text-transform:uppercase;color:#5FD0C5;margin:var(--space-12) 0 var(--space-6)">'+title+' \u00b7 '+cleanCt+'</div>';
       html+='<div style="display:flex;flex-wrap:wrap;gap:'+gap+'px">';
       band.days.forEach(d=>{
-        if(d.pending)html+='<div style="width:'+cs+'px;height:'+cs+'px;border-radius:4px;border:1.4px dashed #7E92AB;box-sizing:border-box"></div>';
-        else if(d.weather)html+='<div style="width:'+cs+'px;height:'+cs+'px;border-radius:4px;border:1.4px solid #A98BC9;opacity:.85;box-sizing:border-box"></div>';
-        else{const dot=d.port?'<div style="position:absolute;top:-2px;right:-2px;width:6px;height:6px;border-radius:50%;background:#16263B;border:1.4px solid #E8B65A;box-sizing:border-box"></div>':'';html+='<div style="position:relative;width:'+cs+'px;height:'+cs+'px;border-radius:4px;background:#5FD0C5;opacity:.9">'+dot+'</div>';}
+        if(d.pending)html+='<div style="width:'+cs+'px;height:'+cs+'px;border-radius:var(--radius-4);border:1.4px dashed #7E92AB;box-sizing:border-box"></div>';
+        else if(d.weather)html+='<div style="width:'+cs+'px;height:'+cs+'px;border-radius:var(--radius-4);border:1.4px solid #A98BC9;opacity:.85;box-sizing:border-box"></div>';
+        else{const dot=d.port?'<div style="position:absolute;top:-2px;right:-2px;width:6px;height:6px;border-radius:var(--radius-circle);background:#16263B;border:1.4px solid #E8B65A;box-sizing:border-box"></div>':'';html+='<div style="position:relative;width:'+cs+'px;height:'+cs+'px;border-radius:var(--radius-4);background:#5FD0C5;opacity:.9">'+dot+'</div>';}
       });
       html+='</div>';
     });
@@ -1470,7 +1471,7 @@
   }
   function renderLedger(){
     const SD=stageData(),A=SD.A;
-    if(!SD.hasBase)return '<div class="card"><div class="muted" style="text-align:center;padding:30px 14px;line-height:1.5">Set <b>Your usual week</b> in the Locker \u2014 then your hold fills here.</div></div>';
+    if(!SD.hasBase)return '<div class="card"><div class="muted" style="text-align:center;padding:var(--space-30) var(--space-14);line-height:var(--lh-body)">Set <b>Your usual week</b> in the Locker \u2014 then your hold fills here.</div></div>';
     const slip=localISO(new Date(state.startAt||parseISO(state.startISO).getTime()));
     const atSea=Math.max(0,daysBetween(slip,todayISO()));
     const money=A.banked.money,units=A.banked.units,kg=A.banked.kcal/7700;
@@ -1481,30 +1482,30 @@
     const chestSVG='<svg viewBox="0 0 60 56" width="52" height="48"><path d="M6,28 Q6,12 30,12 Q54,12 54,28 Z" fill="none" stroke="#E8B65A" stroke-width="1.6"/><rect x="6" y="28" width="48" height="22" rx="3" fill="none" stroke="#E8B65A" stroke-width="1.6"/><line x1="6" y1="36" x2="54" y2="36" stroke="#E8B65A" stroke-width="1.4"/><rect x="26" y="32" width="8" height="9" rx="1.5" fill="#E8B65A"/></svg>';
     let progressHTML;
     if(nextS){const frac=Math.max(0,Math.min(1,money/nextS.amt));
-      progressHTML='<div style="display:flex;justify-content:space-between;font-size:9px;color:#7E92AB;margin:0 0 5px"><span>'+fmtMoney(nextS.amt-money)+' to <span style="color:#E8B65A">'+nextS.name+'</span></span><span>'+fmtMoney(nextS.amt)+'</span></div><div style="height:7px;border-radius:3.5px;background:#20344d;overflow:hidden"><div style="height:100%;width:'+(frac*100).toFixed(1)+'%;background:#E8B65A;border-radius:3.5px"></div></div>';
-    } else {progressHTML='<div style="font-size:9px;color:#E8B65A">King\u2019s Ransom banked \u2014 the chest overflows.</div>';}
-    let flags='';for(let i=0;i<landfalls;i++)flags+='<span style="color:#E8B65A;font-size:15px;line-height:1">\u2691</span>';
-    if(!landfalls)flags='<span style="color:#7E92AB;font-size:10px">no landfalls yet \u2014 your first is near</span>';
-    let dots='';const dn=Math.min(honours,14);for(let i=0;i<dn;i++)dots+='<span style="display:inline-block;width:14px;height:14px;border-radius:50%;border:1.4px solid #5FD0C5;position:relative;box-sizing:border-box"><span style="position:absolute;left:4px;top:4px;width:4px;height:4px;border-radius:50%;background:#5FD0C5"></span></span>';
-    if(honours>14)dots+='<span style="color:#7E92AB;font-size:10px;align-self:center">+'+(honours-14)+'</span>';
-    if(!honours)dots='<span style="color:#7E92AB;font-size:10px">none earned yet</span>';
+      progressHTML='<div style="display:flex;justify-content:space-between;font-size:var(--text-9);color:#7E92AB;margin:0 0 var(--space-5)"><span>'+fmtMoney(nextS.amt-money)+' to <span style="color:#E8B65A">'+nextS.name+'</span></span><span>'+fmtMoney(nextS.amt)+'</span></div><div style="height:7px;border-radius:var(--radius-3-5);background:#20344d;overflow:hidden"><div style="height:100%;width:'+(frac*100).toFixed(1)+'%;background:#E8B65A;border-radius:var(--radius-3-5)"></div></div>';
+    } else {progressHTML='<div style="font-size:var(--text-9);color:#E8B65A">King\u2019s Ransom banked \u2014 the chest overflows.</div>';}
+    let flags='';for(let i=0;i<landfalls;i++)flags+='<span style="color:#E8B65A;font-size:var(--text-body);line-height:var(--lh-1)">\u2691</span>';
+    if(!landfalls)flags='<span style="color:#7E92AB;font-size:var(--text-micro)">no landfalls yet \u2014 your first is near</span>';
+    let dots='';const dn=Math.min(honours,14);for(let i=0;i<dn;i++)dots+='<span style="display:inline-block;width:14px;height:14px;border-radius:var(--radius-circle);border:1.4px solid #5FD0C5;position:relative;box-sizing:border-box"><span style="position:absolute;left:4px;top:4px;width:4px;height:4px;border-radius:var(--radius-circle);background:#5FD0C5"></span></span>';
+    if(honours>14)dots+='<span style="color:#7E92AB;font-size:var(--text-micro);align-self:center">+'+(honours-14)+'</span>';
+    if(!honours)dots='<span style="color:#7E92AB;font-size:var(--text-micro)">none earned yet</span>';
     return ''
-      +'<div class="card"><div style="font-size:9px;letter-spacing:.16em;color:#7E92AB">SINCE '+fmtDate(slip).toUpperCase()+' \u00b7 SLIPPED THE LINES</div>'
-      +'<div style="font-size:32px;font-weight:300;color:#C9D6E5;margin-top:6px">'+atSea+' <span style="font-size:13px;color:#7E92AB;font-weight:400">day'+(atSea===1?'':'s')+' at sea</span></div></div>'
-      +'<div class="card"><div style="font-size:9px;letter-spacing:.16em;color:#7E92AB">THE CHEST</div>'
-      +'<div style="display:flex;align-items:center;gap:14px;margin:10px 0 14px">'+chestSVG
-      +'<div><div style="font-size:24px;color:#E8B65A;font-weight:600">'+fmtMoney(money)+'</div><div style="font-size:10px;color:#7E92AB;margin-top:2px">salvage banked \u00b7 safe in the hold</div><div style="font-size:11px;color:#C9D6E5;margin-top:3px">'+salvPun(money)+'</div></div></div>'
+      +'<div class="card"><div style="font-size:var(--text-9);letter-spacing:.16em;color:#7E92AB">SINCE '+fmtDate(slip).toUpperCase()+' \u00b7 SLIPPED THE LINES</div>'
+      +'<div style="font-size:var(--text-32);font-weight:300;color:#C9D6E5;margin-top:var(--space-6)">'+atSea+' <span style="font-size:var(--text-small);color:#7E92AB;font-weight:400">day'+(atSea===1?'':'s')+' at sea</span></div></div>'
+      +'<div class="card"><div style="font-size:var(--text-9);letter-spacing:.16em;color:#7E92AB">THE CHEST</div>'
+      +'<div style="display:flex;align-items:center;gap:14px;margin:var(--space-10) 0 var(--space-14)">'+chestSVG
+      +'<div><div style="font-size:var(--text-24);color:#E8B65A;font-weight:600">'+fmtMoney(money)+'</div><div style="font-size:var(--text-micro);color:#7E92AB;margin-top:var(--space-2)">salvage banked \u00b7 safe in the hold</div><div style="font-size:var(--text-caption);color:#C9D6E5;margin-top:var(--space-3)">'+salvPun(money)+'</div></div></div>'
       +progressHTML+'</div>'
       +'<div style="display:flex;gap:14px">'
-      +'<div class="card" style="flex:1;margin-top:0"><div style="font-size:9px;letter-spacing:.14em;color:#7E92AB">BALLAST SHED</div><div style="font-size:22px;color:#C9D6E5;margin-top:8px">'+kg.toFixed(1)+' <span style="font-size:12px;color:#7E92AB">kg</span></div><div style="font-size:9.5px;color:#7E92AB;margin-top:4px">cast overboard \u00b7 lighter</div></div>'
-      +'<div class="card" style="flex:1;margin-top:0"><div style="font-size:9px;letter-spacing:.14em;color:#7E92AB">DRIFT HELD OFF</div><div style="font-size:22px;color:#C9D6E5;margin-top:8px">'+fmtU(units)+' <span style="font-size:12px;color:#7E92AB">units</span></div><div style="font-size:9.5px;color:#7E92AB;margin-top:4px">never crossed the bow</div></div>'
+      +'<div class="card" style="flex:1;margin-top:0"><div style="font-size:var(--text-9);letter-spacing:.14em;color:#7E92AB">BALLAST SHED</div><div style="font-size:var(--text-title);color:#C9D6E5;margin-top:var(--space-8)">'+kg.toFixed(1)+' <span style="font-size:var(--text-12);color:#7E92AB">kg</span></div><div style="font-size:var(--text-9-5);color:#7E92AB;margin-top:var(--space-4)">cast overboard \u00b7 lighter</div></div>'
+      +'<div class="card" style="flex:1;margin-top:0"><div style="font-size:var(--text-9);letter-spacing:.14em;color:#7E92AB">DRIFT HELD OFF</div><div style="font-size:var(--text-title);color:#C9D6E5;margin-top:var(--space-8)">'+fmtU(units)+' <span style="font-size:var(--text-12);color:#7E92AB">units</span></div><div style="font-size:var(--text-9-5);color:#7E92AB;margin-top:var(--space-4)">never crossed the bow</div></div>'
       +'</div>'
-      +'<div class="card"><div style="font-size:9px;letter-spacing:.16em;color:#7E92AB">THE MANIFEST</div>'
-      +'<div style="font-size:14px;color:#C9D6E5;margin:12px 0 6px">'+landfalls+' <span style="font-size:11px;color:#7E92AB">landfall'+(landfalls===1?'':'s')+' made</span></div>'
+      +'<div class="card"><div style="font-size:var(--text-9);letter-spacing:.16em;color:#7E92AB">THE MANIFEST</div>'
+      +'<div style="font-size:var(--text-14);color:#C9D6E5;margin:var(--space-12) 0 var(--space-6)">'+landfalls+' <span style="font-size:var(--text-caption);color:#7E92AB">landfall'+(landfalls===1?'':'s')+' made</span></div>'
       +'<div style="display:flex;flex-wrap:wrap;gap:6px">'+flags+'</div>'
-      +'<div style="font-size:14px;color:#C9D6E5;margin:16px 0 6px">'+honours+' <span style="font-size:11px;color:#7E92AB">honour'+(honours===1?'':'s')+' earned</span></div>'
+      +'<div style="font-size:var(--text-14);color:#C9D6E5;margin:var(--space-16) 0 var(--space-6)">'+honours+' <span style="font-size:var(--text-caption);color:#7E92AB">honour'+(honours===1?'':'s')+' earned</span></div>'
       +'<div style="display:flex;flex-wrap:wrap;gap:8px">'+dots+'</div>'
-      +'<div style="display:flex;justify-content:space-between;border-top:1px solid #26405C;margin-top:14px;padding-top:12px"><span style="font-size:11.5px;color:#7E92AB">Longest clear run</span><span style="font-size:11.5px;color:#5FD0C5">'+A.best+(A.best===1?' day':' days')+'</span></div></div>';
+      +'<div style="display:flex;justify-content:space-between;border-top:1px solid #26405C;margin-top:var(--space-14);padding-top:var(--space-12)"><span style="font-size:var(--text-11-5);color:#7E92AB">Longest clear run</span><span style="font-size:var(--text-11-5);color:#5FD0C5">'+A.best+(A.best===1?' day':' days')+'</span></div></div>';
   }
   function renderTrends(){
     if(!state)return;
@@ -1517,7 +1518,7 @@
     if(view==='ledger'){$("#ledgerBody").innerHTML=renderLedger();return;}
     const SD=stageData();
     renderByVoyage();
-    if(!SD.hasBase){$("#salvChart").innerHTML='<div class="muted" style="text-align:center;padding:30px 14px;line-height:1.5">Set <b>Your usual week</b> in the Locker — then your charts appear here.</div>';$("#runRibbon").innerHTML='';$("#trimLine").style.display='none';return;}
+    if(!SD.hasBase){$("#salvChart").innerHTML='<div class="muted" style="text-align:center;padding:var(--space-30) var(--space-14);line-height:var(--lh-body)">Set <b>Your usual week</b> in the Locker — then your charts appear here.</div>';$("#runRibbon").innerHTML='';$("#trimLine").style.display='none';return;}
     $("#salvChart").innerHTML=chartSalvage();
     $("#runRibbon").innerHTML=chartRibbon();
     const countedAll=SD.A.series.filter(d=>d.counted).length;
@@ -1561,9 +1562,9 @@
       const nextName=(nIdx+1<PORTS.length)?PORTS[nIdx+1].name:null;
       dayLine='Day '+vday+(V.openSea?'':' of '+V.length)+' · <span>'+fromName+'</span><span class="ar"> → </span><span class="tgt">'+p.name+'</span>'+(nextName?'<span class="nx"> → '+nextName+'</span>':'');
     }
-    let h1='<div class="grow" style="margin-bottom:2px"><h2 style="margin:0">'+title+'</h2>'+(era?'<span style="color:var(--faint);font-size:12px">'+era+'</span>':'')+'</div>'
+    let h1='<div class="grow" style="margin-bottom:var(--space-2)"><h2 style="margin:0">'+title+'</h2>'+(era?'<span style="color:var(--faint);font-size:var(--text-12)">'+era+'</span>':'')+'</div>'
       +voyStripSVG(V.start,stripSpan,made,nIdx)
-      +'<div class="gcrumb" style="margin-top:12px">'+dayLine+'</div>'
+      +'<div class="gcrumb" style="margin-top:var(--space-12)">'+dayLine+'</div>'
       +'<div class="portslink" id="voyAbout">About this voyage ›</div>';
 
     // ---- ② next-landfall card ----
@@ -1572,12 +1573,12 @@
       const port=PORTS[nIdx],to=port.d-made;
       const bearing=bearingFor(V.id,port.name);
       h2='<div class="card"><div class="eyebrow">Next landfall</div>'
-        +'<div style="display:flex;align-items:center;gap:10px;margin-top:9px">'
+        +'<div style="display:flex;align-items:center;gap:10px;margin-top:var(--space-9)">'
         +'<span style="color:var(--amber);flex:none">'+FLAG+'</span>'
         +'<div class="gport" style="flex:1;margin-top:0">'+port.name+'</div>'
-        +'<div style="color:var(--amber);font-size:13px;white-space:nowrap">'+to+' day'+(to===1?'':'s')+' to run</div>'
+        +'<div style="color:var(--amber);font-size:var(--text-small);white-space:nowrap">'+to+' day'+(to===1?'':'s')+' to run</div>'
         +'</div>'
-        +(bearing?'<p style="font-style:italic;color:var(--faint);font-size:12.5px;margin:10px 0 0;line-height:1.5">'+bearing+'</p>':'')
+        +(bearing?'<p style="font-style:italic;color:var(--faint);font-size:var(--text-12-5);margin:var(--space-10) 0 0;line-height:var(--lh-body)">'+bearing+'</p>':'')
         +'</div>';
     }
 
@@ -1591,8 +1592,8 @@
       const madeSub=dISO?('made '+fmtDate(dISO)):'';
       return '<div class="lrow" data-r="'+asternRung+'" data-i="'+i+'">'
         +'<span style="color:var(--beacon);flex:none">'+FLAG+'</span>'
-        +'<div style="flex:1;min-width:0"><div class="pname">'+pt.name+'</div>'+(madeSub?'<div style="font-size:12px;color:var(--faint);margin-top:2px">'+madeSub+'</div>':'')+'</div>'
-        +'<div style="color:var(--beacon);font-size:12px;white-space:nowrap">read the chapter ›</div>'
+        +'<div style="flex:1;min-width:0"><div class="pname">'+pt.name+'</div>'+(madeSub?'<div style="font-size:var(--text-12);color:var(--faint);margin-top:var(--space-2)">'+madeSub+'</div>':'')+'</div>'
+        +'<div style="color:var(--beacon);font-size:var(--text-12);white-space:nowrap">read the chapter ›</div>'
         +'</div>';
     }).filter(Boolean);
     const h3='<div class="lh">This voyage, astern</div><div class="card">'
@@ -1620,9 +1621,9 @@
     if(aheadRungs.length){
       const rows=aheadRungs.map(i=>{
         const P=passageById(LADDER[i].id);
-        return '<div style="padding:11px 2px;border-bottom:1px solid var(--line)">'
-          +'<div style="color:var(--faint);font-size:15px">'+P.title+'</div>'
-          +'<div style="color:var(--faint);opacity:.7;font-size:12px;margin-top:2px">'+P.era+' · '+LADDER[i].len+' days · starts at '+b.starts[i]+' clear days</div>'
+        return '<div style="padding:var(--space-11) var(--space-2);border-bottom:1px solid var(--line)">'
+          +'<div style="color:var(--faint);font-size:var(--text-body)">'+P.title+'</div>'
+          +'<div style="color:var(--faint);opacity:.7;font-size:var(--text-12);margin-top:var(--space-2)">'+P.era+' · '+LADDER[i].len+' days · starts at '+b.starts[i]+' clear days</div>'
           +'</div>';
       }).join('');
       h5='<div class="lh">Voyages ahead</div><div class="card">'+rows+'</div>';
@@ -1655,13 +1656,13 @@
       head
       +'<div class="field"><label>Slipped the lines — date</label><input id="f_start" type="date" value="'+_slipISO+'" max="'+todayISO()+'"></div>'
       +'<div class="field"><label>Slipped the lines — time</label><input id="f_starttime" type="time" value="'+_stime+'"></div>'
-      +(first?'<p class="note" style="margin:2px 0 14px">The clock starts the moment you slip the lines. You <b>cast off</b> \u2014 day one \u2014 at first light the next morning.</p>':'')
-      +(first?'<p class="note" style="margin:2px 0 14px">Your usual week before you cast off \u2014 how often did each cross your bow? Rough is fine; it sets your reckoning.</p>':'')
+      +(first?'<p class="note" style="margin:var(--space-2) 0 var(--space-14)">The clock starts the moment you slip the lines. You <b>cast off</b> \u2014 day one \u2014 at first light the next morning.</p>':'')
+      +(first?'<p class="note" style="margin:var(--space-2) 0 var(--space-14)">Your usual week before you cast off \u2014 how often did each cross your bow? Rough is fine; it sets your reckoning.</p>':'')
       +'<div id="wkRows">'+stepperRows(values)+'</div>'
       +'<div class="summary" id="wkSum"></div>'
       +'<button class="btn ghost" id="editDr">Edit the hazards</button>'
-      +(first?'<p class="note" style="margin:12px 0">If you\u2019re leaving a long, hard run behind, read <b>Before you cast off</b> in the Locker first.</p>':'')
-      +(first?'<p class="note" style="margin:12px 0">Everything stays on this phone \u2014 nothing is uploaded, so save your papers now and then.</p>':'')
+      +(first?'<p class="note" style="margin:var(--space-12) 0">If you\u2019re leaving a long, hard run behind, read <b>Before you cast off</b> in the Locker first.</p>':'')
+      +(first?'<p class="note" style="margin:var(--space-12) 0">Everything stays on this phone \u2014 nothing is uploaded, so save your papers now and then.</p>':'')
       +'<button class="btn primary" id="saveSetup">'+(first?"Get under way":"Save")+'</button>'
       +(first?'':'<button class="btn quiet" id="cancelSetup">Cancel</button>')
     );
@@ -1725,8 +1726,8 @@
       +'<div class="field"><label>When the weather set in (optional)</label><input id="e_time" type="time" value="'+_wtime+'"></div>'
       +'<div id="e_rows">'+stepperRows(values)+'</div><div class="summary" id="e_calc"></div></div>'
       +diaryFieldsHTML(iso)
-      +'<div id="noteBlock" style="margin-top:8px"><div class="dreason" id="noteReason" style="margin-top:4px;display:none"></div><button class="btn ghost" id="e_diary">Add a line to the diary</button></div>'
-      +'<button class="btn primary" id="e_save" style="margin-top:16px">Save</button>'
+      +'<div id="noteBlock" style="margin-top:var(--space-8)"><div class="dreason" id="noteReason" style="margin-top:var(--space-4);display:none"></div><button class="btn ghost" id="e_diary">Add a line to the diary</button></div>'
+      +'<button class="btn primary" id="e_save" style="margin-top:var(--space-16)">Save</button>'
       +'<button class="btn quiet" id="e_cancel">Cancel</button>');
     function calc(){const c=basketTotals(values),r=rates();const total=Object.keys(values).reduce((a,k)=>a+(values[k]||0),0);if(total===0){$("#e_calc").innerHTML="No hazards yet \u2014 leave it and it\u2019s a clear day.";}else{$("#e_calc").innerHTML="This day <b>"+fmtU(c.units)+" drift</b> \u00b7 "+fmtMoney(c.money)+" \u00b7 "+Math.round(c.kcal)+" ballast<br><span style='color:var(--faint)'>still salvaged "+fmtMoney(Math.max(0,r.money-c.money))+" against your usual</span>";}}
     function setMode(m){mode=m;document.querySelectorAll('#dayToggle button').forEach(function(b){b.classList.toggle('on',b.dataset.m===m);});$("#wxBlock").style.display=(m==='weather')?'':'none';const reasonText=(m==='weather')?wReason:(isLand?lReason:'');const rEl=$("#noteReason");rEl.style.display=reasonText?'':'none';rEl.textContent=reasonText;refreshSheetChrome($("#sheet"));}
@@ -1778,28 +1779,28 @@
     var raw="";try{raw=localStorage.getItem("onward.v3")||"";}catch(e){}
     var autoLine='';try{var araw=localStorage.getItem("onward.v3.auto");if(araw){var asnap=JSON.parse(araw);var ageH=Math.max(0,Math.round((Date.now()-(asnap.at||0))/3600000));var ageStr=ageH<24?(ageH+'h ago'):(Math.round(ageH/24)+'d ago');autoLine='<button class="btn ghost" id="rcAuto">Restore from auto-backup ('+ageStr+')</button>';}}catch(e){}
     var d=document.createElement("div");
-    d.setAttribute("style","position:fixed;inset:0;z-index:9999;background:var(--ink);color:var(--mist);font:16px -apple-system,Helvetica,Arial,sans-serif;padding:34px 22px;overflow:auto;-webkit-overflow-scrolling:touch");
+    d.setAttribute("style","position:fixed;inset:0;z-index:9999;background:var(--ink);color:var(--mist);font:16px -apple-system,Helvetica,Arial,sans-serif;padding:var(--space-34) var(--space-22);overflow:auto;-webkit-overflow-scrolling:touch");
     function msg(html){var m=d.querySelector("#rcMsg");if(m)m.innerHTML=html;}
     function main(){
       d.innerHTML='<div style="max-width:520px;margin:0 auto">'
         +'<div class="eyebrow" style="color:var(--beacon)">SOMETHING FOULED THE RIGGING</div>'
-        +'<h2 style="font-size:17px;margin:10px 0 6px">Your passage is still aboard.</h2>'
-        +'<p class="muted" style="line-height:1.5;margin:0 0 16px">The app hit a snag while setting sail \u2014 but your saved data has not been touched. Copy it somewhere safe, restore from a file or auto-backup, or start over.</p>'
+        +'<h2 style="font-size:var(--text-heading);margin:var(--space-10) 0 var(--space-6)">Your passage is still aboard.</h2>'
+        +'<p class="muted" style="line-height:var(--lh-body);margin:0 0 var(--space-16)">The app hit a snag while setting sail \u2014 but your saved data has not been touched. Copy it somewhere safe, restore from a file or auto-backup, or start over.</p>'
         +'<div id="rcMsg"></div>'
         +'<button class="btn primary" id="rcCopy">Copy current papers</button>'
         +'<button class="btn ghost" id="rcRestore">Restore from a file</button>'
         +autoLine
         +'<button class="btn danger" id="rcScuttle">Scuttle and start over</button>'
-        +'<details style="margin-top:16px"><summary class="muted" style="font-size:12px;cursor:pointer">Technical detail</summary><pre style="white-space:pre-wrap;color:var(--faint);font-size:11px;margin-top:8px;opacity:.75">'+String((err&&err.stack)||err||"").replace(/</g,"&lt;")+'</pre></details></div>';
-      d.querySelector("#rcCopy").onclick=function(){var ok=false;try{if(navigator.clipboard){navigator.clipboard.writeText(raw);ok=true;}}catch(e){}if(ok)msg('<p class="muted" style="margin:0 0 12px">Papers copied \u2014 paste them somewhere safe.</p>');else msg('<p class="muted" style="margin:0 0 8px">Clipboard isn\u2019t available \u2014 copy the text below by hand.</p><pre style="white-space:pre-wrap;word-break:break-all;background:var(--slate);border:1px solid var(--line);border-radius:12px;padding:10px;font-size:11px;color:var(--mist);max-height:160px;overflow:auto;margin:0 0 12px">'+raw.replace(/</g,"&lt;")+'</pre>');};
-      d.querySelector("#rcRestore").onclick=function(){var inp=document.createElement("input");inp.type="file";inp.accept=".json,application/json,text/plain";inp.onchange=function(e){var fl=e.target.files&&e.target.files[0];if(!fl)return;var rd=new FileReader();rd.onload=function(){try{var r=coerceState(JSON.parse(String(rd.result).trim()));if(r){localStorage.setItem("onward.v3",JSON.stringify(r));location.reload();}else msg('<p class="muted" style="margin:0 0 12px">Couldn\u2019t read that file.</p>');}catch(x){msg('<p class="muted" style="margin:0 0 12px">Couldn\u2019t read that file.</p>');}};rd.readAsText(fl);};inp.click();};
-      var _ra=d.querySelector("#rcAuto");if(_ra)_ra.onclick=function(){try{var araw2=localStorage.getItem("onward.v3.auto");var asnap2=araw2?JSON.parse(araw2):null;var r=asnap2?coerceState(asnap2.state):null;if(r){localStorage.setItem("onward.v3",JSON.stringify(r));location.reload();}else msg('<p class="muted" style="margin:0 0 12px">Couldn\u2019t read the auto-backup.</p>');}catch(x){msg('<p class="muted" style="margin:0 0 12px">Couldn\u2019t read the auto-backup.</p>');}};
+        +'<details style="margin-top:var(--space-16)"><summary class="muted" style="font-size:var(--text-12);cursor:pointer">Technical detail</summary><pre style="white-space:pre-wrap;color:var(--faint);font-size:var(--text-caption);margin-top:var(--space-8);opacity:.75">'+String((err&&err.stack)||err||"").replace(/</g,"&lt;")+'</pre></details></div>';
+      d.querySelector("#rcCopy").onclick=function(){var ok=false;try{if(navigator.clipboard){navigator.clipboard.writeText(raw);ok=true;}}catch(e){}if(ok)msg('<p class="muted" style="margin:0 0 var(--space-12)">Papers copied \u2014 paste them somewhere safe.</p>');else msg('<p class="muted" style="margin:0 0 var(--space-8)">Clipboard isn\u2019t available \u2014 copy the text below by hand.</p><pre style="white-space:pre-wrap;word-break:break-all;background:var(--slate);border:1px solid var(--line);border-radius:var(--radius-12);padding:var(--space-10);font-size:var(--text-caption);color:var(--mist);max-height:160px;overflow:auto;margin:0 0 var(--space-12)">'+raw.replace(/</g,"&lt;")+'</pre>');};
+      d.querySelector("#rcRestore").onclick=function(){var inp=document.createElement("input");inp.type="file";inp.accept=".json,application/json,text/plain";inp.onchange=function(e){var fl=e.target.files&&e.target.files[0];if(!fl)return;var rd=new FileReader();rd.onload=function(){try{var r=coerceState(JSON.parse(String(rd.result).trim()));if(r){localStorage.setItem("onward.v3",JSON.stringify(r));location.reload();}else msg('<p class="muted" style="margin:0 0 var(--space-12)">Couldn\u2019t read that file.</p>');}catch(x){msg('<p class="muted" style="margin:0 0 var(--space-12)">Couldn\u2019t read that file.</p>');}};rd.readAsText(fl);};inp.click();};
+      var _ra=d.querySelector("#rcAuto");if(_ra)_ra.onclick=function(){try{var araw2=localStorage.getItem("onward.v3.auto");var asnap2=araw2?JSON.parse(araw2):null;var r=asnap2?coerceState(asnap2.state):null;if(r){localStorage.setItem("onward.v3",JSON.stringify(r));location.reload();}else msg('<p class="muted" style="margin:0 0 var(--space-12)">Couldn\u2019t read the auto-backup.</p>');}catch(x){msg('<p class="muted" style="margin:0 0 var(--space-12)">Couldn\u2019t read the auto-backup.</p>');}};
       d.querySelector("#rcScuttle").onclick=confirmScuttle;
     }
     function confirmScuttle(){
       d.innerHTML='<div style="max-width:520px;margin:0 auto">'
-        +'<h2 style="font-size:17px;margin:10px 0 6px">Scuttle the ship?</h2>'
-        +'<p class="muted" style="line-height:1.5;margin:0 0 16px">This erases everything aboard and cannot be undone.</p>'
+        +'<h2 style="font-size:var(--text-heading);margin:var(--space-10) 0 var(--space-6)">Scuttle the ship?</h2>'
+        +'<p class="muted" style="line-height:var(--lh-body);margin:0 0 var(--space-16)">This erases everything aboard and cannot be undone.</p>'
         +'<button class="btn danger" id="rcScuttleGo">Scuttle it</button>'
         +'<button class="btn quiet" id="rcScuttleBack">Belay that</button></div>';
       d.querySelector("#rcScuttleGo").onclick=function(){try{localStorage.removeItem("onward.v3");}catch(e){}location.reload();};
@@ -1847,7 +1848,7 @@
     const notes=_dnLoad();
     function renderList(){
       const rows=notes.slice().reverse().map(n=>'<div class="devnotes-row" data-at="'+n.at+'"><div class="devnotes-text">'+esc(n.text)+'<small>'+_dnFmt(n.at)+'</small></div><div class="devnotes-del" data-at="'+n.at+'">✕</div></div>').join("");
-      $("#dnList").innerHTML=rows||'<div class="muted" style="padding:10px 0">No notes yet.</div>';
+      $("#dnList").innerHTML=rows||'<div class="muted" style="padding:var(--space-10) 0">No notes yet.</div>';
       document.querySelectorAll('.devnotes-del').forEach(el=>el.onclick=()=>{const at=+el.dataset.at;const i=notes.findIndex(n=>n.at===at);if(i>=0){notes.splice(i,1);_dnSave(notes);renderList();}});
       refreshSheetChrome($("#sheet"));
     }
@@ -1925,6 +1926,16 @@
   const GR_DAYWX_CLOSE=['The leg starts fresh from here. ','Fresh leg from here. The voyage lost no ground. ','The slate\u2019s clear and the course unchanged. ','Nothing to make up. Just the next day, sailed clean. ','Start again from here \u2014 that\u2019s all a fresh leg ever is. '];
   const GR_DAYWX_BTN=['Take the helm','Back to it','Make way'];
 
+  const GR_NOON_HEAD=['Steady as she goes.','The long middle of the day.','Holding your course.','Mid-passage.','On an even keel.'];
+  const GR_NOON_OPEN=['The middle of the day asks the least and rewards the steady. You’re making way: ','Nothing dramatic about the early afternoon — just quiet miles under the keel: ','This is the easy stretch of the watch. Use it: ','The wind’s set fair for now, and the work is simply to keep on: ','Half the day’s run behind you already: '];
+  const GR_NOON_CLOSE=[' Keep her steady and the evening takes care of itself.',' No need to chase it — the day logs itself when you’re ready.',' Plenty of water left under you. Sail it easy.',' Hold this course into the evening and the day is yours.',' Nothing to force. Just the next few hours, held.'];
+  const GR_NOON_BTN=['Steady on','Hold the course','Make way'];
+
+  const GR_NOONWX_HEAD=['Weather, mid-passage.','The glass steadies.','A clear afternoon.','Weather astern by noon.','Back to fair water.'];
+  const GR_NOONWX_OPEN=['Weather came through earlier — that’s the sea, not a failure of yours. What you’ve banked still stands, and the afternoon’s clear: ','The last run met weather, and the middle of the day is where it clears. Nothing you’ve earned went with it: ','Rough water this morning, fair by afternoon. The ledger is unchanged: ','It blew in and it blew out, and here’s the clear stretch of the day: ','Weather’s astern and the glass is rising. What’s banked is banked: '];
+  const GR_NOONWX_CLOSE=['The leg starts fresh from here, and there’s a whole afternoon to make way in. ','Fresh leg from here — and the best of the light is still ahead. ','The slate’s clear, the course unchanged, and the day’s only half run. ','Nothing to make up. Just the afternoon ahead, sailed clean. ','Start again from here — the afternoon is the easiest time to. '];
+  const GR_NOONWX_BTN=['Take the helm','Back to it','Make way'];
+
   const GR_WATCH_HEAD=['Hold your course','The hard hours.','Steady through the evening.','This is the stretch.','Hands on the helm.'];
   const GR_WATCH_OPEN=['The evening watch is often the hardest stretch \u2014 the wind gets up just as the light goes. But you\u2019ve stood it before: ','Most passages are lost in the evening, not the morning. You know that, and you\u2019re still here: ','The wind always freshens at dusk. It always drops again: ','This is the watch that asks the most of you. Look what you\u2019ve already answered: ','The light goes and the sea gets loud. It\u2019s been loud before: '];
   const GR_WATCH_CLOSE=[' Hold your course through tonight, and the day is yours to log.',' Get through these few hours and the day is yours.',' You don\u2019t have to sail the whole passage tonight. Just this watch.',' Hold on until the wind drops. It does drop.',' A few hours. That\u2019s the whole ask.'];
@@ -1971,6 +1982,25 @@
     }
     modal(h);$("#mClose").onclick=closeModal;
   }
+  function afternoonGreeting(){
+    const A=aggregate();PORTS=currentPorts(A.made);const V=voyageContext(A.made);
+    const recentWeather=(A.leg===0&&A.made>0);
+    let h='<div class="eyebrow">The afternoon watch</div>';
+    if(recentWeather){
+      h+='<h2>'+pick(GR_NOONWX_HEAD)+'</h2>';
+      h+='<p>'+pick(GR_NOONWX_OPEN)+progressLine(A,V)+'</p>';
+      h+='<p>'+pick(GR_NOONWX_CLOSE)+nextStepLine(A,V)+'</p>';
+      h+=backupOverdueHTML();
+      h+='<button class="btn primary" id="mClose">'+pick(GR_NOONWX_BTN)+'</button>';
+    } else {
+      h+='<h2>'+pick(GR_NOON_HEAD)+'</h2>';
+      h+='<p>'+pick(GR_NOON_OPEN)+progressLine(A,V)+'</p>';
+      h+='<p>'+nextStepLine(A,V)+pick(GR_NOON_CLOSE)+'</p>';
+      h+=backupOverdueHTML();
+      h+='<button class="btn primary" id="mClose">'+pick(GR_NOON_BTN)+'</button>';
+    }
+    modal(h);$("#mClose").onclick=closeModal;
+  }
   function watchGreeting(){
     const A=aggregate();PORTS=currentPorts(A.made);const V=voyageContext(A.made);
     const recentWeather=(A.leg===0&&A.made>0);
@@ -2007,7 +2037,7 @@
       $("#mClose").onclick=closeModal;
     }
   }
-  function currentSlot(){const h=new Date().getHours();return h<12?'d':(h<21?'w':'u');}
+  function currentSlot(){const h=new Date().getHours();if(h>=5&&h<12)return 'd';if(h>=12&&h<17)return 'a';if(h>=17&&h<21)return 'w';return 'u';}
   function maybeCatchUp(){
     if(!state||!state.startISO)return false;
     const today=todayISO(),la=state.lastActive||today;
@@ -2036,8 +2066,8 @@
   function updateNudge(worker){
     if(document.getElementById('upNudge'))return;
     var b=document.createElement('div');b.id='upNudge';
-    b.setAttribute('style','position:fixed;left:12px;right:12px;bottom:calc(86px + var(--pad,0px));z-index:80;background:#06231f;border:1px solid #5FD0C5;border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;font:14px -apple-system,Helvetica,Arial,sans-serif;color:#C9D6E5;box-shadow:0 6px 24px rgba(0,0,0,.4)');
-    b.innerHTML='<span style="flex:1">A fresh chart\u2019s aboard.</span><button id="upGo" style="border:0;border-radius:9px;background:#5FD0C5;color:#0c1a2a;font-weight:600;padding:8px 14px;font-size:13px">Update</button><button id="upX" style="border:0;background:none;color:#7E92AB;font-size:18px;padding:4px 6px;line-height:1">\u00d7</button>';
+    b.setAttribute('style','position:fixed;left:12px;right:12px;bottom:calc(86px + var(--pad,0px));z-index:80;background:#06231f;border:1px solid #5FD0C5;border-radius:var(--radius-md);padding:var(--space-12) var(--space-14);display:flex;align-items:center;gap:12px;font:14px -apple-system,Helvetica,Arial,sans-serif;color:#C9D6E5;box-shadow:0 6px 24px rgba(0,0,0,.4)');
+    b.innerHTML='<span style="flex:1">A fresh chart\u2019s aboard.</span><button id="upGo" style="border:0;border-radius:var(--radius-9);background:#5FD0C5;color:#0c1a2a;font-weight:600;padding:var(--space-8) var(--space-14);font-size:var(--text-small)">Update</button><button id="upX" style="border:0;background:none;color:#7E92AB;font-size:var(--text-18);padding:var(--space-4) var(--space-6);line-height:var(--lh-1)">\u00d7</button>';
     document.body.appendChild(b);
     document.getElementById('upGo').onclick=function(){try{worker.postMessage('skipWaiting');}catch(e){}b.remove();};
     document.getElementById('upX').onclick=function(){b.remove();};
@@ -2053,6 +2083,7 @@
     if((state.greetSlots||"").indexOf(slot)>=0)return;
     state.greetSlots=(state.greetSlots||"")+slot;save();
     if(slot==='d')dailyGreeting();
+    else if(slot==='a')afternoonGreeting();
     else if(slot==='w')watchGreeting();
     else duskGreeting();
   }
@@ -2077,14 +2108,14 @@
   function notePromptHTML(iso){
     const weather=!!(state.deviations&&state.deviations[iso]),_port=landfallISOs()[iso];
     const reason=weather?'Weather blew in today \u2014 worth a line on what happened, and the plan.':(_port?('You reached '+esc(_port)+' \u2014 a landfall worth marking.'):'A moment worth marking.');
-    return '<div class="dreason" style="margin-top:18px">'+reason+'</div>';
+    return '<div class="dreason" style="margin-top:var(--space-18)">'+reason+'</div>';
   }
   function openDiary(iso,noteOnly){
     const weather=!!(state.deviations&&state.deviations[iso]),_port=landfallISOs()[iso];
     const reason=weather?'Weather blew in today \u2014 worth a line on what happened, and the plan.':(_port?('You reached '+esc(_port)+' \u2014 a landfall worth marking.'):'A line for the Captain\u2019s Diary.');
     const e=(state.diary&&state.diary[iso])||{};
     modal('<div class="eyebrow">Captain\u2019s Diary</div><h2>'+fmtDate(iso)+'</h2>'+(noteOnly?'':diaryFieldsHTML(iso))
-      +'<div class="dreason"'+(noteOnly?' style="margin-top:4px"':'')+'>'+reason+'</div>'
+      +'<div class="dreason"'+(noteOnly?' style="margin-top:var(--space-4)"':'')+'>'+reason+'</div>'
       +'<textarea id="d_note" class="dnote dnote-lg" placeholder="'+(weather?'What happened, and the plan\u2026':'Anything worth remembering\u2026')+'">'+(e.note?esc(e.note):'')+'</textarea>'
       +'<button class="btn primary" id="dSave">Save the entry</button><button class="btn quiet" id="dCancel">Close</button>');
     if(!noteOnly)wireBaro();
@@ -2131,7 +2162,7 @@
     let h='<div class="eyebrow">Captain’s Diary</div>';
     h+='<div class="diarybook">'+diaryPageHTML(d)+'</div>';
     h+='<div class="chapnav">'+(hasLater?'<div class="chapnav-btn" id="dpPrev">‹</div>':'<div class="chapnav-btn void"></div>')+'<div class="chapnav-pos">'+fmtDate(d.iso)+' · page '+(DIARY_IDX+1)+' of '+DIARY_PAGES.length+'</div>'+(hasEarlier?'<div class="chapnav-btn" id="dpNext">›</div>':'<div class="chapnav-btn void"></div>')+'</div>';
-    h+='<button class="btn quiet" id="mClose" style="margin-top:14px">Close</button>';
+    h+='<button class="btn quiet" id="mClose" style="margin-top:var(--space-14)">Close</button>';
     modal(h);
     if(hasLater)$("#dpPrev").onclick=()=>renderDiaryBook(DIARY_IDX+1);
     if(hasEarlier)$("#dpNext").onclick=()=>renderDiaryBook(DIARY_IDX-1);
@@ -2196,7 +2227,7 @@
     const iso=todayISO();h+=diaryFieldsHTML(iso);
     h+=notePromptHTML(iso);
     h+='<button class="btn primary" id="mClose">Sail on</button><button class="btn quiet" id="mAdd">Add a line to the diary</button>';
-    h+='<p class="note" id="mSupport" style="text-align:center;font-size:12px;margin:14px 0 0;cursor:pointer">Need more than a log book? Support ›</p>';
+    h+='<p class="note" id="mSupport" style="text-align:center;font-size:var(--text-12);margin:var(--space-14) 0 0;cursor:pointer">Need more than a log book? Support ›</p>';
     modal(h);wireBaro();
     $("#mClose").onclick=()=>{collectDiary(iso);save();closeModal();render();};
     $("#mAdd").onclick=()=>{collectDiary(iso);save();closeModal();openDiary(iso,true);};
@@ -2211,7 +2242,7 @@
     const bearing=state==='next'?bearingFor(P.id,pt.name):null;
     return '<p class="muted">Still ahead \u2014 '+to+' day'+(to===1?'':'s')+' to run. Reach this port to read its chapter.</p>'
       +(state==='next'?'<div class="locknote">'+pt.log+'</div>':'')
-      +(bearing?'<p style="font-style:italic;color:var(--faint);font-size:12.5px;margin:10px 0 0;line-height:1.5">'+bearing+'</p>':'');
+      +(bearing?'<p style="font-style:italic;color:var(--faint);font-size:var(--text-12-5);margin:var(--space-10) 0 0;line-height:var(--lh-body)">'+bearing+'</p>':'');
   }
   function openChapter(rung,i,onBack){
     const A=aggregate(),P=passageById(LADDER[rung].id),pt=P.ports[i],reached=stopReached(rung,i,A.made);
@@ -2406,9 +2437,9 @@
     if(portsH)h+='<div class="plog-h">Ports of call</div><div class="plog-ports">'+portsH+'</div>';
     const honours=voyageHonoursEarned(rung,reck);
     if(honours.length)h+='<div class="plog-h">Honours earned</div><div class="plog-awards">'+honours.map(function(a){return '<div class="plog-award"><div>'+a.label+'</div><div class="k">'+a.sub+'</div></div>';}).join('')+'</div>';
-    h+='<div class="portslink" id="plogAbout">About this voyage ›<div style="font-size:11px;color:var(--faint);margin-top:2px">Ship, crew, chart &amp; sources</div></div>';
+    h+='<div class="portslink" id="plogAbout">About this voyage ›<div style="font-size:var(--text-caption);color:var(--faint);margin-top:var(--space-2)">Ship, crew, chart &amp; sources</div></div>';
     if(L.sources)h+='<div class="srcs">'+L.sources+'</div>';
-    h+='<button class="btn quiet" id="mClose" style="margin-top:18px">Close</button>';
+    h+='<button class="btn quiet" id="mClose" style="margin-top:var(--space-18)">Close</button>';
     modal(h);
     $("#plogAbout").onclick=()=>voyageSheet(rung,false,()=>openPassageLog(rung));
     $("#mClose").onclick=closeModal;
@@ -2521,8 +2552,9 @@
   if(state)autoSnapshot();
   startClocks();
   if(returning)setTimeout(function(){if(!maybeCatchUp())maybeDailyGreeting();},1300);
-  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){maybeDailyGreeting();startClocks();}else{stopClocks();}});
-  window.addEventListener('focus',maybeDailyGreeting);
+  function renderIfStale(){if(state&&lastRenderISO&&lastRenderISO!==todayISO())render();}
+  document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){renderIfStale();maybeDailyGreeting();startClocks();}else{stopClocks();}});
+  window.addEventListener('focus',function(){renderIfStale();maybeDailyGreeting();});
 })();
 </script>
 </body>
